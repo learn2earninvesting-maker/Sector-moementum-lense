@@ -1,6 +1,6 @@
 // Sector Momentum Lens service worker: works offline, always tries the network first
 // so a newly published week shows up as soon as it is online.
-const CACHE = 'sml-v6';
+const CACHE = 'sml-v7';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
   'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'];
 
