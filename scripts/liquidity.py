@@ -251,19 +251,29 @@ def volumes(date_str, keys, sessions=55, lookback=95):
         nv = parse_nse_vol(n) if n else {}
         bv = parse_bse_vol(b) if b else {}
         days.append(day.isoformat())
-        rows.append({k: nv.get(k, 0.0) + bv.get(k, 0.0) for k in keys})
+        row = {}
+        for k in keys:
+            bse_only = k.isdigit()
+            if (bse_only and not b) or (not bse_only and not n):
+                row[k] = None  # that exchange's file is missing for this day, not a zero-volume day
+            else:
+                row[k] = nv.get(k, 0.0) + bv.get(k, 0.0)
+        rows.append(row)
         time.sleep(0.3)
     days.reverse()
     rows.reverse()
-    return days, {k: [int(r[k]) for r in rows] for k in keys}
+    return days, {k: [None if r[k] is None else int(r[k]) for r in rows] for k in keys}
 
 
 def dryup(series):
     """Average volume of the last 5 sessions against the 50 sessions before them."""
     if len(series) < 25:
         return None
-    last, base = series[-5:], series[:-5][-50:]
+    last = [x for x in series[-5:] if x is not None]
+    base = [x for x in series[:-5][-50:] if x is not None]
+    if len(last) < 3 or len(base) < 20:
+        return None
     b = sum(base) / len(base) if base else 0
     if b <= 0:
         return None
-    return {"r5": round(sum(last) / 5 / b, 2), "r1": round(series[-1] / b, 2)}
+    return {"r5": round(sum(last) / len(last) / b, 2), "r1": None if series[-1] is None else round(series[-1] / b, 2)}

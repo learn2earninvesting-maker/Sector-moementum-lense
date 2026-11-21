@@ -264,7 +264,7 @@ def main():
         with open(out) as f:
             v = json.load(f)
         rows = v["main"] + v["sme"]
-        if os.environ.get("SKIP_LIQUIDITY") != "1" and any("volh" not in r for r in rows):
+        if os.environ.get("SKIP_LIQUIDITY") != "1" and any(r.get("vv") != 2 for r in rows):
             import liquidity
             keyof = lambda r: str(r["code"]) if r.get("ex") == "BSE" else re.sub(r"-SM$", "", str(r["sym"]))
             try:
@@ -277,6 +277,7 @@ def main():
                     ser = vol.get(keyof(r), [])
                     r["volh"] = ser
                     r["dry"] = liquidity.dryup(ser)
+                    r["vv"] = 2
                 v["voldays"] = [days[0], days[-1], len(days)]
                 with open(out, "w") as f:
                     json.dump(v, f, separators=(",", ":"), default=str)

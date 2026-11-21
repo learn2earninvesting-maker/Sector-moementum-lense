@@ -871,8 +871,8 @@ function vEnrich(){if(!V||!M)return [];const by=Object.fromEntries(M.S.map(s=>[s
     const lqv=r.val??0,li=lqv>=25?15:lqv>=2.5?10:lqv>=0.25?5:0;const sc=sec+gr+pa+rsx+li;
     return {...r,s,g,parts:[['Sector',sec,25],['Grades',gr,25],['Pattern',pa,25],['RS 63d',rsx,10],['Liquidity',li,15]],sc,tier:sc>=70?'s':sc>=50?'m':'w'}})}
 const dryLab=d=>d==null?null:d<0.6?['Drying up sharply','var(--est)']:d<0.85?['Drying up','var(--est)']:d<1.15?['Normal','var(--rb)']:['Rising','var(--dn)'];
-function volSpark(r){const v=r.volh||[];if(v.length<10)return '';const n=v.length,base=v.slice(0,-5).slice(-50),b=base.reduce((a,x)=>a+x,0)/(base.length||1),mx=Math.max(...v,1),W=100,H=34,bw=W/n;
-  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:38px;display:block" aria-label="Daily volume, last ${n} sessions">${v.map((x,i)=>`<rect x="${i*bw+bw*.12}" y="${H-H*x/mx}" width="${bw*.76}" height="${H*x/mx}" fill="${i>=n-5?'var(--ink)':'var(--rb)'}"/>`).join('')}<line x1="0" x2="${W}" y1="${H-H*b/mx}" y2="${H-H*b/mx}" stroke="var(--up)" stroke-width="1" stroke-dasharray="2 1.5" vector-effect="non-scaling-stroke"/></svg>`}
+function volSpark(r){const v=r.volh||[];if(v.length<10)return '';const n=v.length,base=v.slice(0,-5).slice(-50).filter(x=>x!=null),b=base.reduce((a,x)=>a+x,0)/(base.length||1),mx=Math.max(...v.filter(x=>x!=null),1),W=100,H=34,bw=W/n;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:38px;display:block" aria-label="Daily volume, last ${n} sessions">${v.map((x,i)=>x==null?'':`<rect x="${i*bw+bw*.12}" y="${H-H*x/mx}" width="${bw*.76}" height="${H*x/mx}" fill="${i>=n-5?'var(--ink)':'var(--rb)'}"/>`).join('')}<line x1="0" x2="${W}" y1="${H-H*b/mx}" y2="${H-H*b/mx}" stroke="var(--up)" stroke-width="1" stroke-dasharray="2 1.5" vector-effect="non-scaling-stroke"/></svg>`}
 const vCol=t=>t==='s'?'var(--up)':t==='m'?'var(--est)':'var(--rb)';
 const scrUrl=c=>'https://www.screener.in/company/'+encodeURIComponent(c)+'/';
 const tvV=r=>'https://in.tradingview.com/chart/?symbol='+encodeURIComponent((r.ex==='BSE'?'BSE:':'NSE:')+r.sym);
