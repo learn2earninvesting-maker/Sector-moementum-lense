@@ -334,7 +334,13 @@ tr.top10 td{background:var(--gold)}
 <section class="view pall band" id="v-setups" hidden><div class="wrap"><div class="lead" id="i-setups"></div>
   <div class="ctl"><div class="seg" id="vseg"><button data-k="all" aria-pressed="true">All</button><button data-k="main">Mainboard</button><button data-k="sme">SME</button></div><label class="chip" style="cursor:pointer;min-height:40px">Sort <select id="vsort" aria-label="Sort setups" style="min-height:32px;border:0;padding:0 4px;font-size:14px"><option value="conf">Best fit</option><option value="rk">Scan order</option><option value="val">Most liquid</option><option value="rs">Strongest RS 63d</option><option value="adr">Tightest range (ADR)</option><option value="hi">Closest to 52-wk high</option><option value="dry">Driest volume</option><option value="vt">Volume rising</option></select></label><label class="chip" style="cursor:pointer;min-height:40px">Liquidity <select id="vliq" aria-label="Minimum traded value per day" style="min-height:32px;border:0;padding:0 4px;font-size:14px"><option value="0">Any</option><option value="0.25">₹25 L+/day</option><option value="2.5" selected>₹2.5 Cr+/day</option><option value="25">₹25 Cr+/day</option></select></label><select id="vday" aria-label="Choose day" hidden></select></div>
   <div class="note" id="vhid" style="margin:-2px 0 8px"></div>
-  <details class="more" style="margin:4px 0 12px"><summary>What is a VCP, and how to read a card</summary>
+  <div class="vgrid viz" id="z-vcards" style="margin-top:6px"></div>
+  <h3 style="margin-top:22px">Where today's setups sit</h3>
+  <div class="legend"><span><i class="dot" style="background:var(--up)"></i>Strong fit (70+)</span><span><i class="dot" style="background:var(--est)"></i>Mixed (50–69)</span><span><i class="dot" style="background:var(--rb)"></i>Weak (under 50)</span><span>Bigger dot = more traded</span></div>
+  <div class="fig s" id="z-vcp"><svg></svg></div>
+  <div class="cap">Right = closer to its 52-week high (a VCP coils just under it). Up = stronger 3-month return. Tap a dot. For education only, not a buy/sell recommendation.</div>
+  <div class="after" id="j-setups"></div>
+  <details class="more" style="margin:14px 0 0"><summary>What is a VCP, and how to read a card</summary>
   <div class="rules" style="margin-top:4px">
     <div><b>The pattern</b>A stock already in an uptrend that is now consolidating quietly: each pullback shallower than the last, the daily range tightening and volume drying up, as it coils near a possible breakout point.</div>
     <div><b>% from 52-week high</b>VCP candidates sit close to their one-year high. Closer (green zone on the chart) scores higher.</div>
@@ -348,11 +354,7 @@ tr.top10 td{background:var(--gold)}
     <div><b>Fit score</b>Our extra check against the weekly sector sheet: sector 25, grades 25, pattern 25 (high, inside day, range, volume: drying up or rising on up days), RS 10, liquidity 15.</div>
   </div>
   <p class="note">VCP is covered in depth after Module 11 of the course. If you haven't reached it yet, track a few names; the idea clicks faster when you get there. For education only, not investment advice or a buy/sell recommendation.</p></details>
-  <div class="legend"><span><i class="dot" style="background:var(--up)"></i>Strong fit (70+)</span><span><i class="dot" style="background:var(--est)"></i>Mixed (50–69)</span><span><i class="dot" style="background:var(--rb)"></i>Weak (under 50)</span><span>Bigger dot = more traded</span></div>
-  <div class="fig s" id="z-vcp"><svg></svg></div>
-  <div class="cap">Right = closer to its 52-week high (a VCP coils just under it). Up = stronger 3-month return. Tap a dot. For education only, not a buy/sell recommendation.</div>
-  <div class="vgrid viz" id="z-vcards" style="margin-top:16px"></div>
-  <div class="after" id="j-setups"></div></div></section>
+</div></section>
 <section class="view pall band" id="v-clusters" hidden><div class="wrap"><div class="lead" id="i-clusters"></div>
   <h3>Setups by sector, with that sector's MomentumRank</h3><div class="rows viz" id="z-vclu" style="max-width:860px"></div>
   <h3 style="margin-top:18px">By the VCP sheet's own NSE sectors</h3><div class="rows viz" id="z-vnse" style="max-width:860px"></div>
@@ -1038,7 +1040,7 @@ let deferred=null;const standalone=matchMedia('(display-mode: standalone)').matc
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('#shInst').hidden=false});
 if(!standalone&&/iphone|ipad|ipod/i.test(navigator.userAgent)&&location.protocol==='https:'){$('#shInst').hidden=false;$('#instNote').textContent='In Safari: tap Share, then "Add to Home Screen"'}
 $('#shInst').addEventListener('click',async()=>{if(deferred){openSheet(false);deferred.prompt();await deferred.userChoice;deferred=null;$('#shInst').hidden=true}else toast('In Safari, tap Share → Add to Home Screen.')});
-if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!document.getElementById('embedded'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!document.getElementById('embedded')){let rl=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>{if(rl||!navigator.serviceWorker.controller)return;rl=true;location.reload()})}
 
 /* ---------- loading ---------- */
 function readFile(f){if(!f)return;if(typeof XLSX==='undefined'){showErr('The spreadsheet reader did not load. Check your connection and try again.');return}
