@@ -1,0 +1,21 @@
+{
+  "name": "Sector Momentum Lens",
+  "short_name": "Momentum",
+  "description": "Weekly sector momentum insights from the NovaWealth Ranked Sector List.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0b0b0b",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Top 25", "url": "./#top25"},
+    {"name": "Stock picks", "url": "./#stocks"},
+    {"name": "Emerging leaders", "url": "./#emerging"}
+  ]
+}

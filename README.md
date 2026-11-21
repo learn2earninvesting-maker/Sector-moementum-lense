@@ -14,6 +14,13 @@ The tabs follow the guide's weekly routine: **Top 25** (new names by MomentumRan
 
 The week is taken from the date in the file name (`..._21_11_2026_...`) or from "Data as of" inside the sheet. Re-uploading a week replaces that week.
 
+## Install it as an app
+
+- **Android (Chrome):** open the link → Share icon in the dashboard → **Install the app** (or Chrome menu → Install app).
+- **iPhone (Safari):** open the link → Safari's Share button → **Add to Home Screen**.
+
+It opens full-screen like an app, works offline with the last week you opened, and picks up new weeks automatically when online.
+
 ## Sharing
 
 - **The link:** anyone with it sees the latest published week. Tabs have their own links, e.g. `.../#emerging`.

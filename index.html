@@ -2,141 +2,258 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sector Momentum Lens</title>
+<meta name="description" content="Weekly sector momentum insights from the NovaWealth Ranked Sector List.">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0b0b" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Momentum">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* VOICE: a newspaper graphics desk on a trading desk — the finding first, then the evidence, then what to look at.
-   IDEA: a weekly league table of 177 industry groups, read like a race chart: who climbed, who fell.
-   PICTURE: the rank-journey map — every group placed by where it ranked then vs now, sized by stock count.
+/* VOICE: a newspaper graphics desk on a trading desk — finding first, then the picture that proves it, then the detail.
+   IDEA: a weekly league table of 177 industry groups read like a race: who climbed, who fell, who keeps winning.
+   PICTURE: each tab leads with one chart — slope lines, dumbbells, a stock scatter, a transition grid — tap anything to dig in.
    COLOUR and TYPE: monochrome plus one mint field; blue = rising, aqua = established, orange = fading, grey = rangebound. Space Grotesk 700 + Inter.
-   LAYOUT: mint finding panel beside the map, then insights, theme rotation, segment tables, movers, stock screen, sector drill-down. */
+   LAYOUT: phone first — compact header, sub-tab chips, chart, stat chips, table on demand, bottom navigation of five sections. */
 :root{color-scheme:light dark;
 --bg:light-dark(#ffffff,#0b0b0b);--ink:light-dark(#0b0b0b,#f2f2f0);--ink2:light-dark(#52514e,#c3c2b7);--mute:light-dark(#8a8984,#8f8e88);
---line:light-dark(#e6e6e3,#262624);--soft:light-dark(#f5f5f3,#151514);--mint:light-dark(#b8f5d0,#b8f5d0);--field:light-dark(#b8f5d0,#0b0b0b);--fieldink:light-dark(#0b0b0b,#b8f5d0);
---up:light-dark(#2a78d6,#3987e5);--dn:light-dark(#eb6834,#d95926);--est:light-dark(#1baf7a,#199e70);--rb:light-dark(#b9b8b3,#55554f)}
+--line:light-dark(#e6e6e3,#262624);--soft:light-dark(#f5f5f3,#151514);--mint:#b8f5d0;--field:light-dark(#b8f5d0,#0f1f17);--fieldink:light-dark(#0b0b0b,#b8f5d0);
+--up:light-dark(#2a78d6,#3987e5);--dn:light-dark(#eb6834,#d95926);--est:light-dark(#1baf7a,#199e70);--rb:light-dark(#c4c3be,#4c4c47);
+--gold:light-dark(#fff3cc,#2b2410);--hi:light-dark(#d9f6e4,#11301f);--lo:light-dark(#fde0d9,#3a1a14);--amb:light-dark(#fde9bd,#3d3010);
+--navh:64px}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:120px;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
-h1,h2,h3,.big{font-family:"Space Grotesk",Inter,sans-serif;font-weight:700;letter-spacing:-.01em}
-h1{font-size:clamp(30px,4vw,46px);line-height:1.05;margin:0 0 14px;text-wrap:balance}
-h2{font-size:clamp(24px,2.6vw,32px);line-height:1.1;margin:0 0 6px;text-wrap:balance}
-h3{font-size:17px;margin:0 0 8px}
+h1,h2,h3,.big,.num-x{font-family:"Space Grotesk",Inter,sans-serif;font-weight:700;letter-spacing:-.01em}
+h1{font-size:clamp(30px,4.4vw,48px);line-height:1.05;margin:0 0 14px;text-wrap:balance}
+h2{font-size:clamp(25px,3.2vw,38px);line-height:1.08;margin:0 0 10px;text-wrap:balance}
+h3{font-size:17px;margin:0 0 10px}
 p{margin:0 0 10px;max-width:70ch}
-.band{padding:clamp(28px,4vw,56px) max(5vw,16px)}
+a{color:inherit}
 .wrap{max-width:1240px;margin:0 auto}
-.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px max(5vw,16px);border-bottom:1px solid var(--line)}
-.brand{font:700 18px "Space Grotesk",Inter,sans-serif}.brand small{font:500 13px Inter;color:var(--ink2);margin-left:8px}
-.btn{font:600 15px Inter;min-height:44px;padding:0 18px;border-radius:10px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.band{padding:clamp(22px,4vw,52px) max(5vw,16px)}
+/* header */
+.top{display:flex;align-items:center;gap:10px;padding:10px max(5vw,16px);padding-top:max(10px,env(safe-area-inset-top));border-bottom:1px solid var(--line);background:var(--bg)}
+.brand{display:flex;align-items:center;gap:10px;font:700 18px "Space Grotesk",Inter,sans-serif;white-space:nowrap}
+.brand img{width:30px;height:30px;border-radius:8px}
+.brand small{display:block;font:500 12px Inter,sans-serif;color:var(--ink2)}
+.sp{flex:1}
+.ibtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);display:inline-grid;place-items:center;cursor:pointer;flex:none}
+.ibtn svg{width:22px;height:22px}
+.btn{font:600 15px Inter,sans-serif;min-height:44px;padding:0 18px;border-radius:12px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn.ghost{background:transparent;color:var(--ink)}
-.btn:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--up);outline-offset:2px}
-.drop{border:1.5px dashed var(--mute);border-radius:12px;padding:10px 14px;font-size:14px;color:var(--ink2)}
-.drop.on{border-color:var(--up);background:var(--soft)}
+button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible,label:focus-within{outline:3px solid var(--up);outline-offset:2px}
+select,input[type=search],input[type=number]{font:16px Inter,sans-serif;min-height:44px;padding:0 10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+#wk{max-width:190px}
+/* section nav */
+.gnav{display:flex;gap:4px}
+.gnav button{font:600 14px Inter,sans-serif;min-height:44px;padding:0 14px;border:0;border-radius:12px;background:transparent;color:var(--ink2);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.gnav button svg{width:20px;height:20px}
+.gnav button[aria-current=true]{background:var(--ink);color:var(--bg)}
+.chips{position:sticky;top:0;z-index:6;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.chips .scroll{display:flex;gap:6px;padding:9px max(5vw,16px);overflow-x:auto;scrollbar-width:none}
+.chips .scroll::-webkit-scrollbar{display:none}
+.chips a{flex:none;font:500 14px Inter,sans-serif;min-height:38px;display:inline-flex;align-items:center;padding:0 14px;border-radius:99px;border:1px solid var(--line);color:var(--ink);text-decoration:none}
+.chips a[aria-current=page]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.srcline{font-size:13px;color:var(--ink2);padding:8px max(5vw,16px);background:var(--soft);border-bottom:1px solid var(--line)}
+/* hero */
 .hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);border-bottom:1px solid var(--line)}
-.panel{background:var(--field);color:var(--fieldink);padding:clamp(24px,3.4vw,48px) max(4vw,16px)}
-:root[data-theme=dark] .panel,.panel{border-right:1px solid var(--line)}
-.panel .kick{font-size:14px;margin-bottom:10px;opacity:.85}
-.big{font-size:clamp(56px,8vw,96px);line-height:.95}
+.panel{background:var(--field);color:var(--fieldink);padding:clamp(22px,3.4vw,48px) max(4vw,16px)}
+.panel .kick{font-size:14px;margin-bottom:8px;opacity:.85}
+.big{font-size:clamp(64px,9vw,104px);line-height:.92}
 .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;margin-top:22px}
 .kpi b{display:block;font:700 28px "Space Grotesk",Inter,sans-serif;line-height:1.1}
 .kpi span{font-size:13px;opacity:.85}
-.mapbox{padding:clamp(18px,2.4vw,32px) max(3vw,16px)}
+.mapbox{padding:clamp(16px,2.4vw,32px) max(3vw,16px)}
 .ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.seg button{font:500 14px Inter;min-height:40px;padding:0 12px;border:0;background:transparent;color:var(--ink2);cursor:pointer}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.seg button{font:500 14px Inter,sans-serif;min-height:40px;padding:0 12px;border:0;background:transparent;color:var(--ink2);cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
-.chip{font:500 13px Inter;min-height:36px;padding:0 10px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chip{font:500 13px Inter,sans-serif;min-height:36px;padding:0 10px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
 .chip[aria-pressed=false]{opacity:.4}
 .dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
-.fig{position:relative;min-height:440px}.fig>svg{position:absolute;inset:0;width:100%;height:100%}
-.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;line-height:1.4;padding:8px 10px;border-radius:8px;max-width:240px;opacity:0;transition:opacity .12s;z-index:3}
-.cap{font-size:13px;color:var(--ink2);margin-top:6px}
-label.tg{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--ink2);min-height:40px;cursor:pointer}
-label.tg input{width:18px;height:18px}
-select,input[type=search],input[type=number]{font:16px Inter;min-height:44px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
-.ins{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px 28px;list-style:none;padding:0;margin:18px 0 0}
-.ins li{border-top:2px solid var(--ink);padding-top:10px}
-.ins b{font-weight:600}
-.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:28px 48px}
-.bars .r{display:grid;grid-template-columns:12em minmax(0,1fr) 3.6em;gap:10px;align-items:center;font-size:14px;min-height:30px}
-.bars .t{position:relative;height:14px}
-.bars .t i{position:absolute;top:0;height:14px;border-radius:4px}
-.bars .t:before{content:"";position:absolute;left:50%;top:-4px;bottom:-4px;border-left:1px solid var(--mute)}
-.bars .t.half:before{display:none}
-.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
-.tabs button{font:500 14px Inter;min-height:40px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
-.tabs button[aria-selected=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.def{font-size:14px;color:var(--ink2);margin-bottom:8px}
+.fig{position:relative;min-height:420px}.fig>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.fig.s{min-height:380px}
+.cap{font-size:13px;color:var(--ink2);margin-top:8px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink2);margin:4px 0 10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+/* lead + stats */
+.lead{max-width:880px;margin-bottom:20px}
+.kicker{font:600 13px Inter,sans-serif;color:var(--ink2);margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.kicker i{width:8px;height:8px;border-radius:50%;background:var(--mint);display:inline-block;box-shadow:0 0 0 3px color-mix(in srgb,var(--mint) 40%,transparent)}
+.lead h2 b{font-weight:700}
+.lead p{color:var(--ink2)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0 14px}
+.stat{background:var(--soft);border-radius:14px;padding:12px 14px}
+.stat b{display:block;font:700 clamp(24px,3.4vw,34px)/1.05 "Space Grotesk",Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat span{font-size:12.5px;color:var(--ink2);line-height:1.3;display:block;margin-top:4px}
+.stat.m{background:var(--field);color:var(--fieldink)}.stat.m span{color:inherit;opacity:.85}
+.share{font:600 14px Inter,sans-serif;min-height:40px;padding:0 14px;border-radius:99px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.share svg{width:16px;height:16px}
+.viz{margin:6px 0 18px}
+.after{margin:16px 0 8px;padding:16px;border-radius:16px;background:var(--soft)}.after p{color:var(--ink2)}.after:empty{display:none}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:12px;margin-top:16px}
+.card{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:16px;background:var(--soft);color:var(--ink);text-decoration:none;font-size:15px;line-height:1.4;transition:transform .15s}
+.card:hover{transform:translateY(-2px)}
+.card span{font-size:13px;color:var(--ink2)}.card .cn{font:700 40px/1 "Space Grotesk",Inter,sans-serif}
+.card i{font-style:normal;font-size:13px;color:var(--up);margin-top:auto;font-weight:600}
+.compo{display:flex;gap:2px;height:22px;border-radius:6px;overflow:hidden;margin:10px 0 8px}
+.compo i{display:block;height:100%}
+/* html bar charts */
+.rows{display:grid;gap:2px}
+.row{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr) 3.4em;gap:10px;align-items:center;min-height:32px;font-size:14px;cursor:pointer;border-radius:8px;padding:0 4px}
+.row:hover{background:var(--soft)}
+.row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .tr{position:relative;height:16px}
+.row .tr i{position:absolute;top:0;height:16px;border-radius:4px;transform-origin:left;animation:grow .7s cubic-bezier(.2,.7,.2,1) both}
+.row .tr.dv:before{content:"";position:absolute;left:50%;top:-6px;bottom:-6px;border-left:1px solid var(--mute)}
+.row .v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+.lad{grid-template-columns:2.2em minmax(0,12em) minmax(0,1fr) 3em}
+.lad.t10{background:var(--gold)}
+.lad .rk{font:700 15px "Space Grotesk",Inter,sans-serif;color:var(--ink2)}
+@keyframes grow{from{transform:scaleX(0)}}
+/* dumbbells */
+.db{display:grid;grid-template-columns:minmax(0,12em) minmax(0,1fr) 5.2em;gap:10px;align-items:center;min-height:38px;font-size:14px;cursor:pointer;border-radius:8px;padding:0 4px}
+.db:hover{background:var(--soft)}
+.db .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.db .nm small{display:block;color:var(--mute);font-size:12px}
+.db .tr{position:relative;height:20px}
+.db .tr:before{content:"";position:absolute;left:0;right:0;top:9px;border-top:1px dashed var(--line)}
+.db .tr .z{position:absolute;top:2px;bottom:2px;left:0;width:24.9%;background:color-mix(in srgb,var(--mint) 35%,transparent);border-radius:4px}
+.db .tr .ln{position:absolute;top:8px;height:4px;border-radius:2px;animation:grow .7s cubic-bezier(.2,.7,.2,1) both}
+.db .tr .a,.db .tr .b{position:absolute;top:3px;width:14px;height:14px;margin-left:-7px;border-radius:50%}
+.db .tr .a{background:var(--bg);border:2.5px solid var(--mute)}
+.db .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.axis{display:grid;grid-template-columns:minmax(0,12em) minmax(0,1fr) 5.2em;gap:10px;font-size:12px;color:var(--mute);padding:0 4px}
+.axis div{display:flex;justify-content:space-between}
+/* matrix */
+.mx{display:grid;gap:3px;font-size:13px}
+.mx div{min-height:46px;border-radius:8px;display:grid;place-items:center;text-align:center;padding:4px}
+.mx .h{background:transparent;color:var(--ink2);font-weight:600;font-size:12px}
+.mx .c{font:700 18px "Space Grotesk",Inter,sans-serif}
+/* tables */
+details.more{margin-top:6px;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;min-height:48px;display:flex;align-items:center;font-weight:600;font-size:15px;list-style:none;gap:8px}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary:before{content:"+";font:700 20px "Space Grotesk";width:22px}
+details.more[open]>summary:before{content:"–"}
 table{width:100%;border-collapse:collapse;font-size:14px}
-th{font-weight:600;text-align:left;color:var(--ink2);font-size:13px;padding:8px 8px;border-bottom:1px solid var(--ink);white-space:nowrap;cursor:pointer;user-select:none}
+th{font-weight:600;text-align:left;color:var(--ink2);font-size:13px;padding:8px;border-bottom:1px solid var(--ink);white-space:nowrap;cursor:pointer;user-select:none}
 td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
-td.num,th.num{text-align:right}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 tr.click{cursor:pointer}tr.click:hover td{background:var(--soft)}
-.tbl{max-height:560px;overflow:auto;border-bottom:1px solid var(--line)}
+tr.top10 td{background:var(--gold)}
+.tbl{max-height:560px;overflow:auto}
 .tbl thead th{position:sticky;top:0;background:var(--bg);z-index:1}
 .thin{font-size:12px;color:var(--mute);margin-left:4px}
 .pos{color:var(--up)}.neg{color:var(--dn)}
 .pill{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
-.spark{display:block}
 .grade{font:700 13px "Space Grotesk",Inter,sans-serif;display:inline-block;min-width:24px;text-align:center;border-radius:6px;padding:1px 4px;background:var(--soft)}
-.grade.A,.grade.B{background:var(--mint);color:#0b0b0b}
-.filters{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end;margin:14px 0}
+.grade.A,.grade.B{background:var(--mint);color:#0b0b0b}.grade.C{background:var(--amb)}.grade.D,.grade.E{background:var(--lo)}
+.hi{background:var(--hi)}.lo{background:var(--lo)}
+.tag{font-size:11px;font-weight:600;padding:1px 6px;border-radius:99px;margin-left:6px;white-space:nowrap;vertical-align:1px}
+.tag.ok{background:var(--mint);color:#0b0b0b}.tag.warn{background:var(--amb);color:var(--ink)}.tag.new{background:var(--ink);color:var(--bg)}
+.filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:end;margin:14px 0}
 .filters label{display:grid;gap:4px;font-size:13px;color:var(--ink2)}
-.drill-h{display:flex;flex-wrap:wrap;gap:8px 28px;margin:14px 0}
-.drill-h div{font-size:13px;color:var(--ink2)}.drill-h b{display:block;font:700 22px "Space Grotesk",Inter,sans-serif;color:var(--ink)}
-details{margin-top:10px;font-size:14px;color:var(--ink2)}summary{cursor:pointer;min-height:36px;color:var(--ink)}
+.drill-h{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin:14px 0}
+.drill-h div{font-size:12.5px;color:var(--ink2);background:var(--soft);border-radius:12px;padding:10px 12px}.drill-h b{display:block;font:700 18px "Space Grotesk",Inter,sans-serif;color:var(--ink)}
+.sres{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}.sres button{font:500 14px Inter,sans-serif;min-height:40px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;text-align:left}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:24px 40px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin:12px 0 20px}.rules div{background:var(--soft);border-radius:14px;padding:12px 14px;font-size:15px}.rules b{display:block;font-family:"Space Grotesk",Inter,sans-serif;font-size:17px}
+.gradebar{display:flex;gap:2px;height:30px;border-radius:8px;overflow:hidden;margin:6px 0}
+.gradebar i{display:grid;place-items:center;font:700 13px "Space Grotesk",Inter,sans-serif;font-style:normal;color:#0b0b0b}
+.weeks{display:flex;gap:6px;align-items:center;margin:6px 0 14px;font-size:13px;color:var(--ink2)}
+.weeks i{width:14px;height:14px;border-radius:50%;background:var(--line)}.weeks i.on{background:var(--up)}
 .note{font-size:13px;color:var(--mute)}
 .err{color:var(--dn);font-size:14px}
-.alt{background:var(--soft)}
-.tabbar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
-.tabbar .scroll{display:flex;gap:4px;padding:8px max(5vw,16px);overflow-x:auto;scrollbar-width:thin}
-.tabbar a{flex:none;font:500 14px Inter,sans-serif;min-height:40px;display:inline-flex;align-items:center;padding:0 14px;border-radius:99px;color:var(--ink2);text-decoration:none}
-.tabbar a:hover{background:var(--soft)}.tabbar a[aria-current=page]{background:var(--ink);color:var(--bg)}
-.tabbar a:focus-visible{outline:3px solid var(--up);outline-offset:-3px}
-.lead{max-width:860px;margin-bottom:18px}.lead h2{font-size:clamp(24px,3vw,36px)}.lead h2 b{font-weight:700}.lead p{color:var(--ink2)}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px 24px;margin-top:16px}
-.card{display:flex;flex-direction:column;gap:8px;padding:14px 0 6px;border-top:2px solid var(--ink);color:var(--ink);text-decoration:none;font-size:16px;line-height:1.4}
-.card span{font-size:13px;color:var(--mute)}.card i{font-style:normal;font-size:13px;color:var(--up);margin-top:auto}.card:hover i{text-decoration:underline}
-.card:focus-visible{outline:3px solid var(--up);outline-offset:4px}
-[hidden]{display:none!important}
-.top10 td{background:light-dark(#fff3cc,#2b2410)}
-.hi{background:light-dark(#d9f6e4,#11301f)}.lo{background:light-dark(#fde0d9,#3a1a14)}
-.grade.C{background:light-dark(#fde9bd,#3d3010)}.grade.D,.grade.E{background:light-dark(#fde0d9,#3a1a14)}
-.tag{font-size:11px;font-weight:600;padding:1px 6px;border-radius:99px;margin-left:6px;white-space:nowrap;vertical-align:1px}
-.tag.ok{background:var(--mint);color:#0b0b0b}.tag.warn{background:light-dark(#fde9bd,#3d3010);color:var(--ink)}.tag.new{background:var(--ink);color:var(--bg)}
-.sres{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}.sres button{font:500 14px Inter,sans-serif;min-height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;text-align:left}
-.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px 28px;margin:12px 0 20px}.rules div{border-top:2px solid var(--ink);padding-top:8px;font-size:15px}.rules b{display:block}
-.sharebar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px max(5vw,16px);background:var(--soft);border-bottom:1px solid var(--line);font-size:14px;color:var(--ink2)}
-.sharebar .btn{min-height:40px;font-size:14px;padding:0 14px}
-.share{font:600 14px Inter,sans-serif;min-height:40px;padding:0 14px;border-radius:99px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;margin:4px 0 6px}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;max-width:90vw}
+.empty{padding:28px;border-radius:16px;background:var(--soft);text-align:center;color:var(--ink2)}
+/* tooltip, sheet, toast */
+.tip{position:fixed;z-index:20;background:var(--ink);color:var(--bg);font-size:13px;line-height:1.4;padding:9px 11px;border-radius:10px;max-width:250px;opacity:0;pointer-events:none;transition:opacity .12s}
+.tip.on{opacity:1}.tip.touch{pointer-events:auto}
+.tip button{margin-top:6px;font:600 13px Inter,sans-serif;min-height:34px;padding:0 10px;border-radius:8px;border:0;background:var(--mint);color:#0b0b0b;cursor:pointer}
+.scrim{position:fixed;inset:0;background:rgb(0 0 0/.35);z-index:30;display:none}
+.scrim.on{display:block}
+.sheet{position:fixed;z-index:31;left:50%;bottom:0;transform:translate(-50%,105%);width:min(520px,100%);background:var(--bg);border-radius:20px 20px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom));transition:transform .25s;display:grid;gap:8px;box-shadow:0 -10px 40px rgb(0 0 0/.2)}
+.sheet:not(.on){visibility:hidden;transition:transform .25s,visibility 0s .25s}.sheet.on{transform:translate(-50%,0)}
+.sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 6px}
+.sheet button.it{display:flex;gap:12px;align-items:center;text-align:left;font:600 16px Inter,sans-serif;min-height:56px;padding:0 14px;border-radius:14px;border:0;background:var(--soft);color:var(--ink);cursor:pointer}
+.sheet button.it small{display:block;font:400 13px Inter,sans-serif;color:var(--ink2)}
+.sheet button.it svg{width:22px;height:22px;flex:none}
+.toast{position:fixed;left:50%;bottom:calc(var(--navh) + 20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:40;max-width:90vw}
 .toast.on{opacity:1}
-#wk{min-height:40px;font-size:15px}
-@media print{.top .ctl,.tabbar,.sharebar .ctl,.share,.filters,#cmp,#legend,.toast,.cap{display:none!important}.tbl{max-height:none;overflow:visible}body{font-size:12px}.band{padding:16px}
-body.printall .view.pall[hidden]{display:block!important}body.printall .view.pall{break-before:page}body.printall #v-summary{break-before:auto}.hero{grid-template-columns:minmax(0,1fr)}.fig{min-height:420px}}
-@media(max-width:900px){.hero{grid-template-columns:minmax(0,1fr)}.panel{border-right:0}}
-@media(max-width:600px){.drop{display:none}.top label.tg{order:2}.fig{min-height:360px}.bars .r{grid-template-columns:7em minmax(0,1fr) 3.2em;font-size:13px}table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--mute)}.stack td:empty{display:none}.tbl{max-height:none}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.drop-on:after{content:"Drop the sheet to load it";position:fixed;inset:12px;border:3px dashed var(--up);border-radius:20px;display:grid;place-items:center;font:700 22px "Space Grotesk";background:color-mix(in srgb,var(--bg) 80%,transparent);z-index:50}
+[hidden]{display:none!important}
+/* mobile */
+@media(max-width:900px){
+  .hero{grid-template-columns:minmax(0,1fr)}
+  .gnav{position:fixed;left:0;right:0;bottom:0;z-index:15;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));justify-content:space-around}
+  .gnav button{flex-direction:column;gap:2px;font-size:11.5px;min-height:52px;padding:4px 6px;flex:1;border-radius:12px}
+  .gnav button[aria-current=true]{background:transparent;color:var(--ink)}
+  .gnav button[aria-current=true] svg{background:var(--mint);color:#0b0b0b;border-radius:10px;padding:3px 10px;width:44px;height:28px}
+  body{padding-bottom:calc(var(--navh) + 18px + env(safe-area-inset-bottom))}
+  .hide-m{display:none!important}
+}
+@media(max-width:600px){
+  .fig{min-height:360px}.fig.s{min-height:340px}
+  .row{grid-template-columns:minmax(0,8.5em) minmax(0,1fr) 3em;font-size:13px}
+  .lad{grid-template-columns:1.8em minmax(0,8em) minmax(0,1fr) 2.8em}
+  .db,.axis{grid-template-columns:minmax(0,8em) minmax(0,1fr) 4.4em;font-size:13px}
+  .stats{gap:8px}.stat{padding:10px}.stat span{font-size:11.5px}
+  table{font-size:13px}
+  .stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--mute)}.stack td:empty{display:none}
+  .tbl{max-height:none}
+  table.stk{font-size:13px}table.stk td,table.stk th{padding:8px 5px}
+  table.stk.ws th:nth-child(2),table.stk.ws td:nth-child(2),table.stk.ws th:nth-child(n+7),table.stk.ws td:nth-child(n+7){display:none}
+  table.stk.dt th:nth-child(n+6),table.stk.dt td:nth-child(n+6){display:none}
+  .brand small{display:none}.brand{font-size:16px}.brand .bt{display:none}
+  #wk{max-width:170px;font-size:15px}
+  h2,.lead h2{font-size:23px;line-height:1.15}
+  h1{font-size:28px}.big{font-size:60px}.kpis{margin-top:14px;gap:10px}.kpi b{font-size:24px}
+  .panel{padding:20px 16px}.mapbox{padding:16px}
+  .srcline.repo{display:none}
+}
+@media print{.top,.chips,.gnav,.share,.filters,#cmp,#legend,.toast,.tip,.sheet,.scrim,.srcline,.cap{display:none!important}.tbl{max-height:none;overflow:visible}body{font-size:12px;padding:0}.band{padding:16px}
+  body.printall .view.pall[hidden]{display:block!important}body.printall .view.pall{break-before:page}body.printall #v-summary{break-before:auto}.hero{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sec" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-stk" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-flow" viewBox="0 0 24 24"><path d="M4 8h13l-3-3M20 16H7l3 3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zm0 0v5h5M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-app" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v7m0 0-3-3m3 3 3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
 <header class="top">
-  <div class="brand">Sector Momentum Lens<small id="asof">Loading…</small></div>
-  <div class="ctl" style="margin:0">
-    <select id="wk" aria-label="Choose week" hidden></select>
-    <label class="tg"><input type="checkbox" id="hideThin" checked> Ignore thin groups</label>
-    <label class="drop" id="drop" for="file">Drop this week's sheet here, or</label>
-    <label class="btn ghost" for="file">Upload sheet</label>
-    <input id="file" type="file" accept=".xlsx,.xls" hidden>
-  </div>
+  <div class="brand"><img src="icons/icon-192.png" alt=""><div><span class="bt">Momentum Lens</span><small id="asof">Loading…</small></div></div>
+  <span class="sp"></span>
+  <nav class="gnav" id="gnav" aria-label="Sections"></nav>
+  <span class="sp hide-m"></span>
+  <select id="wk" aria-label="Choose week" hidden></select>
+  <label class="ibtn" for="file" title="Upload a sheet" aria-label="Upload a sheet"><svg><use href="#i-up"/></svg></label>
+  <input id="file" type="file" accept=".xlsx,.xls" hidden>
+  <button class="ibtn" id="shareBtn" title="Share" aria-label="Share and export"><svg><use href="#i-share"/></svg></button>
 </header>
-<div class="sharebar"><span id="src"></span><div class="ctl" style="margin:0"><button class="btn" id="shSum">Share summary</button><button class="btn ghost" id="shRep">Download report</button><button class="btn ghost" id="shPdf">Save PDF</button></div></div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-<nav class="tabbar" id="tabbar" aria-label="Insights"></nav>
+<div class="srcline" id="src"></div>
+<nav class="chips" id="chips" aria-label="Insights"></nav>
 <div id="msg" class="band err" hidden></div>
 
 <main>
@@ -150,36 +267,34 @@ body.printall .view.pall[hidden]{display:block!important}body.printall .view.pal
       <div class="kpis" id="kpis"></div>
     </div>
     <div class="mapbox">
-      <h3>Rank journey of every industry group</h3>
-      <div class="ctl">
-        <span style="font-size:14px;color:var(--ink2)">Compare now with</span>
-        <div class="seg" id="cmp"><button data-k="W">Last week</button><button data-k="M3" aria-pressed="true">3 months ago</button><button data-k="M6">6 months ago</button></div>
-      </div>
+      <h3>Where every industry group has travelled</h3>
+      <div class="ctl"><div class="seg" id="cmp"><button data-k="W">vs last week</button><button data-k="M3" aria-pressed="true">vs 3 months</button><button data-k="M6">vs 6 months</button></div></div>
       <div class="ctl" id="legend"></div>
-      <div class="fig" id="fig"><svg id="map" role="img" aria-label="Scatter of industry group rank then versus now"></svg><div class="tip" id="tip"></div></div>
-      <div class="cap">Up is a better rank now; right was a weaker rank then. Dots above the dashed line have improved. Dot size shows the number of stocks. Tap a dot to open that sector.</div>
+      <div class="fig" id="fig"><svg id="map" role="img" aria-label="Scatter of industry group rank then versus now"></svg></div>
+      <div class="cap">Higher = better rank now. Further right = weaker rank back then. Dots above the dashed line improved; size = number of stocks. Tap a dot.</div>
     </div>
   </div>
-  <div class="band"><div class="wrap"><h2>Each tab answers one question</h2><div class="cards" id="cards"></div></div></div>
+  <div class="band"><div class="wrap">
+    <h2>How the market splits this week</h2>
+    <div class="compo" id="compo"></div>
+    <div class="legend" id="compoL"></div>
+    <h2 style="margin-top:28px">Tap a finding</h2>
+    <div class="cards" id="cards"></div>
+  </div></div>
 </section>
 
-<section class="view pall band" id="v-changes" hidden><div class="wrap"><div class="lead" id="i-changes"></div><div class="tbl"><table class="stack" id="t-changes"></table></div></div></section>
-<section class="view pall band" id="v-top25" hidden><div class="wrap"><div class="lead" id="i-top25"></div><div class="tbl"><table class="stack" id="t-top25"></table></div><p class="note">Gold rows are the top 10. Δ MRank compares with the previous week loaded (positive = moved up).</p></div></section>
-<section class="view pall band" id="v-conviction" hidden><div class="wrap"><div class="lead" id="i-conviction"></div>
-  <div><div><h3>Sectors holding the top 25</h3><div class="tbl"><table class="stack" id="t-conv"></table></div></div><div style="margin-top:28px"><h3>Stocks repeatedly passing the strong-stock rule</h3><div class="tbl"><table class="stack" id="convs"></table></div></div></div></div></section>
-<section class="view pall band" id="v-emerging" hidden><div class="wrap"><div class="lead" id="i-emerging"></div><div class="tbl"><table class="stack" id="t-emerging"></table></div></div></section>
-<section class="view pall band" id="v-leaders" hidden><div class="wrap"><div class="lead" id="i-leaders"></div><div class="tbl"><table class="stack" id="t-leaders"></table></div></div></section>
-<section class="view pall band" id="v-fading" hidden><div class="wrap"><div class="lead" id="i-fading"></div><div class="tbl"><table class="stack" id="t-fading"></table></div></div></section>
-<section class="view pall band" id="v-turnarounds" hidden><div class="wrap"><div class="lead" id="i-turnarounds"></div><div class="tbl"><table class="stack" id="t-turnarounds"></table></div></div></section>
-<section class="view pall band" id="v-rotation" hidden><div class="wrap"><div class="lead" id="i-rotation"></div><div class="bars" id="themes" style="max-width:760px"></div></div></section>
-<section class="view pall band" id="v-movers" hidden><div class="wrap">
-  <div class="lead" id="i-movers"></div>
-  <div class="seg" id="mvp" style="margin-bottom:16px"><button data-k="W" aria-pressed="true">1 week</button><button data-k="M3">3 months</button></div>
-  <div class="split"><div><h3>Climbers</h3><div class="bars" id="up"></div></div><div><h3>Fallers</h3><div class="bars" id="dn"></div></div></div>
-</div></section>
-<section class="view pall band" id="v-breadth" hidden><div class="wrap"><div class="lead" id="i-breadth"></div><div class="tbl"><table class="stack" id="t-breadth"></table></div><p class="note">Breadth is the share of a group's stocks with Price Strength 70 or more. Quality is the share with MasterScore A or B.</p></div></section>
+<section class="view pall band" id="v-changes" hidden><div class="wrap"><div class="lead" id="i-changes"></div><div class="viz" id="z-changes"></div><div class="after" id="j-changes"></div><details class="more"><summary>Every group that changed segment</summary><div class="tbl"><table class="stack" id="t-changes"></table></div></details></div></section>
+<section class="view pall band" id="v-top25" hidden><div class="wrap"><div class="lead" id="i-top25"></div><div class="legend" id="segL1"></div><div class="viz rows" id="z-top25"></div><p class="note">Bar length is the Momentum Score; gold rows are the top 10. Tap a row to open the sector.</p><div class="after" id="j-top25"></div><details class="more"><summary>Top 25 as a table</summary><div class="tbl"><table class="stack" id="t-top25"></table></div></details></div></section>
+<section class="view pall band" id="v-emerging" hidden><div class="wrap"><div class="lead" id="i-emerging"></div><div class="fig" id="z-emerging"><svg></svg></div><div class="cap">Lines run from 6 months ago to now; higher is a better rank and the green band is the top 45. Tap a line.</div><div class="after" id="j-emerging"></div><details class="more"><summary>Emerging leaders as a table</summary><div class="tbl"><table class="stack" id="t-emerging"></table></div></details></div></section>
+<section class="view pall band" id="v-leaders" hidden><div class="wrap"><div class="lead" id="i-leaders"></div><div class="axis" id="ax-leaders"></div><div class="viz" id="z-leaders"></div><div class="cap">Hollow dot = best rank in the last 6 months, filled dot = rank now. Green band = top 45.</div><div class="after" id="j-leaders"></div><details class="more"><summary>Established leaders as a table</summary><div class="tbl"><table class="stack" id="t-leaders"></table></div></details></div></section>
+<section class="view pall band" id="v-fading" hidden><div class="wrap"><div class="lead" id="i-fading"></div><div class="axis" id="ax-fading"></div><div class="viz" id="z-fading"></div><div class="cap">Hollow dot = best rank in the last 6 months, filled dot = rank now. Green band = top 45.</div><div class="after" id="j-fading"></div><details class="more"><summary>Fading sectors as a table</summary><div class="tbl"><table class="stack" id="t-fading"></table></div></details></div></section>
+<section class="view pall band" id="v-turnarounds" hidden><div class="wrap"><div class="lead" id="i-turnarounds"></div><div class="fig" id="z-turnarounds"><svg></svg></div><div class="cap">Lines run from 6 months ago to now; higher is a better rank and the green band is the top 45. Tap a line.</div><div class="after" id="j-turnarounds"></div><details class="more"><summary>Turnarounds as a table</summary><div class="tbl"><table class="stack" id="t-turnarounds"></table></div></details></div></section>
 <section class="view pall band" id="v-stocks" hidden><div class="wrap">
   <div class="lead" id="i-stocks"></div>
+  <div class="legend"><span><i class="dot" style="background:var(--up)"></i>Passes the filters</span><span><i class="dot" style="background:var(--dn)"></i>Price-led (price strength 80+, EPS under 50)</span><span><i class="dot" style="background:var(--rb)"></i>Other stocks in these sectors</span></div>
+  <div class="fig s" id="z-stocks"><svg></svg></div>
+  <div class="cap">Each dot is a stock in the top sectors. Right = stronger earnings, up = stronger price. The green corner is the guide's sweet spot (both 80+); the amber corner is price without earnings.</div><div class="after" id="j-stocks"></div>
+  <details class="more" id="d-filters"><summary>Adjust the filters</summary>
   <div class="filters">
     <label>Sectors (top by MRank)<select id="fTop"><option>10</option><option selected>25</option><option value="44">44 (top quartile)</option><option value="999">All</option></select></label>
     <label>MasterScore<select id="fMs"><option value="AB" selected>A or B</option><option value="A">A only</option><option value="ABC">A to C</option></select></label>
@@ -187,56 +302,85 @@ body.printall .view.pall[hidden]{display:block!important}body.printall .view.pal
     <label>Price strength at least<input type="number" id="fRs" value="80" min="0" max="99" style="width:6em"></label>
     <label>Buyer demand<select id="fBd"><option value="A">A grades</option><option value="B" selected>B+ or better</option><option value="any">Any</option></select></label>
     <label>Min market cap (₹ Cr)<input type="number" id="fCap" value="0" min="0" step="500" style="width:8em"></label>
-  </div>
-  <div class="ctl"><button class="btn ghost" id="fReset">Reset to the guide's rule</button></div>
-  <div class="tbl"><table class="stack" id="stbl"></table></div>
-  <h3 style="margin-top:32px">Running on price, not earnings</h3>
-  <p class="def" id="specNote"></p>
-  <div class="tbl"><table class="stack" id="spectbl"></table></div>
+    <button class="btn ghost" id="fReset">Reset to the guide's rule</button>
+  </div></details>
+  <details class="more" open><summary id="sumS">The shortlist</summary><div class="tbl"><table class="stk ws" id="stbl"></table></div></details>
+  <details class="more"><summary id="sumP">Running on price, not earnings</summary><p class="def note" id="specNote"></p><div class="tbl"><table class="stk ws" id="spectbl"></table></div></details>
 </div></section>
+<section class="view pall band" id="v-conviction" hidden><div class="wrap"><div class="lead" id="i-conviction"></div><div class="weeks" id="weeks"></div>
+  <div class="split"><div><h3>Sectors holding the top 25</h3><div class="rows" id="z-conv"></div></div><div><h3>Stocks repeatedly passing the rule</h3><div class="rows" id="z-convs"></div></div></div><div class="after" id="j-conviction"></div>
+  <details class="more"><summary>Conviction as tables</summary><div class="tbl"><table class="stack" id="t-conv"></table></div><div class="tbl" style="margin-top:16px"><table class="stack" id="convs"></table></div></details></div></section>
+<section class="view pall band" id="v-rotation" hidden><div class="wrap"><div class="lead" id="i-rotation"></div><div class="rows viz" id="themes" style="max-width:820px"></div><div class="after" id="j-rotation"></div></div></section>
+<section class="view pall band" id="v-movers" hidden><div class="wrap"><div class="lead" id="i-movers"></div>
+  <div class="seg" id="mvp" style="margin-bottom:16px"><button data-k="W" aria-pressed="true">1 week</button><button data-k="M3">3 months</button></div>
+  <div class="split"><div><h3>Climbers</h3><div class="rows" id="up"></div></div><div><h3>Fallers</h3><div class="rows" id="dn"></div></div></div><div class="after" id="j-movers"></div></div></section>
+<section class="view pall band" id="v-breadth" hidden><div class="wrap"><div class="lead" id="i-breadth"></div><div class="rows viz" id="z-breadth" style="max-width:860px"></div><p class="note">Bar = share of the group's stocks with Price Strength 70+. The dashed line marks 30%: below it, a few names carry the group.</p><div class="after" id="j-breadth"></div><details class="more"><summary>Breadth as a table</summary><div class="tbl"><table class="stack" id="t-breadth"></table></div></details></div></section>
 <section class="view band" id="v-sector" hidden><div class="wrap">
   <div class="lead" id="i-sector"></div>
-  <div class="ctl"><input type="search" id="sfind" placeholder="Find a stock by ticker or name" aria-label="Find a stock" style="width:min(100%,360px)"></div>
+  <div class="ctl"><input type="search" id="sfind" placeholder="Find a stock by ticker or name" aria-label="Find a stock" style="width:min(100%,380px)"></div>
   <div class="sres" id="sres"></div>
   <div class="ctl"><select id="dsel" aria-label="Choose a sector" style="max-width:100%"></select></div>
   <div class="drill-h" id="dhead"></div>
-  <div class="tbl"><table class="stack" id="dtbl"></table></div>
+  <div class="split"><div><h3>Rank journey</h3><div class="fig s" id="z-djourney"><svg></svg></div></div><div><h3>Where its stocks sit</h3><div class="gradebar" id="dgrades"></div><div class="fig s" id="z-dscatter"><svg></svg></div></div></div>
+  <details class="more" open><summary>Every stock in this sector</summary><div class="tbl"><table class="stk dt" id="dtbl"></table></div></details>
 </div></section>
 <section class="view band" id="v-all" hidden><div class="wrap">
-  <div class="lead"><h2>Every industry group in one table</h2><p>Search, or sort by any column. Tap a row to open the sector.</p></div>
-  <div class="ctl"><input type="search" id="q" placeholder="Search sectors" aria-label="Search sectors"></div>
+  <div class="lead"><div class="kicker"><i></i>All sectors</div><h2>Every industry group in one table</h2><p>Search, or sort by any column. Tap a row to open the sector.</p></div>
+  <div class="ctl"><input type="search" id="q" placeholder="Search sectors" aria-label="Search sectors"><label class="chip" style="cursor:pointer"><input type="checkbox" id="hideThin" checked style="width:18px;height:18px"> Ignore thin groups</label></div>
   <div class="tbl"><table class="stack" id="t-all"></table></div>
 </div></section>
 <section class="view band" id="v-method" hidden><div class="wrap lead">
-  <h2>How this is calculated</h2>
-  <p>Momentum Score = 40% current strength (groups + 1 − current rank) + 35% ranks gained vs 3 months ago + 15% vs 6 months ago + 10% vs last week. MRank sorts that score, ties broken by the better current rank. The page recomputes this from the four rank columns, so it works on the raw NovaWealth file too.</p>
-  <p>Segments, checked in this order: <b>Established Leader</b> top 45 in all four periods; <b>Emerging Leader</b> top 45 now and 60+ ranks better than 6 months ago; <b>Turnaround Candidate</b> ranked 120 or worse 3 and 6 months ago, 15+ ranks better than 3 months ago and still climbing this week; <b>Fading Sector</b> was top 45 at some point in the last 6 months and has slipped 40+ ranks since; everything else is <b>Rangebound</b>.</p>
-  <h3 style="margin-top:22px">Reading a stock</h3>
+  <div class="kicker"><i></i>Method</div>
+  <h2>How to read this dashboard</h2>
+  <p><b>Start with sectors, never with a stock.</b> Money flows into sectors first and stocks follow.</p>
   <div class="rules">
-    <div><b>MasterScore A–E</b>One-letter verdict combining earnings, price strength and demand. A/B strong, C average, D/E weak.</div>
-    <div><b>EPS rank 1–99</b>Earnings growth vs all listed companies. 80+ is elite, under 50 is mediocre.</div>
-    <div><b>Price strength 0–99</b>Price performance vs every other stock. 80+ means it is beating 80% of the market.</div>
-    <div><b>Buyer demand A+ to E</b>Buying vs selling pressure. A grades = heavy accumulation, C neutral, D/E distribution.</div>
+    <div><b>1 · Scan the Top 25</b>Which sectors are new? What segment are they in? Skip groups with 1–3 stocks.</div>
+    <div><b>2 · Track the movers</b>Note 3–5 groups with a clearly improving journey (Emerging leaders).</div>
+    <div><b>3 · Open those sectors</b>Keep only A/B stocks with EPS 80+, price strength 80+ and buyer demand B+ or better.</div>
+    <div><b>4 · Build a watchlist</b>End with 5–15 names and take each through fundamental research. Candidates, not recommendations.</div>
+    <div><b>5 · Repeat weekly</b>Sectors and stocks that keep showing up (Conviction) are the highest-conviction zone.</div>
   </div>
-  <p><b>The strong-stock rule</b> used in Stock picks and Conviction: MasterScore A or B, EPS rank 80+, price strength 80+ and buyer demand B+ or better, inside a top-ranked sector. Cells are shaded green at 80+ or A grades, amber for C and red for D/E or under 50.</p>
-  <p><b>Price without earnings:</b> high price strength with a low EPS rank is often speculation. Sometimes the market is pricing earnings that have not arrived yet, so a low EPS rank needs a stronger fundamental case rather than an automatic rejection.</p>
-  <p><b>Weekly routine:</b> start with sectors, never with a stock. Scan the Top 25 for new names; note 3–5 groups with a clearly improving journey; open those sectors and keep only A/B stocks that pass the rule; build a 5–15 name watchlist for fundamental work; and favour sectors and stocks that keep showing up week after week (Conviction tab).</p>
-  <p>Thin groups have 3 or fewer stocks; one stock can move their rank, so they are hidden unless you untick "Ignore thin groups".</p>
-  <p class="note">The file is read in your browser and is not uploaded anywhere. Your browser keeps a small summary of each week you load so it can show what changed since the last upload. This is a price-momentum screen for education, not investment advice.</p>
+  <h3>Reading a stock</h3>
+  <div class="rules">
+    <div><b>MasterScore A–E</b>One-letter verdict on earnings, price strength and demand. A/B strong, C average, D/E weak.</div>
+    <div><b>EPS rank 1–99</b>Earnings growth vs all listed companies. 80+ is elite, under 50 is mediocre.</div>
+    <div><b>Price strength 0–99</b>Price performance vs every other stock. 80+ beats 80% of the market.</div>
+    <div><b>Buyer demand A+ to E</b>Buying vs selling pressure. A = heavy accumulation, C neutral, D/E distribution.</div>
+  </div>
+  <p><b>Price without earnings:</b> high price strength with a low EPS rank is often speculation. Sometimes the market is pricing earnings still to come, so a low EPS rank needs a stronger fundamental case, not an automatic rejection.</p>
+  <h3>Scores and segments</h3>
+  <p>Momentum Score = 40% current strength (groups + 1 − current rank) + 35% ranks gained vs 3 months ago + 15% vs 6 months ago + 10% vs last week. MRank sorts that score, ties broken by the better current rank.</p>
+  <p><b>Established Leader</b> top 45 in all four periods. <b>Emerging Leader</b> top 45 now and 60+ ranks better than 6 months ago. <b>Turnaround Candidate</b> 120 or worse 3 and 6 months ago, 15+ ranks better than 3 months ago and still climbing weekly. <b>Fading Sector</b> top 45 at some point in the last 6 months, slipped 40+ ranks since. Everything else is <b>Rangebound</b>. Thin groups (3 or fewer stocks) are hidden unless you untick "Ignore thin groups" on the All sectors tab.</p>
+  <p class="note">The sheet is read on your device; an uploaded file is never sent anywhere. This is a price-momentum screen for education, not investment advice.</p>
 </div></section>
 </main>
+
+<div class="tip" id="tip" role="tooltip"></div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-label="Share and export">
+  <div class="grab"></div>
+  <button class="it" id="shSum"><svg><use href="#i-msg"/></svg><span>Share summary<small>Ready-to-paste message for WhatsApp or Telegram</small></span></button>
+  <button class="it" id="shRep"><svg><use href="#i-doc"/></svg><span>Download report<small>One file that opens in any browser, no internet needed</small></span></button>
+  <button class="it" id="shPdf"><svg><use href="#i-pdf"/></svg><span>Save PDF<small>Every insight, one per page</small></span></button>
+  <label class="it" for="file" style="display:flex;gap:12px;align-items:center;font:600 16px Inter,sans-serif;min-height:56px;padding:0 14px;border-radius:14px;background:var(--soft);cursor:pointer"><svg style="width:22px;height:22px"><use href="#i-up"/></svg><span>Open a sheet on this device<small style="display:block;font:400 13px Inter,sans-serif;color:var(--ink2)">See any week's file privately, nothing is uploaded</small></span></label>
+  <button class="it" id="shInst" hidden><svg><use href="#i-app"/></svg><span>Install the app<small id="instNote">Add Momentum Lens to your home screen</small></span></button>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <script>
 {
 const TEMPLATE=(()=>{const c=document.documentElement.cloneNode(true);c.querySelector('#embedded')?.remove();return c.outerHTML})();
-const $=s=>document.querySelector(s);
-const SEG={E:{n:'Emerging Leader',c:'var(--up)',def:'Top 45 now, 60+ ranks better than 6 months ago.'},T:{n:'Turnaround Candidate',c:'var(--up)',hollow:1,def:'Ranked 120 or worse 3 and 6 months ago, now 15+ ranks better than 3 months ago and still climbing weekly.'},L:{n:'Established Leader',c:'var(--est)',def:'Top 45 in all four periods.'},F:{n:'Fading Sector',c:'var(--dn)',def:'Was top 45 within 6 months, slipped 40+ ranks since.'},R:{n:'Rangebound',c:'var(--rb)',def:'No decisive pattern in its rank journey.'}};
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const SEG={E:{n:'Emerging Leader',c:'var(--up)'},T:{n:'Turnaround Candidate',c:'var(--up)',hollow:1},L:{n:'Established Leader',c:'var(--est)'},F:{n:'Fading Sector',c:'var(--dn)'},R:{n:'Rangebound',c:'var(--rb)'}};
 const ORDER=['E','T','L','F','R'];
-const TABS=[['summary','Summary'],['changes','Since last upload'],['top25','Top 25'],['emerging','Emerging leaders'],['leaders','Established leaders'],['fading','Fading sectors'],['turnarounds','Turnarounds'],['stocks','Stock picks'],['conviction','Conviction'],['rotation','Theme rotation'],['movers','Weekly movers'],['breadth','Breadth'],['sector','Sector drill-down'],['all','All sectors'],['method','Method']];
-let M=null,PREV=null,cmp='M3',mv='W',show=new Set(ORDER),view='summary';
+const GROUPS=[['home','Home','i-home',['summary','changes']],['sectors','Sectors','i-sec',['top25','emerging','leaders','fading','turnarounds']],['stocks','Stocks','i-stk',['stocks','conviction','sector']],['flows','Flows','i-flow',['rotation','movers','breadth']],['more','More','i-more',['all','method']]];
+const TABS={summary:'Summary',changes:'Since last week',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',all:'All sectors',method:'Method'};
+let M=null,PREV=null,HIST=[],IDX=null,SRC='',SITE='',cmp='M3',mv='W',show=new Set(ORDER),view='summary',lastIn={};
 const sorts={};let sortT={k:'cmp',d:-1},sortD={k:'ms',d:1},dk=null;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const key=s=>String(s||'').replace(/\s+IN$/,'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const clean=s=>String(s||'').replace(/\s+IN$/,'');
+const short=s=>clean(s).replace(/-/,' – ');
 const num=v=>{if(typeof v==='number')return v;const n=parseFloat(String(v??'').replace(/[^0-9.\-]/g,''));return isNaN(n)?null:n};
 const fmtCr=v=>v==null?'—':v>=1e5?(v/1e5).toFixed(v>=1e6?0:1)+' L Cr':Math.round(v).toLocaleString('en-IN')+' Cr';
 const sgn=v=>v>0?'+'+v:''+v;
@@ -245,7 +389,10 @@ const theme=n=>{const w=clean(n).split(/[-\s\/&]/)[0];return TH[w]||w};
 const nm=g=>`<b>${esc(clean(g.name))}</b>`;
 const list=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
 const fmtDate=d=>{if(!d)return'';const [y,m,dd]=d.split('-');return new Date(+y,m-1,+dd).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})};
+const bdRank=b=>({'A+':13,'A':12,'A-':11,'B+':10,'B':9,'B-':8,'C+':7,'C':6,'C-':5,'D+':4,'D':3,'D-':2,'E':1}[b]||0);
+const plural=(n,a,b)=>n+' '+(n===1?a:b);
 
+/* ---------- parse + build ---------- */
 function parseWorkbook(wb,fname){
   const groups=[],stocks=[];let date=null;
   const m=/(\d{2})[_\-.](\d{2})[_\-.](\d{4})/.exec(fname||'');if(m)date=`${m[3]}-${m[2]}-${m[1]}`;
@@ -284,146 +431,7 @@ const by=k=>vis().filter(g=>g.seg===k).sort((a,b)=>a.mr-b.mr);
 function themeRows(){const th={};for(const g of M.G){(th[g.th]??={n:0,d:0});th[g.th].n+=g.n;th[g.th].d+=dlt(g,'M3')*g.n}
   return Object.entries(th).filter(([,v])=>v.n>=10).map(([k,v])=>({k,v:v.d/v.n,w:v.d/v.n*Math.sqrt(v.n),n:v.n}))}
 
-/* ---------- insight text, one per tab ---------- */
-function lead(id,h,p){$('#i-'+id).innerHTML=`<h2>${h}</h2>`+(p?`<p>${p}</p>`:'')+(id==='sector'?'':`<button class="share" data-share="${id}">Share this insight</button>`)}
-const INS={};
-function insights(){
-  const E=by('E'),L=by('L'),F=by('F').sort((a,b)=>b.n-a.n),T=by('T'),V=vis();
-  if(E.length){const big=[...E].sort((a,b)=>(b.cap||0)-(a.cap||0))[0],early=E.filter(g=>g.ytd!=null&&g.ytd<10);
-    INS.emerging=[`${E.length} sectors have jumped into the top 45, led by ${list(E.slice(0,3).map(nm))}`,
-      `The heaviest by market cap is ${nm(big)} (${fmtCr(big.cap)}, ${big.n} stocks), up from rank ${big.M3} to ${big.R} in 3 months. `+(early.length?`${early.length===E.length?'All '+E.length:early.length+' of '+E.length} are still below +10% YTD, so most of these moves look early rather than extended.`:'')]}
-  else INS.emerging=['No emerging leaders this week',''];
-  const V25=[...vis()].sort((a,b)=>a.mr-b.mr).slice(0,25),hasMr=PREV&&Object.keys(PREV.mr).length,nw=V25.filter(g=>g.isNew),segc=ORDER.map(k=>[k,V25.filter(g=>g.seg===k).length]).filter(x=>x[1]);
-  INS.top25=[hasMr?(nw.length?`${nw.length} sector${nw.length>1?'s are':' is'} new to the top 25 this week: ${list(nw.slice(0,4).map(nm))}`:'No new names in the top 25 this week; leadership is unchanged'):`Start here: the top 25 by MomentumRank, led by ${list(V25.slice(0,3).map(nm))}`,
-    `MomentumRank weights where a sector stands now (40%) and how far it has climbed (60%), so it favours sectors that are strong and still rising. Of these 25: ${segc.map(([k,n])=>n+' '+({E:['emerging leader','emerging leaders'],T:['turnaround candidate','turnaround candidates'],L:['established leader','established leaders'],F:['fading sector','fading sectors'],R:['rangebound','rangebound']}[k][n>1?1:0])).join(', ')}.`];
-  if(L.length){const tired=L.filter(g=>g.R>g.best+10),ay=L.filter(g=>g.ytd!=null);
-    INS.leaders=[`${L.length} sectors have stayed in the top 45 for six months, led by ${list(L.slice(0,3).map(nm))}`,
-      (tired.length?`Still leaders but slipping: ${list(tired.slice(0,3).map(g=>`${nm(g)} (best ${g.best}, now ${g.R})`))}. Watch these for a move into Fading.`:'None of them is slipping more than 10 ranks from its best.')+(ay.length?` Average YTD is ${(ay.reduce((a,g)=>a+g.ytd,0)/ay.length).toFixed(0)}%: the trend is mature, so many stocks here may already have run up.`:'')]}
-  else INS.leaders=['No established leaders this week',''];
-  INS.fading=F.length?[`${F.length} former leaders are losing ground, the biggest being ${list(F.slice(0,3).map(nm))}`,
-    `${list(F.slice(0,3).map(g=>`${nm(g)} fell from ${g.best} to ${g.R}`))}. These are large groups, so many stocks are affected.`+(F.filter(g=>g.ytd>0).length?` ${F.filter(g=>g.ytd>0).length} of them are still positive YTD; a green YTD can hide money leaving, so be careful with fresh positions.`:'')+' Sorted by number of stocks.']:['No fading sectors this week',''];
-  INS.turnarounds=T.length?[`${T.length} sectors are climbing off the bottom, led by ${list(T.slice(0,3).map(nm))}`,
-    `${list(T.slice(0,4).map(g=>`${nm(g)} (${g.M3} → ${g.R})`))}. ${(n=>n===T.length?'All '+n:n+' of '+T.length)(T.filter(g=>g.ytd<0).length)} are still negative YTD. `+(HIST.length?`${(n=>n?n+' '+(n>1?'have':'has'):'None has yet')(T.filter(g=>g.climb>=3).length)} climbed 3 or more weeks in a row; one good week is noise, a run of weekly gains is the signal.`:'One good week is noise; a run of weekly gains is the signal, so watch the Weeks climbing column over the next few uploads.')]:['No turnaround candidates this week',''];
-  const R=themeRows().sort((a,b)=>b.w-a.w),up=R.slice(0,2).map(t=>t.k),dn=R.slice(-2).reverse().map(t=>t.k);
-  INS.rotation=[`Money is rotating into ${list(up)}, out of ${list(dn)}`,'Average 3-month rank change by theme, weighted by stock count. The headline picks themes by both size and move. The 8 strongest and 8 weakest themes are shown; themes under 10 stocks are left out.'];
-  const wu=[...V].sort((a,b)=>dlt(b,'W')-dlt(a,'W'))[0],wd=[...V].sort((a,b)=>dlt(a,'W')-dlt(b,'W'))[0];
-  INS.movers=[`${nm(wu)} jumped ${dlt(wu,'W')} ranks this week; ${nm(wd)} dropped ${-dlt(wd,'W')}`,`${Math.round(100*M.G.filter(g=>g.W>g.R).length/M.N)}% of all groups improved their rank this week. Blue climbed, orange fell.`];
-  const brd=V.filter(g=>g.mr<=30&&g.st.length>=5&&g.br!=null).sort((a,b)=>b.br-a.br),thinTop=M.G.filter(g=>g.thin&&g.mr<=20);
-  INS.breadth=brd.length?[`${nm(brd[0])} has the broadest rally among the top 30: ${brd[0].br}% of its stocks are strong`,
-    `A sector move is more reliable when many of its stocks join in. Narrow groups (breadth under 30%) are being carried by a few names.`+(thinTop.length?` Also note ${list(thinTop.slice(0,3).map(nm))} rank in the top 20 but have 3 or fewer stocks, so a single stock moves the group.`:'')]:['No breadth data in this file',''];
-  const wk=HIST.length+1,th=Math.min(3,wk),cs=vis().filter(g=>g.streak>=th),ss=M.S.filter(s=>s.streak>=th);
-  INS.conviction=HIST.length?[`${cs.length} sector${cs.length===1?' has':'s have'} held the top 25 for ${th}+ weeks; ${ss.length} stock${ss.length===1?'':'s'} passed the strong-stock rule ${th}+ weeks running`,`Based on ${wk} weeks of sheets. Sectors that hold strength week after week, and stocks that keep showing up in the shortlist, are the highest-conviction zone.`]:['Conviction builds week by week','This is the first week loaded, so everything shows 1 week. From the next sheet onwards, sectors that stay in the top 25 and stocks that keep passing the strong-stock rule move up this list. Repeat appearances are the highest-conviction zone.'];
-  INS.sector=['Look inside any sector','Pick a group to see its rank journey, breadth and every stock with its MasterScore, EPS rank, price strength and buyer demand. Tapping a sector anywhere else opens it here.'];
-  if(PREV){const ch=M.G.filter(g=>PREV.s[g.k]&&PREV.s[g.k]!==g.seg),ne=ch.filter(g=>g.seg==='E');
-    INS.changes=[`${ch.length} groups changed segment since ${fmtDate(PREV.d)}`+(ne.length?`, with ${ne.length} new emerging leader${ne.length>1?'s':''}`:''),SRC==='upload'?'Compared with the previous week you loaded.':'Compared with the previous published week.'];M.changed=ch}
-}
-
-/* ---------- tabs ---------- */
-function tabs(){const T=TABS.filter(([k])=>k!=='changes'||PREV);
-  $('#tabbar').innerHTML=`<div class="scroll">${T.map(([k,l])=>`<a href="#${k}" data-v="${k}" aria-current="${k===view?'page':'false'}">${l}</a>`).join('')}</div>`}
-function go(v){if(!TABS.some(t=>t[0]===v)||(v==='changes'&&!PREV))v='summary';view=v;
-  document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='v-'+v);
-  document.querySelectorAll('#tabbar a').forEach(a=>a.setAttribute('aria-current',a.dataset.v===v?'page':'false'));
-  $(`#tabbar a[data-v="${v}"]`)?.scrollIntoView({block:'nearest',inline:'center'});window.scrollTo(0,0);
-  if(v==='summary')requestAnimationFrame(drawMap)}
-addEventListener('hashchange',()=>go(location.hash.slice(1)));
-
-function cards(){const C=[['top25',INS.top25],['emerging',INS.emerging],['leaders',INS.leaders],['fading',INS.fading],['turnarounds',INS.turnarounds],['stocks',INS.stocks],['conviction',INS.conviction],['rotation',INS.rotation],['movers',INS.movers],['breadth',INS.breadth]];if(PREV)C.unshift(['changes',INS.changes]);
-  $('#cards').innerHTML=C.map(([k,v])=>`<a class="card" href="#${k}"><span>${TABS.find(t=>t[0]===k)[1]}</span><div>${v[0]}</div><i>Open →</i></a>`).join('')}
-
-/* ---------- summary ---------- */
-function hero(){const G=M.G,cnt=k=>G.filter(g=>g.seg===k).length,R=themeRows().sort((a,b)=>b.w-a.w);
-  $('#kick').textContent=`Week of ${fmtDate(M.date)||'this upload'} · ${M.N} industry groups`;
-  $('#title').textContent=`Rotation into ${list(R.slice(0,2).map(t=>t.k))}, out of ${list(R.slice(-2).reverse().map(t=>t.k))}`;
-  $('#bignum').textContent=cnt('E')+cnt('T');
-  $('#bigcap').textContent=`groups are climbing hard: ${cnt('E')} emerging leaders and ${cnt('T')} turnaround candidates`;
-  const k=[[cnt('L'),'established leaders'],[cnt('F'),'fading sectors'],[Math.round(100*G.filter(g=>g.W>g.R).length/M.N)+'%','of groups improved this week'],[Math.round(100*G.filter(g=>g.M3>g.R).length/M.N)+'%','improved over 3 months']];
-  $('#kpis').innerHTML=k.map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
-  $('#asof').textContent=M.date?'Data as of '+fmtDate(M.date):''}
-function legend(){$('#legend').innerHTML=ORDER.map(k=>{const s=SEG[k];return `<button class="chip" data-s="${k}" aria-pressed="${show.has(k)}"><span class="dot" style="${s.hollow?`border:2.5px solid ${s.c}`:`background:${s.c}`}"></span>${s.n} (${M.G.filter(g=>g.seg===k).length})</button>`}).join('')}
-const svg=$('#map'),tip=$('#tip'),fig=$('#fig');
-function drawMap(){if(!M||!svg.clientWidth)return;const W=svg.clientWidth,H=svg.clientHeight,narrow=W<520,N=M.N;
-  const p={l:narrow?34:48,r:18,t:18,b:narrow?30:38},x=v=>p.l+(v-1)/(N-1)*(W-p.l-p.r),y=v=>p.t+(v-1)/(N-1)*(H-p.t-p.b);
-  const ticks=[1,45,90,135,N].filter((v,i,a)=>a.indexOf(v)===i);
-  let o=`<rect x="${x(1)}" y="${y(1)}" width="${x(45)-x(1)}" height="${y(45)-y(1)}" fill="var(--mint)" opacity=".35"/>`;
-  o+=ticks.map(t=>`<line x1="${x(t)}" x2="${x(t)}" y1="${p.t}" y2="${H-p.b}" stroke="var(--line)"/><line x1="${p.l}" x2="${W-p.r}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/>`+(narrow&&t!==1&&t!==N?'':`<text x="${x(t)}" y="${H-p.b+16}" font-size="12" text-anchor="middle" fill="var(--ink2)">${t}</text><text x="${p.l-6}" y="${y(t)+4}" font-size="12" text-anchor="end" fill="var(--ink2)">${t}</text>`)).join('');
-  o+=`<line x1="${x(1)}" y1="${y(1)}" x2="${x(N)}" y2="${y(N)}" stroke="var(--mute)" stroke-dasharray="4 4"/><text x="${W-p.r}" y="${H-4}" font-size="12" text-anchor="end" fill="var(--ink2)">Rank ${cmp==='W'?'last week':cmp==='M3'?'3 months ago':'6 months ago'} →</text>`;
-  const rr=n=>Math.max(4,Math.min(narrow?12:16,2.2*Math.sqrt(n)));
-  const V=vis().filter(g=>show.has(g.seg)).sort((a,b)=>(b.seg==='R')-(a.seg==='R')||a.n-b.n);
-  o+=V.map(g=>{const s=SEG[g.seg],cx=x(g[cmp]),cy=y(g.R),r=rr(g.n);return `<g data-k="${g.k}" class="pt"><circle cx="${cx}" cy="${cy}" r="${Math.max(r+6,14)}" fill="transparent"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="${s.hollow?'var(--bg)':s.c}" stroke="${s.hollow?s.c:'var(--bg)'}" stroke-width="${s.hollow?2.5:2}" fill-opacity="${g.seg==='R'?.8:.9}"/></g>`}).join('');
-  const used=[];for(const g of vis().filter(g=>show.has(g.seg)&&g.seg!=='R'&&!g.thin).sort((a,b)=>a.mr-b.mr).slice(0,narrow?3:6)){const cx=x(g[cmp]),cy=y(g.R),r=rr(g.n),t=clean(g.name).replace(/-/,' – '),w=t.length*6.6;let lx=cx-r-5,anc='end';if(lx-w<p.l){lx=cx+r+5;anc='start'}
-    const bx=anc==='end'?lx-w:lx;if(used.some(u=>Math.abs(u.y-cy)<15&&bx<u.x+u.w&&bx+w>u.x))continue;used.push({x:bx,y:cy,w});
-    o+=`<text x="${lx}" y="${cy+4}" font-size="12" font-weight="600" text-anchor="${anc}" fill="var(--ink)" paint-order="stroke" stroke="var(--bg)" stroke-width="3">${esc(t)}</text>`}
-  svg.innerHTML=o}
-const mapRO=new ResizeObserver(drawMap);mapRO.observe(svg);
-svg.addEventListener('pointermove',e=>{const t=e.target.closest('.pt');if(!t){tip.style.opacity=0;return}const g=M.G.find(v=>v.k===t.dataset.k),b=fig.getBoundingClientRect();
-  tip.innerHTML=`<b>${esc(clean(g.name))}</b><br>${SEG[g.seg].n} · MRank ${g.mr}<br>Rank now ${g.R} · last wk ${g.W} · 3 mo ${g.M3} · 6 mo ${g.M6}<br>${g.n} stocks · YTD ${g.ytd==null?'—':g.ytd.toFixed(1)+'%'}`;
-  let lx=e.clientX-b.left+12,ly=e.clientY-b.top+12;if(lx>b.width-250)lx-=262;if(ly>b.height-110)ly-=120;tip.style.left=lx+'px';tip.style.top=ly+'px';tip.style.opacity=1});
-svg.addEventListener('pointerleave',()=>tip.style.opacity=0);
-svg.addEventListener('click',e=>{const t=e.target.closest('.pt');if(t)openDrill(t.dataset.k)});
-
-/* ---------- sector tables ---------- */
-function spark(g){const p=[g.M6,g.M3,g.W,g.R],N=M.N,w=64,h=22,pts=p.map((v,i)=>[4+i*(w-8)/3,2+(v-1)/(N-1)*(h-4)]),c=g.R<g.M6?'var(--up)':'var(--dn)';
-  return `<svg class="spark" width="${w}" height="${h}" aria-label="Rank 6 mo ${g.M6}, 3 mo ${g.M3}, last week ${g.W}, now ${g.R}"><polyline points="${pts.map(q=>q.join(',')).join(' ')}" fill="none" stroke="${c}" stroke-width="2"/><circle cx="${pts[3][0]}" cy="${pts[3][1]}" r="3" fill="${c}"/></svg>`}
-const COLS={mr:['MRank',1],name:['Sector'],seg:['Segment'],score:['Score',1],sp:['Journey'],R:['Now',1],best:['Best (6 mo)',1],W:['1W Δ',1],M3:['3M Δ',1],ytd:['YTD %',1],n:['Stocks',1],br:['Breadth',1],q:['Quality',1],cap:['Mkt cap',1],prev:['Was'],dmr:['Δ MRank',1],streak:['Weeks in top 25',1],climb:['Weeks climbing',1]};
-const dd=v=>`<span class="${v>0?'pos':v<0?'neg':''}">${sgn(v)}</span>`;
-const cell={mr:g=>g.mr,name:g=>esc(clean(g.name))+(g.thin?'<span class="thin">thin</span>':'')+(g.isNew?'<span class="tag new">new</span>':''),seg:g=>`<span class="pill" style="color:${SEG[g.seg].c}">${SEG[g.seg].n}</span>`,score:g=>g.score.toFixed(1),sp:spark,R:g=>g.R,best:g=>g.best,W:g=>dd(dlt(g,'W')),M3:g=>dd(dlt(g,'M3')),ytd:g=>g.ytd==null?'—':g.ytd.toFixed(1),n:g=>g.n,br:g=>g.br==null?'—':g.br+'%',q:g=>g.q==null?'—':g.q+'%',cap:g=>fmtCr(g.cap),prev:g=>PREV?SEG[PREV.s[g.k]]?.n||'—':'—',dmr:g=>g.dmr==null?'—':dd(g.dmr),streak:g=>g.streak||'—',climb:g=>g.climb};
-const sval=(g,k)=>k==='dmr'?g.dmr??-1e9:k==='W'||k==='M3'?dlt(g,k):k==='name'?g.name:k==='seg'?ORDER.indexOf(g.seg):g[k]??-1e9;
-function gtable(id,rows,cols,def){const s=sorts[id]||(sorts[id]=def);const R=[...rows].sort((a,b)=>{const x=sval(a,s.k),y=sval(b,s.k);return (x>y?1:x<y?-1:0)*s.d});
-  $('#'+id).innerHTML=`<thead><tr>${cols.map(k=>`<th data-k="${k}" class="${COLS[k][1]?'num':''}">${COLS[k][0]}${s.k===k?(s.d>0?' ↑':' ↓'):''}</th>`).join('')}</tr></thead><tbody>`+(R.length?R.map(g=>`<tr class="click${id==='t-top25'&&g.mr<=10?' top10':''}" data-k="${g.k}">${cols.map(k=>`<td class="${COLS[k][1]?'num':''}">${cell[k](g)}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}">Nothing here${$('#hideThin').checked?' with thin groups hidden':''}.</td></tr>`)+'</tbody>';
-  $('#'+id).dataset.cols=cols.join(',')}
-const GT={
- 't-top25':()=>gtable('t-top25',[...vis()].sort((a,b)=>a.mr-b.mr).slice(0,25),['mr','dmr','name','seg','sp','R','score','n','br','cap'],{k:'mr',d:1}),
- 't-conv':()=>gtable('t-conv',vis().filter(g=>g.streak>0),['mr','name','streak','seg','R','n'],{k:'streak',d:-1}),
- 't-emerging':()=>gtable('t-emerging',by('E'),['mr','name','sp','R','M3','W','ytd','n','br','cap'],{k:'mr',d:1}),
- 't-leaders':()=>gtable('t-leaders',by('L'),['mr','name','sp','R','best','W','ytd','n','br','cap'],{k:'mr',d:1}),
- 't-fading':()=>gtable('t-fading',by('F'),['mr','name','sp','best','R','M3','ytd','n','br','cap'],{k:'n',d:-1}),
- 't-turnarounds':()=>gtable('t-turnarounds',by('T'),['mr','name','sp','M3','R','W','climb','ytd','n','br','cap'],{k:'mr',d:1}),
- 't-breadth':()=>gtable('t-breadth',vis().filter(g=>g.mr<=30&&g.st.length>=5),['mr','name','seg','br','q','n','R'],{k:'br',d:-1}),
- 't-all':()=>{const q=$('#q').value.trim().toLowerCase();gtable('t-all',vis().filter(g=>!q||clean(g.name).toLowerCase().includes(q)),['mr','name','seg','score','sp','R','W','M3','ytd','n','br','q','cap'],{k:'mr',d:1})},
- 't-changes':()=>gtable('t-changes',M.changed||[],['mr','name','prev','seg','R','W','n'],{k:'seg',d:1})};
-document.querySelectorAll('table[id^="t-"]').forEach(t=>t.addEventListener('click',e=>{const th=e.target.closest('th');
-  if(th){const k=th.dataset.k;if(k==='sp')return;const s=sorts[t.id];sorts[t.id]=s.k===k?{k,d:-s.d}:{k,d:['name','mr','R','best','seg','prev'].includes(k)?1:-1};GT[t.id]();return}
-  const tr=e.target.closest('tr.click');if(tr)openDrill(tr.dataset.k)}));
-
-function bars(el,rows,max,half){el.innerHTML=rows.map(r=>{const w=Math.min(100,Math.abs(r.v)/max*(half?100:50)),left=half?0:r.v>=0?50:50-w;
-  return `<div class="r" title="${esc(r.k)}"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.k)}</span><div class="t${half?' half':''}"><i style="left:${left}%;width:${w}%;background:${r.v>=0?'var(--up)':'var(--dn)'}"></i></div><span class="num">${sgn(Math.round(r.v))}</span></div>`}).join('')}
-function themes(){const T=themeRows().sort((a,b)=>b.v-a.v),mx=Math.max(...T.map(t=>Math.abs(t.v)),1);bars($('#themes'),T.length>16?[...T.slice(0,8),...T.slice(-8)]:T,mx)}
-function movers(){const V=vis().map(g=>({k:clean(g.name),v:dlt(g,mv)})),u=[...V].sort((a,b)=>b.v-a.v).slice(0,10),d=[...V].sort((a,b)=>a.v-b.v).slice(0,10),mx=Math.max(...u.map(t=>t.v),...d.map(t=>-t.v),1);bars($('#up'),u,mx,1);bars($('#dn'),d,mx,1)}
-
-/* ---------- stocks ---------- */
-const bdRank=b=>({'A+':13,'A':12,'A-':11,'B+':10,'B':9,'B-':8,'C+':7,'C':6,'C-':5,'D+':4,'D':3,'D-':2,'E':1}[b]||0);
-function stockHead(cols,st){return `<thead><tr>${cols.map(([k,l,n])=>`<th data-k="${k}" class="${n?'num':''}">${l}${st.k===k?(st.d>0?' ↑':' ↓'):''}</th>`).join('')}</tr></thead>`}
-const shade=v=>v==null?'':v>=80?'hi':v<50?'lo':'';
-const bdShade=b=>bdRank(b)>=11?'hi':bdRank(b)>0&&bdRank(b)<=4?'lo':'';
-const sname=s=>`<b>${esc(s.sym)}</b>${s.strong?'<span class="tag ok">passes rule</span>':''}${s.spec?'<span class="tag warn">price-led</span>':''}<br><span class="note">${esc(s.name)}</span>`;
-function stockCells(s){return `<td><span class="grade ${esc(s.ms)}">${esc(s.ms||'—')}</span></td><td class="num ${shade(s.eps)}">${s.eps??'—'}</td><td class="num ${shade(s.rs)}">${s.rs??'—'}</td><td class="${bdShade(s.bd)}">${esc(s.bd||'—')}</td><td class="num">${fmtCr(s.cap)}</td><td class="num">${s.px==null?'—':s.px.toLocaleString('en-IN')}</td><td class="num ${s.chg>0?'pos':s.chg<0?'neg':''}">${s.chg==null?'—':s.chg.toFixed(2)}</td>`}
-function screen(){const top=+$('#fTop').value,ms=$('#fMs').value,eps=+$('#fEps').value||0,rs=+$('#fRs').value||0,bd=$('#fBd').value,cap=+$('#fCap').value||0;
-  const S=M.S.filter(s=>s.g.mr<=top&&!($('#hideThin').checked&&s.g.thin)&&ms.includes(s.ms)&&(s.eps??0)>=eps&&(s.rs??0)>=rs&&(bd==='any'||bdRank(s.bd)>=(bd==='A'?11:10))&&(s.cap??0)>=cap);
-  S.forEach(s=>s.sc=(s.eps||0)+(s.rs||0)+bdRank(s.bd)*3+(s.ms==='A'?10:0));
-  const kk=sortT.k==='cmp'?'sc':sortT.k;S.sort((a,b)=>{const x=kk==='sec'?a.g.mr:a[kk]??-1e9,y=kk==='sec'?b.g.mr:b[kk]??-1e9;return (x>y?1:x<y?-1:0)*sortT.d});
-  const secs=new Set(S.map(s=>s.g.k)).size;
-  const guide=top===25&&ms==='AB'&&eps===80&&rs===80&&bd==='B'&&cap===0;INS.stocks=[`${S.length} stocks ${guide?"pass the guide's strong-stock rule":'pass your filters'}, across ${secs} sector${secs===1?'':'s'}`,guide?'MasterScore A or B, EPS rank 80+, price strength 80+ and buyer demand B+ or better, inside the top 25 sectors by MomentumRank. Aim to end with 5–15 names for fundamental research; these are candidates, not recommendations.':'Custom filters are on. Use Reset to go back to the guide\'s rule.'];lead('stocks',...INS.stocks);if(false)lead('stocks',`${S.length} stocks pass every filter, across ${secs} sector${secs===1?'':'s'}`,`Strong stocks inside the top-ranked sectors by momentum, sorted by ${kk==='sc'?'a combined score of EPS rank, price strength and buyer demand':'your chosen column'}. A starting list for research, not a buy list.`);
-  $('#stbl').innerHTML=stockHead([['sym','Stock'],['sec','Sector (MRank)'],['ms','Master'],['eps','EPS',1],['rs','Price str.',1],['bd','Demand'],['cap','Mkt cap',1],['px','Price',1],['chg','Chg %',1]],sortT)+'<tbody>'+(S.length?S.slice(0,150).map(s=>`<tr class="click" data-k="${s.g.k}"><td>${sname(s)}</td><td>${esc(clean(s.g.name))} <span class="note">(${s.g.mr})</span></td>${stockCells(s)}</tr>`).join(''):'<tr><td colspan="9">No stocks pass. Try loosening a filter.</td></tr>')+'</tbody>'}
-function spec(){const top=+$('#fTop').value,cap=+$('#fCap').value||0;const S=M.S.filter(s=>s.spec&&s.g.mr<=top&&!($('#hideThin').checked&&s.g.thin)&&(s.cap??0)>=cap).sort((a,b)=>(b.rs||0)-(a.rs||0)||(a.eps||0)-(b.eps||0));
-  $('#specNote').textContent=S.length?`${S.length} stocks in the same sectors have price strength 80+ but an EPS rank under 50. Often this is price running without earnings; sometimes the market is pricing earnings still to come. Treat them as needing a stronger fundamental case, not as automatic rejects.`:'No price-led stocks in these sectors.';
-  $('#spectbl').innerHTML=S.length?'<thead><tr><th>Stock</th><th>Sector (MRank)</th><th>Master</th><th class="num">EPS</th><th class="num">Price str.</th><th>Demand</th><th class="num">Mkt cap</th><th class="num">Price</th><th class="num">Chg %</th></tr></thead><tbody>'+S.slice(0,40).map(s=>`<tr class="click" data-k="${s.g.k}"><td>${sname(s)}</td><td>${esc(clean(s.g.name))} <span class="note">(${s.g.mr})</span></td>${stockCells(s)}</tr>`).join('')+'</tbody>':''}
-function convStocks(){const S=M.S.filter(s=>s.streak>0).sort((a,b)=>b.streak-a.streak||a.g.mr-b.g.mr);
-  $('#convs').innerHTML='<thead><tr><th>Stock</th><th class="num">Weeks passing</th><th>Sector (MRank)</th><th>Master</th><th class="num">EPS</th><th class="num">Price str.</th><th>Demand</th></tr></thead><tbody>'+(S.length?S.map(s=>`<tr class="click" data-k="${s.g.k}"><td>${sname(s)}</td><td class="num"><b>${s.streak}</b></td><td>${esc(clean(s.g.name))} <span class="note">(${s.g.mr})</span></td><td><span class="grade ${esc(s.ms)}">${esc(s.ms)}</span></td><td class="num ${shade(s.eps)}">${s.eps}</td><td class="num ${shade(s.rs)}">${s.rs}</td><td class="${bdShade(s.bd)}">${esc(s.bd)}</td></tr>`).join(''):'<tr><td colspan="7">No stock passes the rule in the top 25 sectors this week.</td></tr>')+'</tbody>'}
-function drillOpts(){$('#dsel').innerHTML=[...M.G].sort((a,b)=>a.mr-b.mr).map(g=>`<option value="${g.k}">${g.mr}. ${esc(clean(g.name))} — ${SEG[g.seg].n}</option>`).join('');if(!dk||!M.G.some(g=>g.k===dk))dk=[...M.G].filter(g=>!g.thin).sort((a,b)=>a.mr-b.mr)[0].k;$('#dsel').value=dk}
-function drill(){const g=M.G.find(v=>v.k===dk);if(!g)return;
-  const h=[['Segment',SEG[g.seg].n],['MRank',g.mr],['Rank now / 1W / 3M / 6M',`${g.R} / ${g.W} / ${g.M3} / ${g.M6}`],['YTD',g.ytd==null?'—':g.ytd.toFixed(1)+'%'],['Stocks',g.n],['Breadth',g.br==null?'—':g.br+'%'],['Quality (A/B)',g.q==null?'—':g.q+'%'],['Mkt cap',fmtCr(g.cap)]];
-  $('#dhead').innerHTML=h.map(([l,v])=>`<div>${l}<b>${esc(v)}</b></div>`).join('');
-  const msr=m=>({A:5,B:4,C:3,D:2,E:1}[m]||0),k=sortD.k,v=s=>k==='ms'?-(msr(s.ms)*1000+(s.rs||0)):k==='sym'?s.sym:s[k]??-1e9;
-  const S=[...g.st].sort((a,b)=>{const x=v(a),y=v(b);return (x>y?1:x<y?-1:0)*sortD.d});
-  $('#dtbl').innerHTML=stockHead([['sym','Stock'],['ms','Master'],['eps','EPS',1],['rs','Price str.',1],['bd','Demand'],['cap','Mkt cap',1],['px','Price',1],['chg','Chg %',1]],sortD)+'<tbody>'+(S.length?S.map(s=>`<tr><td>${sname(s)}</td>${stockCells(s)}</tr>`).join(''):'<tr><td colspan="8">No stock tab found for this group in the file.</td></tr>')+'</tbody>'}
-function openDrill(k){dk=k;$('#dsel').value=k;drill();if(view!=='sector')location.hash='sector'}
-
-/* ---------- render ---------- */
-function renderLeads(){for(const k of ['top25','conviction','emerging','leaders','fading','turnarounds','rotation','movers','breadth','sector','changes'])if(INS[k])lead(k,...INS[k])}
-function renderVis(){insights();screen();spec();convStocks();renderLeads();cards();legend();drawMap();movers();Object.values(GT).forEach(f=>f())}
-function localHist(){try{const H=JSON.parse(localStorage.getItem('sml-hist')||'[]').filter(h=>h.d!==M.date);H.push(summ());H.sort((a,b)=>a.d<b.d?-1:1);localStorage.setItem('sml-hist',JSON.stringify(H.slice(-12)));return H.filter(h=>h.d<M.date)}catch(e){return []}}
-let IDX=null,SRC='',SITE='',HIST=[];
+/* ---------- history ---------- */
 const toPrev=w=>({d:w.date??w.d,s:w.segs??w.s??{},mr:w.mr||{},R:w.R||{},picks:w.picks||[]});
 const isPick=s=>s.strong&&s.g.mr<=25&&!s.g.thin;
 function summ(){return {d:M.date,s:Object.fromEntries(M.G.map(g=>[g.k,g.seg])),mr:Object.fromEntries(M.G.map(g=>[g.k,g.mr])),R:Object.fromEntries(M.G.map(g=>[g.k,g.R])),picks:[...new Set(M.S.filter(isPick).map(s=>s.sym))]}}
@@ -432,59 +440,288 @@ function computeHist(){const H=[...HIST].reverse(),hasMr=PREV&&Object.keys(PREV.
     let st=g.mr<=25?1:0;if(st)for(const h of H){if(h.mr[g.k]<=25)st++;else break}g.streak=st;
     const seq=[g.R,...H.map(h=>h.R[g.k]).filter(v=>v!=null)];if(seq.length<2)seq.push(g.W);let c=0;for(let i=0;i<seq.length-1&&seq[i]<seq[i+1];i++)c++;g.climb=c}
   for(const s of M.S){let st=isPick(s)?1:0;if(st)for(const h of H){if(h.picks.includes(s.sym))st++;else break}s.streak=st}}
-function load(raw,prev,src){M=build(raw);window.__raw=raw;SRC=src;PREV=prev!==undefined?prev:prevFor(raw.date);if(PREV)PREV=toPrev(PREV);computeHist();srcLine();tabs();hero();themes();drillOpts();drill();renderVis();$('#msg').hidden=true;go(location.hash.slice(1)||view)}
+function localHist(){try{const H=JSON.parse(localStorage.getItem('sml-hist')||'[]').filter(h=>h.d!==M.date);H.push(summ());H.sort((a,b)=>a.d<b.d?-1:1);localStorage.setItem('sml-hist',JSON.stringify(H.slice(-12)));return H.filter(h=>h.d<M.date)}catch(e){return []}}
+function prevFor(d){const I=IDX?IDX.filter(w=>w.date<d).map(toPrev):[];HIST=I.length?I:localHist().map(toPrev);return HIST.length?HIST[HIST.length-1]:null}
 
-$('#cmp').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;cmp=b.dataset.k;[...$('#cmp').children].forEach(x=>x.setAttribute('aria-pressed',x===b));drawMap()});
-$('#mvp').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;mv=b.dataset.k;[...$('#mvp').children].forEach(x=>x.setAttribute('aria-pressed',x===b));movers()});
-$('#legend').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const k=b.dataset.s;show.has(k)?show.delete(k):show.add(k);if(!show.size)ORDER.forEach(o=>show.add(o));legend();drawMap()});
-$('#hideThin').addEventListener('change',()=>{if(M)renderVis()});
-$('#q').addEventListener('input',GT['t-all']);
-$('#stbl').addEventListener('click',e=>{const th=e.target.closest('th');if(th){const k=th.dataset.k;sortT=sortT.k===k?{k,d:-sortT.d}:{k,d:['sym','sec','ms'].includes(k)?1:-1};screen();return}const tr=e.target.closest('tr.click');if(tr)openDrill(tr.dataset.k)});
+/* ---------- insights: headline, detail, stat chips ---------- */
+const INS={},STAT={};
+function insights(){
+  const E=by('E'),L=by('L'),F=by('F').sort((a,b)=>b.n-a.n),T=by('T'),V=vis();
+  const V25=[...V].sort((a,b)=>a.mr-b.mr).slice(0,25),hasMr=PREV&&Object.keys(PREV.mr).length,nw=V25.filter(g=>g.isNew),segc=ORDER.map(k=>[k,V25.filter(g=>g.seg===k).length]).filter(x=>x[1]);
+  const SN={E:['emerging leader','emerging leaders'],T:['turnaround','turnarounds'],L:['established leader','established leaders'],F:['fading sector','fading sectors'],R:['rangebound','rangebound']};
+  INS.top25=[hasMr?(nw.length?`${plural(nw.length,'sector is','sectors are')} new to the top 25: ${list(nw.slice(0,4).map(nm))}`:'No new names in the top 25 this week; leadership is unchanged'):`Start here: the 25 strongest sectors, led by ${list(V25.slice(0,3).map(nm))}`,
+    `MomentumRank weights where a sector stands now (40%) and how far it has climbed (60%), so it rewards sectors that are strong and still rising. Of these 25: ${segc.map(([k,n])=>n+' '+SN[k][n>1?1:0]).join(', ')}.`];
+  STAT.top25=[[hasMr?nw.length:'—','new this week'],[V25.filter(g=>g.seg==='E').length,'emerging leaders in it'],[V25.length?Math.round(V25.reduce((a,g)=>a+(g.br||0),0)/V25.length)+'%':'—','average breadth']];
+  if(E.length){const big=[...E].sort((a,b)=>(b.cap||0)-(a.cap||0))[0],early=E.filter(g=>g.ytd!=null&&g.ytd<10);
+    INS.emerging=[`${E.length} sectors have rocketed into the top 45, led by ${list(E.slice(0,3).map(nm))}`,
+      `The heaviest is ${nm(big)} (${fmtCr(big.cap)}, ${big.n} stocks), up from rank ${big.M3} to ${big.R} in 3 months. `+(early.length?`${early.length===E.length?'All '+E.length:early.length+' of '+E.length} are still below +10% YTD, so most of these moves look early rather than extended.`:'')];
+    STAT.emerging=[[E.length,'emerging leaders'],['+'+Math.round(E.reduce((a,g)=>a+g.M6-g.R,0)/E.length),'avg ranks climbed in 6 months'],[Math.round(100*early.length/E.length)+'%','still below +10% YTD']]}
+  else{INS.emerging=['No emerging leaders this week',''];STAT.emerging=[[0,'emerging leaders'],['—',''],['—','']]}
+  if(L.length){const tired=L.filter(g=>g.R>g.best+10),ay=L.filter(g=>g.ytd!=null),avg=ay.length?ay.reduce((a,g)=>a+g.ytd,0)/ay.length:null;
+    INS.leaders=[`${L.length} sectors have stayed in the top 45 for six months, led by ${list(L.slice(0,3).map(nm))}`,
+      (tired.length?`Still leaders but slipping: ${list(tired.slice(0,3).map(g=>`${nm(g)} (best ${g.best}, now ${g.R})`))}. Watch these for a move into Fading.`:'None is slipping more than 10 ranks from its best.')+(avg!=null?` Average YTD is ${avg.toFixed(0)}%: the trend is mature, so many stocks here may already have run up.`:'')];
+    STAT.leaders=[[L.length,'established leaders'],[avg==null?'—':sgn(Math.round(avg))+'%','average YTD'],[tired.length,'slipping from their best']]}
+  else{INS.leaders=['No established leaders this week',''];STAT.leaders=[[0,'established leaders'],['—',''],['—','']]}
+  const green=F.filter(g=>g.ytd>0).length;
+  INS.fading=F.length?[`${F.length} former leaders are losing ground, the biggest being ${list(F.slice(0,3).map(nm))}`,
+    `${list(F.slice(0,3).map(g=>`${nm(g)} fell from ${g.best} to ${g.R}`))}.`+(green?` ${green} of them are still positive YTD; a green YTD can hide money leaving, so be careful with fresh positions.`:'')]:['No fading sectors this week',''];
+  STAT.fading=[[F.length,'fading sectors'],[F.reduce((a,g)=>a+g.n,0).toLocaleString('en-IN'),'stocks in them'],[green,'still green YTD']];
+  INS.turnarounds=T.length?[`${T.length} sectors are climbing off the bottom, led by ${list(T.slice(0,3).map(nm))}`,
+    `${list(T.slice(0,3).map(g=>`${nm(g)} (${g.M3} → ${g.R})`))}. ${(n=>n===T.length?'All '+n:n+' of '+T.length)(T.filter(g=>g.ytd<0).length)} are still negative YTD. `+(HIST.length?`${(n=>n?n+' '+(n>1?'have':'has'):'None has yet')(T.filter(g=>g.climb>=3).length)} climbed 3+ weeks in a row; one good week is noise, a run of gains is the signal.`:'One good week is noise; a run of weekly gains is the signal, so watch these over the next few uploads.')]:['No turnaround candidates this week',''];
+  STAT.turnarounds=[[T.length,'turnaround candidates'],[T.length?'+'+Math.round(T.reduce((a,g)=>a+g.M3-g.R,0)/T.length):'—','avg ranks climbed in 3 months'],[T.filter(g=>g.ytd<0).length,'still negative YTD']];
+  const R=themeRows().sort((a,b)=>b.w-a.w),up=R.slice(0,2).map(t=>t.k),dn=R.slice(-2).reverse().map(t=>t.k);
+  INS.rotation=[`Money is rotating into ${list(up)}, out of ${list(dn)}`,'Average 3-month rank change by theme, weighted by stock count. The 8 strongest and 8 weakest themes are shown; themes under 10 stocks are left out.'];
+  STAT.rotation=[[R.filter(t=>t.v>0).length,'themes gaining'],[R.filter(t=>t.v<0).length,'themes losing'],[R.length?sgn(Math.round([...R].sort((a,b)=>b.v-a.v)[0].v)):'—','best theme, ranks']];
+  const wu=[...V].sort((a,b)=>dlt(b,'W')-dlt(a,'W'))[0],wd=[...V].sort((a,b)=>dlt(a,'W')-dlt(b,'W'))[0],imp=Math.round(100*M.G.filter(g=>g.W>g.R).length/M.N);
+  INS.movers=[`${nm(wu)} jumped ${dlt(wu,'W')} ranks this week; ${nm(wd)} dropped ${-dlt(wd,'W')}`,`${imp}% of all groups improved their rank this week. Blue climbed, orange fell.`];
+  STAT.movers=[[imp+'%','of groups improved'],['+'+dlt(wu,'W'),'biggest jump'],[dlt(wd,'W'),'biggest drop']];
+  const brd=V.filter(g=>g.mr<=30&&g.st.length>=5&&g.br!=null).sort((a,b)=>b.br-a.br),thinTop=M.G.filter(g=>g.thin&&g.mr<=20),narrow=brd.filter(g=>g.br<30).length;
+  INS.breadth=brd.length?[`${nm(brd[0])} has the broadest rally in the top 30: ${brd[0].br}% of its stocks are strong`,
+    `A sector move is more reliable when many of its stocks join in.`+(narrow?` ${narrow} of the top 30 are narrow, carried by a few names.`:'')+(thinTop.length?` ${list(thinTop.slice(0,3).map(nm))} rank in the top 20 but have 3 or fewer stocks.`:'')]:['No breadth data in this file',''];
+  STAT.breadth=brd.length?[[brd[0].br+'%','broadest group'],[brd[Math.floor(brd.length/2)].br+'%','median of top 30'],[narrow,'narrow (under 30%)']]:[['—',''],['—',''],['—','']];
+  const wk=HIST.length+1,th=Math.min(3,wk),cs=vis().filter(g=>g.streak>=th),ss=M.S.filter(s=>s.streak>=th);
+  INS.conviction=HIST.length?[`${plural(cs.length,'sector has','sectors have')} held the top 25 for ${th}+ weeks; ${plural(ss.length,'stock','stocks')} passed the rule ${th}+ weeks running`,`Based on ${wk} weeks of sheets. Sectors that hold strength week after week, and stocks that keep showing up in the shortlist, are the highest-conviction zone.`]:['Conviction builds week by week','This is the first week loaded, so everything shows 1 week. From the next sheet on, sectors that stay in the top 25 and stocks that keep passing the strong-stock rule climb these lists.'];
+  STAT.conviction=[[wk,plural(wk,'week','weeks').replace(/^\d+ /,'')+' of history'],[cs.length,`sectors ${th}+ weeks`],[ss.length,`stocks ${th}+ weeks`]];
+  INS.sector=['Look inside any sector','Pick a group, or find a stock, to see its rank journey and where every stock sits on earnings and price. Tapping a sector anywhere else opens it here.'];STAT.sector=null;
+  if(PREV){const ch=M.G.filter(g=>PREV.s[g.k]&&PREV.s[g.k]!==g.seg),ne=ch.filter(g=>g.seg==='E'),nf=ch.filter(g=>g.seg==='F');M.changed=ch;
+    INS.changes=[`${plural(ch.length,'group','groups')} changed segment since ${fmtDate(PREV.d)}`+(ne.length?`, including ${plural(ne.length,'new emerging leader','new emerging leaders')}`:''),SRC==='upload'?'Compared with the previous week you loaded. Read the grid as "was" (rows) to "now" (columns).':'Compared with the previous published week. Read the grid as "was" (rows) to "now" (columns).'];
+    STAT.changes=[[ch.length,'changed segment'],[ne.length,'new emerging leaders'],[nf.length,'newly fading']]}
+}
+const shareIco='<svg><use href="#i-share"/></svg>';
+function lead(id){const v=INS[id],st=STAT[id];if(!v)return;const j=$('#j-'+id),tail=(v[1]?`<p>${v[1]}</p>`:'')+(id==='sector'?'':`<button class="share" data-share="${id}">${shareIco}Share this insight</button>`);
+  $('#i-'+id).innerHTML=`<div class="kicker"><i></i>${TABS[id]} · week of ${fmtDate(M.date)}</div><h2>${v[0]}</h2>`+(st?`<div class="stats">${st.map((x,i)=>`<div class="stat${i===0?' m':''}"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div>`:'')+(j?'':tail);if(j)j.innerHTML=tail}
+
+/* ---------- navigation ---------- */
+const groupOf=v=>GROUPS.find(g=>g[3].includes(v));
+const tabsIn=g=>g[3].filter(t=>t!=='changes'||PREV);
+function nav(){const cg=groupOf(view);
+  $('#gnav').innerHTML=GROUPS.map(g=>`<button data-g="${g[0]}" aria-current="${g===cg}"><svg><use href="#${g[2]}"/></svg>${g[1]}</button>`).join('');
+  const T=tabsIn(cg);$('#chips').hidden=T.length<2;$('#chips').innerHTML=`<div class="scroll">${T.map(t=>`<a href="#${t}" data-v="${t}" aria-current="${t===view?'page':'false'}">${TABS[t]}</a>`).join('')}</div>`;
+  $(`#chips a[data-v="${view}"]`)?.scrollIntoView({block:'nearest',inline:'center'})}
+function go(v){if(!TABS[v]||(v==='changes'&&!PREV))v='summary';view=v;lastIn[groupOf(v)[0]]=v;
+  $$('.view').forEach(s=>s.hidden=s.id!=='v-'+v);nav();window.scrollTo(0,0);hideTip();requestAnimationFrame(drawVisible)}
+addEventListener('hashchange',()=>go(location.hash.slice(1)));
+$('#gnav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const g=GROUPS.find(x=>x[0]===b.dataset.g);const t=lastIn[g[0]]&&tabsIn(g).includes(lastIn[g[0]])?lastIn[g[0]]:tabsIn(g)[0];location.hash=t;if(t===view)go(t)});
+
+/* ---------- tooltip ---------- */
+const tip=$('#tip');let ptype='mouse';
+addEventListener('pointerdown',e=>{ptype=e.pointerType||'mouse'},true);
+function showTip(html,x,y,k){tip.innerHTML=html+(ptype!=='mouse'&&k?`<br><button data-open="${k}">Open sector →</button>`:'');tip.classList.toggle('touch',ptype!=='mouse');tip.classList.add('on');
+  const w=tip.offsetWidth,h=tip.offsetHeight;tip.style.left=Math.max(8,Math.min(innerWidth-w-8,x+14))+'px';tip.style.top=Math.max(8,(y+h+20>innerHeight?y-h-14:y+14))+'px'}
+function hideTip(){tip.classList.remove('on','touch')}
+document.addEventListener('pointermove',e=>{if(ptype!=='mouse')return;const t=e.target.closest('[data-tip]');if(t)showTip(t.dataset.tip,e.clientX,e.clientY);else hideTip()});
+tip.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b){hideTip();openDrill(b.dataset.open)}});
+document.addEventListener('click',e=>{if(e.target.closest('#tip'))return;const t=e.target.closest('[data-k]');
+  if(t&&t.closest('svg')){if(ptype==='mouse')openDrill(t.dataset.k);else showTip(t.dataset.tip||'',e.clientX,e.clientY,t.dataset.k);return}
+  if(t&&(t.classList.contains('row')||t.classList.contains('db'))){openDrill(t.dataset.k);return}
+  if(!t)hideTip()});
+addEventListener('scroll',()=>{if(ptype!=='mouse')hideTip()},{passive:true});
+
+/* ---------- charts ---------- */
+const CH={};const chartRO=new ResizeObserver(es=>{for(const e of es){const f=CH[e.target.id];if(f&&e.target.clientWidth)f(e.target.querySelector('svg'),e.target.clientWidth,e.target.clientHeight)}});
+function chart(id,fn){CH[id]=fn;const el=$('#'+id);chartRO.unobserve(el);chartRO.observe(el);if(el.clientWidth)fn(el.querySelector('svg'),el.clientWidth,el.clientHeight)}
+function drawVisible(){for(const id in CH){const el=$('#'+id);if(el&&el.clientWidth)CH[id](el.querySelector('svg'),el.clientWidth,el.clientHeight)}}
+const tipG=g=>esc(`<b>${esc(clean(g.name))}</b><br>${SEG[g.seg].n} · MRank ${g.mr}<br>Rank now ${g.R} · 1 wk ${g.W} · 3 mo ${g.M3} · 6 mo ${g.M6}<br>${g.n} stocks · YTD ${g.ytd==null?'—':g.ytd.toFixed(1)+'%'}`);
+const tipS=s=>esc(`<b>${esc(s.sym)}</b> · ${esc(s.name)}<br>${esc(clean(s.g.name))} (MRank ${s.g.mr})<br>MasterScore ${esc(s.ms||'—')} · EPS ${s.eps??'—'} · Price str. ${s.rs??'—'} · Demand ${esc(s.bd||'—')}`);
+function drawMap(svg,W,H){const narrow=W<520,N=M.N,p={l:narrow?34:46,r:18,t:16,b:narrow?30:36},x=v=>p.l+(v-1)/(N-1)*(W-p.l-p.r),y=v=>p.t+(v-1)/(N-1)*(H-p.t-p.b);
+  const ticks=[1,45,90,135,N];let o=`<rect x="${x(1)}" y="${y(1)}" width="${x(45)-x(1)}" height="${y(45)-y(1)}" fill="var(--mint)" opacity=".35" rx="6"/>`;
+  o+=ticks.map(t=>`<line x1="${x(t)}" x2="${x(t)}" y1="${p.t}" y2="${H-p.b}" stroke="var(--line)"/><line x1="${p.l}" x2="${W-p.r}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/>`+(narrow&&t!==1&&t!==N?'':`<text x="${x(t)}" y="${H-p.b+16}" font-size="12" text-anchor="middle" fill="var(--ink2)">${t}</text><text x="${p.l-6}" y="${y(t)+4}" font-size="12" text-anchor="end" fill="var(--ink2)">${t}</text>`)).join('');
+  o+=`<line x1="${x(1)}" y1="${y(1)}" x2="${x(N)}" y2="${y(N)}" stroke="var(--mute)" stroke-dasharray="4 4"/>`;
+  const rr=n=>Math.max(4,Math.min(narrow?12:16,2.2*Math.sqrt(n)));
+  const V=vis().filter(g=>show.has(g.seg)).sort((a,b)=>(b.seg==='R')-(a.seg==='R')||b.n-a.n);
+  o+=V.map(g=>{const s=SEG[g.seg],cx=x(g[cmp]),cy=y(g.R),r=rr(g.n);return `<g data-k="${g.k}" data-tip="${tipG(g)}" style="cursor:pointer"><circle cx="${cx}" cy="${cy}" r="${Math.max(r+6,14)}" fill="transparent"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="${s.hollow?'var(--bg)':s.c}" stroke="${s.hollow?s.c:'var(--bg)'}" stroke-width="${s.hollow?2.5:2}" fill-opacity="${g.seg==='R'?.8:.92}"/></g>`}).join('');
+  const used=[];for(const g of vis().filter(g=>show.has(g.seg)&&g.seg!=='R'&&!g.thin).sort((a,b)=>a.mr-b.mr).slice(0,narrow?3:6)){const cx=x(g[cmp]),cy=y(g.R),r=rr(g.n),t=short(g.name),w=t.length*6.6;let lx=cx-r-5,anc='end';if(lx-w<p.l){lx=cx+r+5;anc='start'}
+    const bx=anc==='end'?lx-w:lx;if(used.some(u=>Math.abs(u.y-cy)<15&&bx<u.x+u.w&&bx+w>u.x))continue;used.push({x:bx,y:cy,w});
+    o+=`<text x="${lx}" y="${cy+4}" font-size="12" font-weight="600" text-anchor="${anc}" fill="var(--ink)" paint-order="stroke" stroke="var(--bg)" stroke-width="3" pointer-events="none">${esc(t)}</text>`}
+  svg.innerHTML=o}
+/* slope chart: rank 6mo → 3mo → 1wk → now */
+function slope(G,opt={}){return(svg,W,H)=>{const narrow=W<520,N=M.N,lab=opt.labels??(narrow?4:7),pr=lab?Math.min(narrow?118:190,W*.36):16,p={l:narrow?30:40,r:pr,t:30,b:14};
+  const cols=[['M6',narrow?'6 mo':'6 months ago'],['M3',narrow?'3 mo':'3 months ago'],['W',narrow?'1 wk':'Last week'],['R','Now']],x=i=>p.l+i*(W-p.l-p.r)/3,y=v=>p.t+(v-1)/(N-1)*(H-p.t-p.b);
+  let o=`<rect x="${p.l-8}" y="${y(1)-4}" width="${W-p.l-p.r+16}" height="${y(45)-y(1)+8}" fill="var(--mint)" opacity=".3" rx="8"/>`;
+  o+=[1,45,90,135,N].map(t=>`<line x1="${p.l}" x2="${W-p.r}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${p.l-10}" y="${y(t)+4}" font-size="11" text-anchor="end" fill="var(--mute)">${t}</text>`).join('');
+  o+=cols.map((c,i)=>`<text x="${x(i)}" y="16" font-size="12" font-weight="600" text-anchor="middle" fill="var(--ink2)">${c[1]}</text>`).join('');
+  const top=new Set([...G].sort((a,b)=>a.mr-b.mr).slice(0,lab).map(g=>g.k));
+  const line=(g,hl)=>{const pts=cols.map((c,i)=>`${x(i)},${y(g[c[0]])}`).join(' '),col=opt.color||SEG[g.seg].c;
+    return `<g data-k="${g.k}" data-tip="${tipG(g)}" style="cursor:pointer" class="sl"><polyline points="${pts}" fill="none" stroke="transparent" stroke-width="14"/><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="${hl?3:2}" stroke-opacity="${hl?1:.28}" stroke-linejoin="round" stroke-linecap="round" style="stroke-dasharray:2000;stroke-dashoffset:2000;animation:draw 1.1s ease-out forwards"/>${cols.map((c,i)=>i===3||hl&&i===0?`<circle cx="${x(i)}" cy="${y(g[c[0]])}" r="${i===3?(hl?5:3.5):3}" fill="${i===3?col:'var(--bg)'}" stroke="${col}" stroke-width="2" ${hl?'':'opacity=".5"'}/>`:'').join('')}</g>`};
+  o+=G.filter(g=>!top.has(g.k)).map(g=>line(g,0)).join('')+G.filter(g=>top.has(g.k)).map(g=>line(g,1)).join('');
+  if(lab){const L=G.filter(g=>top.has(g.k)).map(g=>({g,y:y(g.R)})).sort((a,b)=>a.y-b.y);for(let i=1;i<L.length;i++)if(L[i].y-L[i-1].y<15)L[i].y=L[i-1].y+15;
+    const ov=L.length?L[L.length-1].y-(H-p.b):0;if(ov>0)L.forEach(l=>l.y-=ov);const mx=Math.floor((pr-14)/6.4);
+    o+=L.map(l=>{const t=short(l.g.name);return `<text x="${x(3)+10}" y="${l.y+4}" font-size="12" font-weight="600" fill="var(--ink)" pointer-events="none">${esc(t.length>mx?t.slice(0,mx-1)+'…':t)}</text>`}).join('')}
+  svg.innerHTML=`<style>@keyframes draw{to{stroke-dashoffset:0}}@media(prefers-reduced-motion:reduce){polyline{animation:none!important;stroke-dashoffset:0!important}}</style>`+o}}
+/* stock scatter: EPS rank vs price strength */
+function scatter(S,pass,opt={}){return(svg,W,H)=>{const narrow=W<520,p={l:narrow?34:44,r:16,t:24,b:narrow?36:40},x=v=>p.l+(v+1)/101*(W-p.l-p.r),y=v=>p.t+(100-v)/101*(H-p.t-p.b);
+  let o=`<rect x="${x(80)}" y="${y(99)}" width="${x(99)-x(80)}" height="${y(80)-y(99)}" fill="var(--mint)" opacity=".55" rx="6"/><rect x="${x(0)}" y="${y(99)}" width="${x(50)-x(0)}" height="${y(80)-y(99)}" fill="var(--amb)" opacity=".6" rx="6"/>`;
+  o+=[0,50,80,99].map(t=>`<line x1="${x(t)}" x2="${x(t)}" y1="${p.t}" y2="${H-p.b}" stroke="var(--line)"/><line x1="${p.l}" x2="${W-p.r}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${x(t)}" y="${H-p.b+15}" font-size="11" text-anchor="middle" fill="var(--mute)">${t}</text><text x="${p.l-6}" y="${y(t)+4}" font-size="11" text-anchor="end" fill="var(--mute)">${t}</text>`).join('');
+  o+=`<text x="${W-p.r}" y="${H-4}" font-size="12" text-anchor="end" fill="var(--ink2)">EPS rank →</text><text x="${p.l}" y="11" font-size="12" fill="var(--ink2)">↑ Price strength</text>`;
+  const P=new Set(pass),rest=S.filter(s=>!P.has(s)&&s.eps!=null&&s.rs!=null),sp=rest.filter(s=>s.spec),ot=rest.filter(s=>!s.spec);
+  const dot=(s,c,r)=>`<g data-k="${s.g.k}" data-tip="${tipS(s)}" style="cursor:pointer"><circle cx="${x(s.eps)}" cy="${y(s.rs)}" r="${r+5}" fill="transparent"/><circle cx="${x(s.eps)}" cy="${y(s.rs)}" r="${r}" fill="${c}" stroke="var(--bg)" stroke-width="1.5"/></g>`;
+  o+=ot.map(s=>dot(s,'var(--rb)',3)).join('')+sp.map(s=>dot(s,'var(--dn)',4)).join('')+pass.filter(s=>s.eps!=null&&s.rs!=null).map(s=>dot(s,'var(--up)',narrow?5:6)).join('');
+  if(opt.label!==false){const L=[...pass].sort((a,b)=>(b.cap||0)-(a.cap||0)).slice(0,narrow?3:5);const used=[];for(const s of L){const cx=x(s.eps),cy=y(s.rs);if(used.some(u=>Math.abs(u-cy)<14))continue;used.push(cy);o+=`<text x="${cx-9}" y="${cy+4}" font-size="11.5" font-weight="600" text-anchor="end" fill="var(--ink)" paint-order="stroke" stroke="var(--bg)" stroke-width="3" pointer-events="none">${esc(s.sym)}</text>`}}
+  svg.innerHTML=o}}
+
+/* ---------- tab renderers ---------- */
+const bar=(w,c,left=0)=>`<i style="left:${left}%;width:${Math.max(0,w)}%;background:${c}"></i>`;
+function rSummary(){const G=M.G,cnt=k=>G.filter(g=>g.seg===k).length,R=themeRows().sort((a,b)=>b.w-a.w);
+  $('#kick').textContent=`Week of ${fmtDate(M.date)||'this upload'} · ${M.N} industry groups`;
+  $('#title').textContent=`Rotation into ${list(R.slice(0,2).map(t=>t.k))}, out of ${list(R.slice(-2).reverse().map(t=>t.k))}`;
+  $('#bignum').textContent=cnt('E')+cnt('T');
+  $('#bigcap').textContent=`groups are climbing hard: ${cnt('E')} emerging leaders and ${cnt('T')} turnaround candidates`;
+  $('#kpis').innerHTML=[[cnt('L'),'established leaders'],[cnt('F'),'fading sectors'],[Math.round(100*G.filter(g=>g.W>g.R).length/M.N)+'%','of groups improved this week'],[Math.round(100*G.filter(g=>g.M3>g.R).length/M.N)+'%','improved over 3 months']].map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+  $('#asof').textContent=M.date?'Week of '+fmtDate(M.date):'';
+  $('#legend').innerHTML=ORDER.map(k=>{const s=SEG[k];return `<button class="chip" data-s="${k}" aria-pressed="${show.has(k)}"><span class="dot" style="${s.hollow?`border:2.5px solid ${s.c}`:`background:${s.c}`}"></span>${s.n} (${cnt(k)})</button>`}).join('');
+  const fill=k=>SEG[k].hollow?`repeating-linear-gradient(135deg,${SEG[k].c} 0 4px,transparent 4px 8px);box-shadow:inset 0 0 0 2px ${SEG[k].c}`:SEG[k].c;
+  $('#compo').innerHTML=ORDER.map(k=>`<i style="width:${100*cnt(k)/M.N}%;background:${fill(k)}" data-tip="${esc(`<b>${SEG[k].n}</b><br>${cnt(k)} of ${M.N} groups`)}"></i>`).join('');
+  $('#compoL').innerHTML=ORDER.map(k=>`<span><i class="dot" style="${SEG[k].hollow?`border:2.5px solid ${SEG[k].c}`:`background:${SEG[k].c}`}"></i>${SEG[k].n} <b>${cnt(k)}</b></span>`).join('');
+  const C=['changes','top25','emerging','leaders','fading','turnarounds','stocks','conviction','rotation','movers','breadth'].filter(k=>INS[k]&&(k!=='changes'||PREV));
+  $('#cards').innerHTML=C.map(k=>`<a class="card" href="#${k}"><span>${TABS[k]}</span><div class="cn">${STAT[k]?.[0]?.[0]??''}</div><div>${INS[k][0]}</div><i>Open →</i></a>`).join('');
+  chart('fig',drawMap)}
+function rTop25(){const V=[...vis()].sort((a,b)=>a.mr-b.mr).slice(0,25),mx=Math.max(...V.map(g=>g.score),1);
+  $('#segL1').innerHTML=ORDER.filter(k=>V.some(g=>g.seg===k)).map(k=>`<span><i class="dot" style="${SEG[k].hollow?`border:2.5px solid ${SEG[k].c}`:`background:${SEG[k].c}`}"></i>${SEG[k].n}</span>`).join('');
+  $('#z-top25').innerHTML=V.map((g,i)=>`<div class="row lad${g.mr<=10?' t10':''}" data-k="${g.k}" data-tip="${tipG(g)}"><span class="rk">${g.mr}</span><span class="nm">${esc(clean(g.name))}${g.isNew?'<span class="tag new">new</span>':''}${g.thin?'<span class="thin">thin</span>':''}</span><div class="tr"><i style="left:0;width:${100*g.score/mx}%;background:${SEG[g.seg].hollow?`repeating-linear-gradient(135deg,${SEG[g.seg].c} 0 4px,transparent 4px 8px)`:SEG[g.seg].c};animation-delay:${i*25}ms"></i></div><span class="v">${g.score.toFixed(0)}</span></div>`).join('')}
+function dumb(id,G,col){const pos=v=>100*(v-1)/(M.N-1);
+  $('#ax-'+id).innerHTML=`<span>Rank →</span><div style="position:relative;height:18px">${[[1,'1'],[45,'45'],[90,'90'],[M.N,''+M.N]].map(([v,l],i,a)=>`<span style="position:absolute;left:${pos(v)}%;transform:translateX(${i===0?0:i===a.length-1?-100:-50}%)">${l}</span>`).join('')}</div><span style="text-align:right">move</span>`;
+  $('#z-'+id).innerHTML=G.length?G.map((g,i)=>{const a=pos(g.best),b=pos(g.R),l=Math.min(a,b),w=Math.abs(b-a);return `<div class="db" data-k="${g.k}" data-tip="${tipG(g)}"><span class="nm">${esc(clean(g.name))}<small>${g.n} stocks · YTD ${g.ytd==null?'—':sgn(Math.round(g.ytd))+'%'}</small></span><div class="tr"><span class="z"></span><i class="ln" style="left:${l}%;width:${w}%;background:${col};animation-delay:${i*30}ms;${b<a?'transform-origin:right':''}"></i><span class="a" style="left:${a}%"></span><span class="b" style="left:${b}%;background:${col}"></span></div><span class="v">${g.best} → ${g.R}</span></div>`}).join(''):'<div class="empty">Nothing in this segment this week.</div>'}
+function rChanges(){if(!PREV||!M.changed){$('#z-changes').innerHTML='';return}
+  const cnt={};for(const g of vis()){const a=PREV.s[g.k];if(!a)continue;cnt[a+g.seg]=(cnt[a+g.seg]||0)+1}const mx=Math.max(1,...Object.entries(cnt).filter(([k])=>k[0]!==k[1]).map(e=>e[1]));
+  const L={E:'Emerging',T:'Turnaround',L:'Established',F:'Fading',R:'Rangebound'};
+  let h=`<div class="mx" style="grid-template-columns:minmax(0,1.2fr) repeat(5,minmax(0,1fr))"><div class="h">was ↓ / now →</div>${ORDER.map(k=>`<div class="h">${L[k]}</div>`).join('')}`;
+  for(const a of ORDER){h+=`<div class="h" style="justify-items:start">${L[a]}</div>`;for(const b of ORDER){const n=cnt[a+b]||0,d=a===b;h+=`<div class="c" style="background:${d?'var(--soft)':n?`color-mix(in srgb,${b==='F'?'var(--dn)':b==='R'?'var(--mute)':'var(--up)'} ${15+70*n/mx}%,transparent)`:'transparent'};color:${d?'var(--mute)':'var(--ink)'}" data-tip="${esc(`${n} groups: ${L[a]} → ${L[b]}`)}">${n||''}</div>`}}
+  $('#z-changes').innerHTML=h+'</div><p class="note" style="margin-top:8px">Grey diagonal = stayed in the same segment.</p>'}
+function rBars(el,rows,max,half,fmt=v=>sgn(Math.round(v))){el.innerHTML=rows.map((r,i)=>{const w=Math.min(100,Math.abs(r.v)/max*(half?100:50)),left=half?0:r.v>=0?50:50-w;
+  return `<div class="row" ${r.k?`data-k="${r.k}"`:''} ${r.tip?`data-tip="${r.tip}"`:''}><span class="nm">${esc(r.n)}</span><div class="tr${half?'':' dv'}"><i style="left:${left}%;width:${w}%;background:${r.c||(r.v>=0?'var(--up)':'var(--dn)')};animation-delay:${i*25}ms;${!half&&r.v<0?'transform-origin:right':''}"></i>${r.mark!=null?`<span style="position:absolute;left:${r.mark}%;top:-6px;bottom:-6px;border-left:1.5px dashed var(--ink2)"></span>`:''}</div><span class="v">${fmt(r.v)}</span></div>`}).join('')}
+function rRotation(){const T=themeRows().sort((a,b)=>b.v-a.v),mx=Math.max(...T.map(t=>Math.abs(t.v)),1);rBars($('#themes'),(T.length>16?[...T.slice(0,8),...T.slice(-8)]:T).map(t=>({n:t.k,v:t.v,tip:esc(`<b>${esc(t.k)}</b><br>${t.n} stocks · ${sgn(Math.round(t.v))} ranks avg over 3 months`)})),mx)}
+function rMovers(){const V=vis().map(g=>({n:clean(g.name),v:dlt(g,mv),k:g.k,tip:tipG(g)})),u=[...V].sort((a,b)=>b.v-a.v).slice(0,10),d=[...V].sort((a,b)=>a.v-b.v).slice(0,10),mx=Math.max(...u.map(t=>t.v),...d.map(t=>-t.v),1);
+  rBars($('#up'),u,mx,1);rBars($('#dn'),d.map(r=>({...r,c:'var(--dn)'})),mx,1,v=>''+Math.round(v))}
+function rBreadth(){const B=vis().filter(g=>g.mr<=30&&g.st.length>=5&&g.br!=null).sort((a,b)=>b.br-a.br);rBars($('#z-breadth'),B.map(g=>({n:clean(g.name),v:g.br,k:g.k,tip:tipG(g),c:g.br<30?'var(--rb)':'var(--est)',mark:30})),100,1,v=>v+'%')}
+function rConv(){const wk=HIST.length+1;$('#weeks').innerHTML=Array.from({length:Math.max(wk,6)},(_,i)=>`<i class="${i<wk?'on':''}"></i>`).join('')+`<span>${plural(wk,'week','weeks')} loaded</span>`;
+  const C=vis().filter(g=>g.streak>0).sort((a,b)=>b.streak-a.streak||a.mr-b.mr).slice(0,15),mx=Math.max(wk,3);
+  rBars($('#z-conv'),C.map(g=>({n:clean(g.name),v:g.streak,k:g.k,tip:tipG(g),c:SEG[g.seg].hollow?SEG[g.seg].c:SEG[g.seg].c})),mx,1,v=>v+' wk');
+  const S=M.S.filter(s=>s.streak>0).sort((a,b)=>b.streak-a.streak||a.g.mr-b.g.mr).slice(0,15);
+  rBars($('#z-convs'),S.map(s=>({n:s.sym,v:s.streak,k:s.g.k,tip:tipS(s),c:'var(--up)'})),mx,1,v=>v+' wk');
+  if(!S.length)$('#z-convs').innerHTML='<div class="empty">No stock passes the rule in the top 25 sectors this week.</div>'}
+
+/* ---------- tables ---------- */
+const COLS={mr:['MRank',1],name:['Sector'],seg:['Segment'],score:['Score',1],R:['Now',1],best:['Best (6 mo)',1],W:['1W Δ',1],M3:['3M Δ',1],ytd:['YTD %',1],n:['Stocks',1],br:['Breadth',1],q:['Quality',1],cap:['Mkt cap',1],prev:['Was'],dmr:['Δ MRank',1],streak:['Weeks in top 25',1],climb:['Weeks climbing',1]};
+const dd=v=>`<span class="${v>0?'pos':v<0?'neg':''}">${sgn(v)}</span>`;
+const cell={mr:g=>g.mr,name:g=>esc(clean(g.name))+(g.thin?'<span class="thin">thin</span>':'')+(g.isNew?'<span class="tag new">new</span>':''),seg:g=>`<span class="pill" style="color:${SEG[g.seg].c}">${SEG[g.seg].n}</span>`,score:g=>g.score.toFixed(1),R:g=>g.R,best:g=>g.best,W:g=>dd(dlt(g,'W')),M3:g=>dd(dlt(g,'M3')),ytd:g=>g.ytd==null?'—':g.ytd.toFixed(1),n:g=>g.n,br:g=>g.br==null?'—':g.br+'%',q:g=>g.q==null?'—':g.q+'%',cap:g=>fmtCr(g.cap),prev:g=>PREV?SEG[PREV.s[g.k]]?.n||'—':'—',dmr:g=>g.dmr==null?'—':dd(g.dmr),streak:g=>g.streak||'—',climb:g=>g.climb};
+const sval=(g,k)=>k==='dmr'?g.dmr??-1e9:k==='W'||k==='M3'?dlt(g,k):k==='name'?g.name:k==='seg'?ORDER.indexOf(g.seg):g[k]??-1e9;
+function gtable(id,rows,cols,def){const s=sorts[id]||(sorts[id]=def);const R=[...rows].sort((a,b)=>{const x=sval(a,s.k),y=sval(b,s.k);return (x>y?1:x<y?-1:0)*s.d});
+  $('#'+id).innerHTML=`<thead><tr>${cols.map(k=>`<th data-k="${k}" class="${COLS[k][1]?'num':''}">${COLS[k][0]}${s.k===k?(s.d>0?' ↑':' ↓'):''}</th>`).join('')}</tr></thead><tbody>`+(R.length?R.map(g=>`<tr class="click${id==='t-top25'&&g.mr<=10?' top10':''}" data-tk="${g.k}">${cols.map(k=>`<td class="${COLS[k][1]?'num':''}">${cell[k](g)}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}">Nothing here this week.</td></tr>`)+'</tbody>'}
+const GT={
+ 't-top25':()=>gtable('t-top25',[...vis()].sort((a,b)=>a.mr-b.mr).slice(0,25),['mr','dmr','name','seg','R','score','n','br','cap'],{k:'mr',d:1}),
+ 't-conv':()=>gtable('t-conv',vis().filter(g=>g.streak>0),['mr','name','streak','seg','R','n'],{k:'streak',d:-1}),
+ 't-emerging':()=>gtable('t-emerging',by('E'),['mr','name','R','M3','W','ytd','n','br','cap'],{k:'mr',d:1}),
+ 't-leaders':()=>gtable('t-leaders',by('L'),['mr','name','R','best','W','ytd','n','br','cap'],{k:'mr',d:1}),
+ 't-fading':()=>gtable('t-fading',by('F'),['mr','name','best','R','M3','ytd','n','br','cap'],{k:'n',d:-1}),
+ 't-turnarounds':()=>gtable('t-turnarounds',by('T'),['mr','name','M3','R','W','climb','ytd','n','br','cap'],{k:'mr',d:1}),
+ 't-breadth':()=>gtable('t-breadth',vis().filter(g=>g.mr<=30&&g.st.length>=5),['mr','name','seg','br','q','n','R'],{k:'br',d:-1}),
+ 't-all':()=>{const q=$('#q').value.trim().toLowerCase();gtable('t-all',vis().filter(g=>!q||clean(g.name).toLowerCase().includes(q)),['mr','name','seg','score','R','W','M3','ytd','n','br','q','cap'],{k:'mr',d:1})},
+ 't-changes':()=>gtable('t-changes',M.changed||[],['mr','name','prev','seg','R','W','n'],{k:'seg',d:1})};
+$$('table[id^="t-"]').forEach(t=>t.addEventListener('click',e=>{const th=e.target.closest('th');
+  if(th){const k=th.dataset.k,s=sorts[t.id];sorts[t.id]=s.k===k?{k,d:-s.d}:{k,d:['name','mr','R','best','seg','prev'].includes(k)?1:-1};GT[t.id]();return}
+  const tr=e.target.closest('tr[data-tk]');if(tr)openDrill(tr.dataset.tk)}));
+const shade=v=>v==null?'':v>=80?'hi':v<50?'lo':'';
+const bdShade=b=>bdRank(b)>=11?'hi':bdRank(b)>0&&bdRank(b)<=4?'lo':'';
+const sname=s=>`<b>${esc(s.sym)}</b>${s.strong?'<span class="tag ok">passes rule</span>':''}${s.spec?'<span class="tag warn">price-led</span>':''}<br><span class="note">${esc(s.name)}</span>`;
+function stockHead(cols,st){return `<thead><tr>${cols.map(([k,l,n])=>`<th data-k="${k}" class="${n?'num':''}">${l}${st&&st.k===k?(st.d>0?' ↑':' ↓'):''}</th>`).join('')}</tr></thead>`}
+function stockCells(s){return `<td><span class="grade ${esc(s.ms)}">${esc(s.ms||'—')}</span></td><td class="num ${shade(s.eps)}">${s.eps??'—'}</td><td class="num ${shade(s.rs)}">${s.rs??'—'}</td><td class="${bdShade(s.bd)}">${esc(s.bd||'—')}</td><td class="num">${fmtCr(s.cap)}</td><td class="num">${s.px==null?'—':s.px.toLocaleString('en-IN')}</td><td class="num ${s.chg>0?'pos':s.chg<0?'neg':''}">${s.chg==null?'—':s.chg.toFixed(2)}</td>`}
+const SCOLS=[['sym','Stock'],['sec','Sector (MRank)'],['ms','Master'],['eps','EPS',1],['rs','Price str.',1],['bd','Demand'],['cap','Mkt cap',1],['px','Price',1],['chg','Chg %',1]];
+function screen(){const top=+$('#fTop').value,ms=$('#fMs').value,eps=+$('#fEps').value||0,rs=+$('#fRs').value||0,bd=$('#fBd').value,cap=+$('#fCap').value||0,thin=$('#hideThin').checked;
+  const pool=M.S.filter(s=>s.g.mr<=top&&!(thin&&s.g.thin)&&(s.cap??0)>=cap);
+  const S=pool.filter(s=>ms.includes(s.ms)&&(s.eps??0)>=eps&&(s.rs??0)>=rs&&(bd==='any'||bdRank(s.bd)>=(bd==='A'?11:10)));
+  S.forEach(s=>s.sc=(s.eps||0)+(s.rs||0)+bdRank(s.bd)*3+(s.ms==='A'?10:0));
+  const kk=sortT.k==='cmp'?'sc':sortT.k;S.sort((a,b)=>{const x=kk==='sec'?a.g.mr:a[kk]??-1e9,y=kk==='sec'?b.g.mr:b[kk]??-1e9;return (x>y?1:x<y?-1:0)*sortT.d});
+  const secs=new Set(S.map(s=>s.g.k)).size,guide=top===25&&ms==='AB'&&eps===80&&rs===80&&bd==='B'&&cap===0,SP=pool.filter(s=>s.spec);
+  INS.stocks=[`${S.length} stocks ${guide?"pass the guide's strong-stock rule":'pass your filters'}, across ${plural(secs,'sector','sectors')}`,guide?'MasterScore A or B, EPS rank 80+, price strength 80+ and buyer demand B+ or better, inside the top 25 sectors. Narrow it to 5–15 names for fundamental research; these are candidates, not recommendations.':'Custom filters are on. Use Reset to go back to the guide\'s rule.'];
+  STAT.stocks=[[S.length,guide?'pass the rule':'pass your filters'],[secs,'sectors'],[SP.length,'price-led, weak earnings']];lead('stocks');
+  $('#sumS').textContent=`The shortlist (${S.length})`;$('#sumP').textContent=`Running on price, not earnings (${SP.length})`;
+  $('#stbl').innerHTML=stockHead(SCOLS,sortT)+'<tbody>'+(S.length?S.slice(0,150).map(s=>`<tr class="click" data-tk="${s.g.k}"><td>${sname(s)}</td><td>${esc(clean(s.g.name))} <span class="note">(${s.g.mr})</span></td>${stockCells(s)}</tr>`).join(''):'<tr><td colspan="9">No stocks pass. Try loosening a filter.</td></tr>')+'</tbody>';
+  SP.sort((a,b)=>(b.rs||0)-(a.rs||0));$('#specNote').textContent=SP.length?'Price strength 80+ but EPS rank under 50. Often this is price running without earnings; sometimes the market is pricing earnings still to come. These need a stronger fundamental case, not an automatic reject.':'No price-led stocks in these sectors.';
+  $('#spectbl').innerHTML=SP.length?stockHead(SCOLS)+'<tbody>'+SP.slice(0,40).map(s=>`<tr class="click" data-tk="${s.g.k}"><td>${sname(s)}</td><td>${esc(clean(s.g.name))} <span class="note">(${s.g.mr})</span></td>${stockCells(s)}</tr>`).join('')+'</tbody>':'';
+  chart('z-stocks',scatter(pool,S))}
+function drillOpts(){$('#dsel').innerHTML=[...M.G].sort((a,b)=>a.mr-b.mr).map(g=>`<option value="${g.k}">${g.mr}. ${esc(clean(g.name))} — ${SEG[g.seg].n}</option>`).join('');if(!dk||!M.G.some(g=>g.k===dk))dk=[...M.G].filter(g=>!g.thin).sort((a,b)=>a.mr-b.mr)[0].k;$('#dsel').value=dk}
+function drill(){const g=M.G.find(v=>v.k===dk);if(!g)return;
+  $('#dhead').innerHTML=[['Segment',SEG[g.seg].n],['MRank',g.mr],['Rank now',g.R],['YTD',g.ytd==null?'—':g.ytd.toFixed(1)+'%'],['Stocks',g.n],['Breadth',g.br==null?'—':g.br+'%'],['Quality (A/B)',g.q==null?'—':g.q+'%'],['Mkt cap',fmtCr(g.cap)]].map(([l,v])=>`<div>${l}<b>${esc(v)}</b></div>`).join('');
+  const gc={A:0,B:0,C:0,D:0,E:0};g.st.forEach(s=>{if(gc[s.ms]!=null)gc[s.ms]++});const tot=Object.values(gc).reduce((a,b)=>a+b,0)||1,gcol={A:'var(--mint)',B:'var(--mint)',C:'var(--amb)',D:'var(--lo)',E:'var(--lo)'};
+  $('#dgrades').innerHTML=Object.entries(gc).filter(e=>e[1]).map(([k,n])=>`<i style="width:${100*n/tot}%;background:${gcol[k]};color:var(--ink)" data-tip="${esc(`MasterScore ${k}: ${n} stocks`)}">${k} ${n}</i>`).join('');
+  chart('z-djourney',slope([g],{labels:0,color:SEG[g.seg].c}));chart('z-dscatter',scatter(g.st,g.st.filter(s=>s.strong),{label:true}));
+  const msr=m=>({A:5,B:4,C:3,D:2,E:1}[m]||0),k=sortD.k,v=s=>k==='ms'?-(msr(s.ms)*1000+(s.rs||0)):k==='sym'?s.sym:s[k]??-1e9;
+  const S=[...g.st].sort((a,b)=>{const x=v(a),y=v(b);return (x>y?1:x<y?-1:0)*sortD.d});
+  $('#dtbl').innerHTML=stockHead([['sym','Stock'],['ms','Master'],['eps','EPS',1],['rs','Price str.',1],['bd','Demand'],['cap','Mkt cap',1],['px','Price',1],['chg','Chg %',1]],sortD)+'<tbody>'+(S.length?S.map(s=>`<tr><td>${sname(s)}</td>${stockCells(s)}</tr>`).join(''):'<tr><td colspan="8">No stock tab found for this group in the file.</td></tr>')+'</tbody>';
+  INS.sector=[`${esc(clean(g.name))}: ${SEG[g.seg].n.toLowerCase()}, MRank ${g.mr}`,`Rank ${g.M6} six months ago, ${g.M3} three months ago, ${g.W} last week and ${g.R} now. ${g.st.filter(s=>s.strong).length} of its ${g.st.length} stocks pass the strong-stock rule. Search a stock or pick another sector below.`];lead('sector')}
+function openDrill(k){dk=k;$('#dsel').value=k;drill();if(view!=='sector')location.hash='sector';else drawVisible()}
+function convTables(){GT['t-conv']();const S=M.S.filter(s=>s.streak>0).sort((a,b)=>b.streak-a.streak||a.g.mr-b.g.mr);
+  $('#convs').innerHTML='<thead><tr><th>Stock</th><th class="num">Weeks passing</th><th>Sector (MRank)</th><th>Master</th><th class="num">EPS</th><th class="num">Price str.</th><th>Demand</th></tr></thead><tbody>'+(S.length?S.map(s=>`<tr class="click" data-tk="${s.g.k}"><td>${sname(s)}</td><td class="num"><b>${s.streak}</b></td><td>${esc(clean(s.g.name))} <span class="note">(${s.g.mr})</span></td><td><span class="grade ${esc(s.ms)}">${esc(s.ms)}</span></td><td class="num ${shade(s.eps)}">${s.eps}</td><td class="num ${shade(s.rs)}">${s.rs}</td><td class="${bdShade(s.bd)}">${esc(s.bd)}</td></tr>`).join(''):'<tr><td colspan="7">No stock passes the rule this week.</td></tr>')+'</tbody>'}
+
+/* ---------- render ---------- */
+function renderAll(){insights();screen();
+  for(const k of ['top25','emerging','leaders','fading','turnarounds','conviction','rotation','movers','breadth','changes'])lead(k);
+  rTop25();chart('z-emerging',slope(by('E')));chart('z-turnarounds',slope(by('T')));dumb('leaders',by('L'),'var(--est)');dumb('fading',by('F').sort((a,b)=>b.n-a.n),'var(--dn)');
+  rChanges();rRotation();rMovers();rBreadth();rConv();Object.values(GT).forEach(f=>f());convTables();rSummary();drillOpts();drill();
+  if(innerWidth>900)$$('details.more').forEach(d=>{if(!d.id)d.open=true})}
+function srcLine(){const d=fmtDate(M.date);$('#src').className='srcline'+(SRC==='repo'?' repo':'');$('#src').innerHTML=SRC==='repo'?`Published week of <b>${d}</b> · anyone with this link sees it`:SRC==='upload'?`Showing <b>your file</b> (${d}) on this device only · use Share → Download report to send it`:SRC==='snapshot'?`Report for the week of <b>${d}</b>`:`Week of <b>${d}</b>`}
+function load(raw,prev,src){M=build(raw);window.__raw=raw;SRC=src;PREV=prev!==undefined?prev:prevFor(raw.date);if(PREV)PREV=toPrev(PREV);computeHist();srcLine();renderAll();$('#msg').hidden=true;go(location.hash.slice(1)||view)}
+
+$('#cmp').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;cmp=b.dataset.k;[...$('#cmp').children].forEach(x=>x.setAttribute('aria-pressed',x===b));drawVisible()});
+$('#mvp').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;mv=b.dataset.k;[...$('#mvp').children].forEach(x=>x.setAttribute('aria-pressed',x===b));rMovers()});
+$('#legend').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const k=b.dataset.s;show.has(k)?show.delete(k):show.add(k);if(!show.size)ORDER.forEach(o=>show.add(o));rSummary()});
+$('#hideThin').addEventListener('change',()=>{if(M)renderAll()});
+$('#q').addEventListener('input',()=>GT['t-all']());
+$('#stbl').addEventListener('click',e=>{const th=e.target.closest('th');if(th){const k=th.dataset.k;sortT=sortT.k===k?{k,d:-sortT.d}:{k,d:['sym','sec','ms'].includes(k)?1:-1};screen();return}const tr=e.target.closest('tr[data-tk]');if(tr)openDrill(tr.dataset.tk)});
+['#spectbl','#convs'].forEach(s=>$(s).addEventListener('click',e=>{const tr=e.target.closest('tr[data-tk]');if(tr)openDrill(tr.dataset.tk)}));
 $('#dtbl').addEventListener('click',e=>{const th=e.target.closest('th');if(!th)return;const k=th.dataset.k;sortD=sortD.k===k?{k,d:-sortD.d}:{k,d:k==='sym'?1:-1};drill()});
-['#fTop','#fMs','#fEps','#fRs','#fBd','#fCap'].forEach(s=>$(s).addEventListener('input',()=>{screen();spec()}));
-$('#fReset').addEventListener('click',()=>{$('#fTop').value='25';$('#fMs').value='AB';$('#fEps').value=80;$('#fRs').value=80;$('#fBd').value='B';$('#fCap').value=0;screen();spec()});
-$('#spectbl').addEventListener('click',e=>{const tr=e.target.closest('tr.click');if(tr)openDrill(tr.dataset.k)});
-$('#convs').addEventListener('click',e=>{const tr=e.target.closest('tr.click');if(tr)openDrill(tr.dataset.k)});
+['#fTop','#fMs','#fEps','#fRs','#fBd','#fCap'].forEach(s=>$(s).addEventListener('input',()=>{screen()}));
+$('#fReset').addEventListener('click',()=>{$('#fTop').value='25';$('#fMs').value='AB';$('#fEps').value=80;$('#fRs').value=80;$('#fBd').value='B';$('#fCap').value=0;screen()});
+$('#dsel').addEventListener('change',e=>{dk=e.target.value;drill()});
 $('#sfind').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();if(!M||q.length<2){$('#sres').innerHTML='';return}
   const S=M.S.filter(s=>s.sym.toLowerCase().includes(q)||String(s.name).toLowerCase().includes(q)).slice(0,10);
-  $('#sres').innerHTML=S.length?S.map(s=>`<button data-k="${s.g.k}"><b>${esc(s.sym)}</b> · ${esc(clean(s.g.name))} (MRank ${s.g.mr})</button>`).join(''):'<span class="note">No stock matches.</span>'});
-$('#sres').addEventListener('click',e=>{const b=e.target.closest('button');if(b)openDrill(b.dataset.k)});
-$('#dsel').addEventListener('change',e=>{dk=e.target.value;drill()});
+  $('#sres').innerHTML=S.length?S.map(s=>`<button data-sk="${s.g.k}"><b>${esc(s.sym)}</b> · ${esc(clean(s.g.name))} (MRank ${s.g.mr})</button>`).join(''):'<span class="note">No stock matches.</span>'});
+$('#sres').addEventListener('click',e=>{const b=e.target.closest('button');if(b)openDrill(b.dataset.sk)});
 
-function readFile(f){if(!f)return;if(typeof XLSX==='undefined'){showErr('The spreadsheet reader did not load. Check your connection and try again.');return}
-  $('#asof').textContent='Reading '+f.name+'…';const r=new FileReader();
-  r.onload=()=>{try{load(parseWorkbook(XLSX.read(new Uint8Array(r.result),{type:'array'}),f.name),undefined,'upload');$('#wk').value=''}catch(err){showErr(err.message||String(err))}};r.readAsArrayBuffer(f)}
-function showErr(t){const m=$('#msg');m.hidden=false;m.textContent='Could not read that file: '+t}
-$('#file').addEventListener('change',e=>readFile(e.target.files[0]));
-const dz=$('#drop');['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('on')}));
-['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();if(ev==='drop'||e.target===document.documentElement)dz.classList.remove('on')}));
-document.addEventListener('drop',e=>readFile(e.dataTransfer.files[0]));
-function prevFor(d){const I=IDX?IDX.filter(w=>w.date<d).map(toPrev):[];HIST=I.length?I:localHist().map(toPrev);return HIST.length?HIST[HIST.length-1]:null}
-function srcLine(){const d=fmtDate(M.date);$('#src').innerHTML=SRC==='repo'?`Published week of <b>${d}</b>. Anyone with this link sees it.`:SRC==='upload'?`Showing <b>your uploaded file</b> (${d}). Only you can see this; use Download report to share it.`:SRC==='snapshot'?`Report for the week of <b>${d}</b>.`:`Week of <b>${d}</b>`}
+/* ---------- share, report, pdf, install ---------- */
 const plain=h=>{const t=document.createElement('div');t.innerHTML=h;return t.textContent.replace(/\s+/g,' ').trim()};
-const link=t=>(SITE||'')+(SITE?'#'+t:'');
+const link=t=>SITE?SITE+'#'+t:'';
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2600)}
 async function share(text,title){try{if(navigator.share&&matchMedia('(pointer:coarse)').matches){await navigator.share({title,text});return}}catch(e){if(e.name==='AbortError')return}
   try{await navigator.clipboard.writeText(text);toast('Copied. Paste it into WhatsApp, Telegram or email.')}catch(e){const a=document.createElement('textarea');a.value=text;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('Copied.')}catch(_){toast('Could not copy on this browser.')}a.remove()}}
-const head=()=>`Sector momentum · week of ${fmtDate(M.date)}`;
-function insightText(id){const v=INS[id];return `${head()}\n\n${plain(v[0])}.\n${plain(v[1])}`+(SRC==='upload'||!SITE?'':`\n\n${link(id)}`)}
-function summaryText(){const C=[['changes','Since last week'],['top25','Top 25'],['emerging','Emerging'],['leaders','Leaders'],['fading','Fading'],['turnarounds','Turnarounds'],['rotation','Rotation'],['movers','This week'],['stocks','Stock picks'],['conviction','Conviction'],['breadth','Breadth']].filter(([k])=>INS[k]&&(k!=='changes'||PREV));
+const head=()=>`📊 Sector momentum · week of ${fmtDate(M.date)}`;
+const tail=t=>(SRC==='upload'||!SITE?'':`\n\n${link(t)}`);
+function stocksText(){const rows=[...document.querySelectorAll('#stbl tbody tr[data-tk]')].slice(0,15).map(r=>`• ${r.cells[0].querySelector('b')?.textContent} (${r.cells[1].textContent.replace(/\s*\(\d+\)/,'')})`);return `${head()}\n\n${plain(INS.stocks[0])}:\n${rows.join('\n')}${tail('stocks')}\n\nA starting list for research, not a buy list.`}
+function insightText(id){const v=INS[id],st=STAT[id];return `${head()}\n\n${plain(v[0])}.\n`+(st?st.map(x=>`▸ ${x[0]} ${x[1]}`).join('\n')+'\n':'')+`\n${plain(v[1])}${tail(id)}`}
+function summaryText(){const C=[['changes','Since last week'],['top25','Top 25'],['emerging','Emerging'],['leaders','Leaders'],['fading','Fading'],['turnarounds','Turnarounds'],['rotation','Rotation'],['stocks','Stock picks'],['conviction','Conviction']].filter(([k])=>INS[k]&&(k!=='changes'||PREV));
   return `${head()}\n${$('#title').textContent}\n\n`+C.map(([k,l])=>`• ${l}: ${plain(INS[k][0])}`).join('\n')+(SRC==='upload'||!SITE?'':`\n\nFull dashboard: ${SITE}`)+'\n\nPrice-momentum screen for education, not investment advice.'}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-share]');if(!b)return;const id=b.dataset.share;share(id==='stocks'?stocksText():insightText(id),head())});
-function stocksText(){const t=$('#i-stocks h2').textContent,rows=[...document.querySelectorAll('#stbl tbody tr')].slice(0,15).map(r=>`• ${r.cells[0].querySelector('b')?.textContent} (${r.cells[1].textContent.replace(/\s*\(\d+\)/,'')})`);return `${head()}\n\n${t}:\n${rows.join('\n')}`+(SRC==='upload'||!SITE?'':`\n\n${link('stocks')}`)+'\n\nA starting list for research, not a buy list.'}
-$('#shSum').addEventListener('click',()=>M&&share(summaryText(),head()));
-$('#shPdf').addEventListener('click',()=>{if(!M)return;document.body.classList.add('printall');const was=view;go('summary');setTimeout(()=>{window.print();document.body.classList.remove('printall');go(was)},300)});
-$('#shRep').addEventListener('click',()=>{if(!M)return;const json=JSON.stringify({cur:window.__raw,prev:PREV,hist:HIST,site:SITE}).replace(/</g,'\\u003c');
+document.addEventListener('click',e=>{const b=e.target.closest('[data-share]');if(!b||!M)return;const id=b.dataset.share;share(id==='stocks'?stocksText():insightText(id),head())});
+const sheet=$('#sheet'),scrim=$('#scrim');const openSheet=o=>{sheet.classList.toggle('on',o);scrim.classList.toggle('on',o)};
+$('#shareBtn').addEventListener('click',()=>openSheet(true));scrim.addEventListener('click',()=>openSheet(false));$('#file').addEventListener('click',()=>openSheet(false));
+$('#shSum').addEventListener('click',()=>{openSheet(false);M&&share(summaryText(),head())});
+$('#shPdf').addEventListener('click',()=>{openSheet(false);if(!M)return;document.body.classList.add('printall');const was=view,op=$$('details.more').map(d=>d.open);$$('details.more').forEach(d=>d.open=true);go('summary');
+  setTimeout(()=>{window.print();document.body.classList.remove('printall');$$('details.more').forEach((d,i)=>d.open=op[i]);go(was)},400)});
+$('#shRep').addEventListener('click',()=>{openSheet(false);if(!M)return;const json=JSON.stringify({cur:window.__raw,prev:PREV,hist:HIST,site:SITE}).replace(/</g,'\\u003c');
   const html='<!DOCTYPE html>\n'+TEMPLATE.replace('</head>',`<script id="embedded" type="application/json">${json}<\/script></head>`);
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=`Sector-Momentum-${M.date||'report'}.html`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast('Report downloaded. Send the file; it opens in any browser.')});
-function weekSel(){const w=$('#wk');if(!IDX||!IDX.length){w.hidden=true;return}w.hidden=false;w.innerHTML=[...IDX].reverse().map(x=>`<option value="${x.date}">Week of ${fmtDate(x.date)}</option>`).join('')}
+let deferred=null;const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('#shInst').hidden=false});
+if(!standalone&&/iphone|ipad|ipod/i.test(navigator.userAgent)&&location.protocol==='https:'){$('#shInst').hidden=false;$('#instNote').textContent='In Safari: tap Share, then "Add to Home Screen"'}
+$('#shInst').addEventListener('click',async()=>{if(deferred){openSheet(false);deferred.prompt();await deferred.userChoice;deferred=null;$('#shInst').hidden=true}else toast('In Safari, tap Share → Add to Home Screen.')});
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!document.getElementById('embedded'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+/* ---------- loading ---------- */
+function readFile(f){if(!f)return;if(typeof XLSX==='undefined'){showErr('The spreadsheet reader did not load. Check your connection and try again.');return}
+  $('#asof').textContent='Reading…';const r=new FileReader();
+  r.onload=()=>{try{load(parseWorkbook(XLSX.read(new Uint8Array(r.result),{type:'array'}),f.name),undefined,'upload');$('#wk').value='';toast('Loaded '+f.name)}catch(err){showErr(err.message||String(err))}};r.readAsArrayBuffer(f)}
+function showErr(t){const m=$('#msg');m.hidden=false;m.textContent='Could not read that file: '+t}
+$('#file').addEventListener('change',e=>{readFile(e.target.files[0]);e.target.value=''});
+['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{if(![...(e.dataTransfer?.types||[])].includes('Files'))return;e.preventDefault();document.body.classList.add('drop-on')}));
+['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();if(ev==='drop'||!e.relatedTarget)document.body.classList.remove('drop-on')}));
+document.addEventListener('drop',e=>{const f=e.dataTransfer?.files?.[0];if(f)readFile(f)});
+function weekSel(){const w=$('#wk');if(!IDX||!IDX.length){w.hidden=true;return}w.hidden=false;w.innerHTML=[...IDX].reverse().map(x=>`<option value="${x.date}">${fmtDate(x.date)}</option>`).join('')}
 async function loadWeek(d){const r=await fetch(`data/weeks/${d}.json`,{cache:'no-cache'});if(!r.ok)throw new Error('missing week');const raw=await r.json();const i=IDX.findIndex(x=>x.date===d);HIST=IDX.slice(0,Math.max(i,0)).map(toPrev);load(raw,HIST.length?HIST[HIST.length-1]:null,'repo');$('#wk').value=d}
 $('#wk').addEventListener('change',e=>loadWeek(e.target.value).catch(()=>showErr('Could not load that week.')));
 (async()=>{const emb=document.getElementById('embedded');
   if(emb){try{const d=JSON.parse(emb.textContent);SITE=d.site||'';HIST=(d.hist||[]).map(toPrev);load(d.cur,d.prev||null,'snapshot');return}catch(e){console.error(e);showErr('This report could not be opened.')}}
   try{const r=await fetch('data/index.json',{cache:'no-cache'});if(!r.ok)throw 0;IDX=await r.json();if(!IDX.length)throw 0;SITE=location.origin+location.pathname;weekSel();await loadWeek(IDX[IDX.length-1].date);return}catch(e){IDX=null}
   try{const r=await fetch('sample.json');if(!r.ok)throw 0;load(await r.json(),undefined,'sample');return}catch(e){}
-  $('#asof').textContent='Upload a sheet to begin';$('#title').textContent='Upload your weekly Ranked Sector List';$('#src').textContent='No published week yet. Upload a sheet to see its insights.'})();
+  $('#asof').textContent='No data yet';$('#title').textContent='Open your weekly Ranked Sector List';$('#src').textContent='No published week yet. Tap the upload icon to open a sheet.';nav()})();
 }
 </script>
 </body>
