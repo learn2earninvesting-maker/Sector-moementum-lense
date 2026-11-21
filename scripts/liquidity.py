@@ -218,6 +218,41 @@ def parse_bse_vol(text):
     return out
 
 
+def parse_nse_chg(text):
+    """SYMBOL -> daily % change (close vs previous close), EQ-type series."""
+    out = {}
+    rows = csv.reader(io.StringIO(text))
+    head = [h.strip().upper() for h in next(rows)]
+    ix = {h: i for i, h in enumerate(head)}
+    if "CLOSE_PRICE" not in ix or "PREV_CLOSE" not in ix:
+        return out
+    for r in rows:
+        if len(r) < len(head) or r[ix["SERIES"]].strip().upper() not in ("EQ", "BE", "BZ", "SM", "ST", "SZ"):
+            continue
+        c, p = _num(r[ix["CLOSE_PRICE"]]), _num(r[ix["PREV_CLOSE"]])
+        if c and p:
+            out[r[ix["SYMBOL"]].strip()] = (c / p - 1) * 100
+    return out
+
+
+def parse_bse_chg(text):
+    out = {}
+    rows = csv.reader(io.StringIO(text))
+    head = [h.strip() for h in next(rows)]
+    ix = {h: i for i, h in enumerate(head)}
+    if not all(k in ix for k in ("FinInstrmId", "TckrSymb", "ClsPric", "PrvsClsgPric")):
+        return out
+    for r in rows:
+        if len(r) < len(head):
+            continue
+        c, p = _num(r[ix["ClsPric"]]), _num(r[ix["PrvsClsgPric"]])
+        if c and p:
+            for k in (r[ix["FinInstrmId"]].strip(), r[ix["TckrSymb"]].strip()):
+                if k:
+                    out.setdefault(k, (c / p - 1) * 100)
+    return out
+
+
 def prune_raw(keep_days=140):
     if not os.path.isdir(RAW):
         return
@@ -235,7 +270,7 @@ def volumes(date_str, keys, sessions=55, lookback=95):
         return [], {}
     s = _session()
     d = dt.date.fromisoformat(date_str)
-    days, rows = [], []
+    days, rows, chg = [], [], []
     for back in range(lookback):
         if len(days) >= sessions:
             break
@@ -250,7 +285,10 @@ def volumes(date_str, keys, sessions=55, lookback=95):
             continue
         nv = parse_nse_vol(n) if n else {}
         bv = parse_bse_vol(b) if b else {}
+        nc = parse_nse_chg(n) if n else {}
+        bc = parse_bse_chg(b) if b else {}
         days.append(day.isoformat())
+        chg.append({k: (round(nc[k], 2) if k in nc else round(bc[k], 2) if k in bc else None) for k in keys})
         row = {}
         for k in keys:
             bse_only = k.isdigit()
@@ -262,7 +300,29 @@ def volumes(date_str, keys, sessions=55, lookback=95):
         time.sleep(0.3)
     days.reverse()
     rows.reverse()
-    return days, {k: [None if r[k] is None else int(r[k]) for r in rows] for k in keys}
+    chg.reverse()
+    return days, {k: [None if r[k] is None else int(r[k]) for r in rows] for k in keys}, {k: [c[k] for c in chg] for k in keys}
+
+
+def voltrend(vol, chg):
+    """Volume trend over the last 10 sessions against the 20 before, and up-day vs down-day volume (20 sessions)."""
+    pairs = [(v, c) for v, c in zip(vol, chg)]
+    last10 = [v for v, _ in pairs[-10:] if v is not None]
+    prev20 = [v for v, _ in pairs[-30:-10] if v is not None]
+    if len(last10) < 6 or len(prev20) < 12:
+        return None
+    p = sum(prev20) / len(prev20)
+    if p <= 0:
+        return None
+    up = sum(v for v, c in pairs[-20:] if v is not None and c is not None and c > 0)
+    dn = sum(v for v, c in pairs[-20:] if v is not None and c is not None and c < 0)
+    base = [v for v in vol[:-5][-50:] if v is not None]
+    b = sum(base) / len(base) if base else 0
+    last_v, last_c = vol[-1], chg[-1]
+    return {"t10": round(sum(last10) / len(last10) / p, 2),
+            "udr": round(up / dn, 2) if dn > 0 else (9.99 if up > 0 else None),
+            "surge": bool(b and last_v is not None and last_c is not None and last_v >= 1.5 * b and last_c > 0),
+            "c1": last_c}
 
 
 def dryup(series):
