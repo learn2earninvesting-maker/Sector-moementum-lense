@@ -133,12 +133,49 @@ def summarise(raw):
         ms, eps, rs, bd = s[4], s[5] or 0, s[6] or 0, BD.get(s[7], 0)
         if ms in ("A", "B") and eps >= 80 and rs >= 80 and bd >= 10 and g["mr"] <= 25 and g["n"] > 3 and s[1] not in picks:
             picks.append(s[1])
+    br = {}
+    for g in G:
+        st = [s for s in raw["stocks"] if s[0] == g["k"]]
+        if st:
+            br[g["k"]] = round(100 * sum(1 for s in st if (s[6] or 0) >= 70) / len(st))
     return {
         "date": raw["date"], "file": raw.get("file"), "groups": N,
         "segs": {g["k"]: segment(g["R"], g["W"], g["M3"], g["M6"]) for g in G},
         "mr": {g["k"]: g["mr"] for g in G},
         "R": {g["k"]: g["R"] for g in G},
+        "W": {g["k"]: g["W"] for g in G},
+        "br": br,
         "picks": picks,
+    }
+
+
+def median(v):
+    v = sorted(v)
+    n = len(v)
+    return None if not n else (v[n // 2] if n % 2 else (v[n // 2 - 1] + v[n // 2]) / 2)
+
+
+def scorecard(prev_raw, prev_picks, raw):
+    """How last week's shortlist did by this week's sheet, against every stock.
+    Price moves beyond +/-40% in a week are skipped as likely splits or bonus issues."""
+    p0 = {s[1]: s[8] for s in prev_raw["stocks"] if s[8]}
+    ret = {}
+    for s in raw["stocks"]:
+        a = p0.get(s[1])
+        if a and s[8]:
+            r = (s[8] / a - 1) * 100
+            if abs(r) <= 40:
+                ret[s[1]] = round(r, 2)
+    pr = [(sym, ret[sym]) for sym in prev_picks if sym in ret]
+    if not pr:
+        return None
+    mkt = median(list(ret.values()))
+    vals = [r for _, r in pr]
+    return {
+        "from": prev_raw["date"], "n": len(pr),
+        "pick_med": round(median(vals), 2), "pick_mean": round(sum(vals) / len(vals), 2),
+        "mkt_med": round(mkt, 2), "beat": round(100 * sum(1 for r in vals if r > mkt) / len(vals)),
+        "ret": dict(pr),
     }
 
 
@@ -151,11 +188,15 @@ def main():
             json.dump(raw, f, separators=(",", ":"))
         print(f"{os.path.basename(path)} -> data/weeks/{raw['date']}.json "
               f"({len(raw['groups'])} groups, {len(raw['stocks'])} stocks)")
-    index = []
+    index, prev = [], None
     for out in sorted(glob.glob(os.path.join(WEEKS, "*.json"))):
         with open(out) as f:
             raw = json.load(f)
-        index.append(summarise(raw))
+        entry = summarise(raw)
+        if prev:
+            entry["sc"] = scorecard(prev[0], prev[1]["picks"], raw)
+        index.append(entry)
+        prev = (raw, entry)
     with open(INDEX, "w") as f:
         json.dump(index, f, separators=(",", ":"))
     print(f"data/index.json: {len(index)} week(s)")

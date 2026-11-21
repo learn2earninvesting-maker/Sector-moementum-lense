@@ -99,6 +99,17 @@ select,input[type=search],input[type=number]{font:16px Inter,sans-serif;min-heig
 .share{font:600 14px Inter,sans-serif;min-height:40px;padding:0 14px;border-radius:99px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;gap:8px;align-items:center}
 .share svg{width:16px;height:16px}
 .viz{margin:6px 0 18px}
+.cols3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px;margin:8px 0 14px}
+.col h3{display:flex;align-items:center;gap:8px}.col h3 .ct{font:700 14px Inter,sans-serif;background:var(--soft);border-radius:99px;padding:2px 10px}
+.sc{display:grid;gap:8px}
+.sitem{border-radius:14px;background:var(--soft);padding:10px 12px;border-left:5px solid var(--up);cursor:pointer}
+.sitem.dn{border-left-color:var(--dn)}.sitem.ug{border-left-color:var(--est)}
+.sitem b{font-family:"Space Grotesk",Inter,sans-serif;font-size:16px}.sitem .sec{font-size:12.5px;color:var(--ink2)}
+.why{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.why span{font-size:11.5px;font-weight:600;border-radius:99px;padding:2px 8px;background:var(--bg);border:1px solid var(--line)}
+.mixrow{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:10px;align-items:center;min-height:34px;font-size:13px}
+.mixrow .compo{margin:0;height:22px}
+.wait{padding:18px;border-radius:16px;border:1.5px dashed var(--line);color:var(--ink2);font-size:15px;margin:10px 0}
+.wait b{color:var(--ink)}
 .after{margin:16px 0 8px;padding:16px;border-radius:16px;background:var(--soft)}.after p{color:var(--ink2)}.after:empty{display:none}
 /* cards */
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:12px;margin-top:16px}
@@ -229,6 +240,7 @@ tr.top10 td{background:var(--gold)}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15l2.5 2.5L16 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-sec" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
   <symbol id="i-stk" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
@@ -284,6 +296,27 @@ tr.top10 td{background:var(--gold)}
 </section>
 
 <section class="view pall band" id="v-changes" hidden><div class="wrap"><div class="lead" id="i-changes"></div><div class="viz" id="z-changes"></div><div class="after" id="j-changes"></div><details class="more"><summary>Every group that changed segment</summary><div class="tbl"><table class="stack" id="t-changes"></table></div></details></div></section>
+<section class="view pall band" id="v-scorecard" hidden><div class="wrap"><div class="lead" id="i-scorecard"></div>
+  <div id="z-scbig" class="rows viz" style="max-width:820px"></div>
+  <h3 id="h-scst">Each name from last week's shortlist</h3><div class="rows viz" id="z-scst" style="max-width:820px"></div>
+  <h3>Running record</h3><div class="rows viz" id="z-schist" style="max-width:820px"></div>
+  <div class="cap">Weekly price change between the two sheets (dividends not included). Moves over ±40% are skipped as likely splits or bonus issues. One week is a small sample; the running record matters more.</div>
+  <div class="after" id="j-scorecard"></div></div></section>
+<section class="view pall band" id="v-shortlist" hidden><div class="wrap"><div class="lead" id="i-shortlist"></div>
+  <div class="cols3"><div class="col"><h3>New on the shortlist <span class="ct" id="c-new"></span></h3><div class="sc" id="z-new"></div></div><div class="col"><h3>Dropped off <span class="ct" id="c-drop"></span></h3><div class="sc" id="z-drop"></div></div><div class="col"><h3>Grades rising <span class="ct" id="c-up"></span></h3><div class="sc" id="z-upg"></div></div></div>
+  <div class="cap">Grades rising: stocks in the top 44 sectors whose MasterScore moved up to A/B, or whose buyer demand reached an A grade, since last week. Often an early sign before price confirms it.</div>
+  <div class="after" id="j-shortlist"></div></div></section>
+<section class="view pall band" id="v-speed" hidden><div class="wrap"><div class="lead" id="i-speed"></div>
+  <div class="legend"><span><i class="dot" style="background:var(--up)"></i>Emerging / turnaround</span><span><i class="dot" style="background:var(--est)"></i>Established</span><span><i class="dot" style="background:var(--dn)"></i>Fading</span><span><i class="dot" style="background:var(--rb)"></i>Rangebound</span></div>
+  <div class="fig s" id="z-speed"><svg></svg></div>
+  <div class="cap">Across = ranks gained the week before, up = ranks gained this week. Top-right kept climbing, top-left turned up, bottom-right turned down, bottom-left kept falling.</div>
+  <div class="split" style="margin-top:18px"><div><h3>Picking up speed</h3><div class="rows" id="z-acc"></div></div><div><h3>Leaders slowing down</h3><div class="rows" id="z-dec"></div></div></div>
+  <div class="after" id="j-speed"></div></div></section>
+<section class="view pall band" id="v-trends" hidden><div class="wrap"><div class="lead" id="i-trends"></div>
+  <h3>Rank of today's top sectors, week by week</h3><div class="fig s" id="z-trank"><svg></svg></div>
+  <div class="split" style="margin-top:18px"><div><h3>Breadth, last week → now</h3><div class="rows" id="z-tbr"></div></div><div><h3>Segment mix by week</h3><div id="z-mix"></div></div></div>
+  <h3 style="margin-top:22px">Early warnings</h3><div id="z-warn"></div>
+  <div class="after" id="j-trends"></div></div></section>
 <section class="view pall band" id="v-top25" hidden><div class="wrap"><div class="lead" id="i-top25"></div><div class="legend" id="segL1"></div><div class="viz rows" id="z-top25"></div><p class="note">Bar length is the Momentum Score; gold rows are the top 10. Tap a row to open the sector.</p><div class="after" id="j-top25"></div><details class="more"><summary>Top 25 as a table</summary><div class="tbl"><table class="stack" id="t-top25"></table></div></details></div></section>
 <section class="view pall band" id="v-emerging" hidden><div class="wrap"><div class="lead" id="i-emerging"></div><div class="fig" id="z-emerging"><svg></svg></div><div class="cap">Lines run from 6 months ago to now; higher is a better rank and the green band is the top 45. Tap a line.</div><div class="after" id="j-emerging"></div><details class="more"><summary>Emerging leaders as a table</summary><div class="tbl"><table class="stack" id="t-emerging"></table></div></details></div></section>
 <section class="view pall band" id="v-leaders" hidden><div class="wrap"><div class="lead" id="i-leaders"></div><div class="axis" id="ax-leaders"></div><div class="viz" id="z-leaders"></div><div class="cap">Hollow dot = best rank in the last 6 months, filled dot = rank now. Green band = top 45.</div><div class="after" id="j-leaders"></div><details class="more"><summary>Established leaders as a table</summary><div class="tbl"><table class="stack" id="t-leaders"></table></div></details></div></section>
@@ -373,8 +406,8 @@ const TEMPLATE=(()=>{const c=document.documentElement.cloneNode(true);c.querySel
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const SEG={E:{n:'Emerging Leader',c:'var(--up)'},T:{n:'Turnaround Candidate',c:'var(--up)',hollow:1},L:{n:'Established Leader',c:'var(--est)'},F:{n:'Fading Sector',c:'var(--dn)'},R:{n:'Rangebound',c:'var(--rb)'}};
 const ORDER=['E','T','L','F','R'];
-const GROUPS=[['home','Home','i-home',['summary','changes']],['sectors','Sectors','i-sec',['top25','emerging','leaders','fading','turnarounds']],['stocks','Stocks','i-stk',['stocks','conviction','sector']],['flows','Flows','i-flow',['rotation','movers','breadth']],['more','More','i-more',['all','method']]];
-const TABS={summary:'Summary',changes:'Since last week',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',all:'All sectors',method:'Method'};
+const GROUPS=[['home','Home','i-home',['summary']],['weekly','Weekly','i-cal',['changes','scorecard','shortlist','speed','trends']],['sectors','Sectors','i-sec',['top25','emerging','leaders','fading','turnarounds']],['stocks','Stocks','i-stk',['stocks','conviction','sector']],['flows','Flows','i-flow',['rotation','movers','breadth']],['more','More','i-more',['all','method']]];
+const TABS={summary:'Summary',changes:'Segment changes',scorecard:'Scorecard',shortlist:'Shortlist changes',speed:'Speed',trends:'Trends',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',all:'All sectors',method:'Method'};
 let M=null,PREV=null,HIST=[],IDX=null,SRC='',SITE='',cmp='M3',mv='W',show=new Set(ORDER),view='summary',lastIn={};
 const sorts={};let sortT={k:'cmp',d:-1},sortD={k:'ms',d:1},dk=null;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -432,9 +465,11 @@ function themeRows(){const th={};for(const g of M.G){(th[g.th]??={n:0,d:0});th[g
   return Object.entries(th).filter(([,v])=>v.n>=10).map(([k,v])=>({k,v:v.d/v.n,w:v.d/v.n*Math.sqrt(v.n),n:v.n}))}
 
 /* ---------- history ---------- */
-const toPrev=w=>({d:w.date??w.d,s:w.segs??w.s??{},mr:w.mr||{},R:w.R||{},picks:w.picks||[]});
+const toPrev=w=>({d:w.date??w.d,s:w.segs??w.s??{},mr:w.mr||{},R:w.R||{},W:w.W||{},br:w.br||{},picks:w.picks||[],sc:w.sc||null});
+let PS=null,CURSC=null;
+const compactPS=raw=>Object.fromEntries(raw.stocks.map(s=>[s[1],[s[0],s[4],s[5],s[6],s[7],s[8]]]));
 const isPick=s=>s.strong&&s.g.mr<=25&&!s.g.thin;
-function summ(){return {d:M.date,s:Object.fromEntries(M.G.map(g=>[g.k,g.seg])),mr:Object.fromEntries(M.G.map(g=>[g.k,g.mr])),R:Object.fromEntries(M.G.map(g=>[g.k,g.R])),picks:[...new Set(M.S.filter(isPick).map(s=>s.sym))]}}
+function summ(){return {d:M.date,W:Object.fromEntries(M.G.map(g=>[g.k,g.W])),br:Object.fromEntries(M.G.filter(g=>g.br!=null).map(g=>[g.k,g.br])),s:Object.fromEntries(M.G.map(g=>[g.k,g.seg])),mr:Object.fromEntries(M.G.map(g=>[g.k,g.mr])),R:Object.fromEntries(M.G.map(g=>[g.k,g.R])),picks:[...new Set(M.S.filter(isPick).map(s=>s.sym))]}}
 function computeHist(){const H=[...HIST].reverse(),hasMr=PREV&&Object.keys(PREV.mr).length;
   for(const g of M.G){g.isNew=!!(hasMr&&g.mr<=25&&!(PREV.mr[g.k]<=25));g.dmr=hasMr&&PREV.mr[g.k]!=null?PREV.mr[g.k]-g.mr:null;
     let st=g.mr<=25?1:0;if(st)for(const h of H){if(h.mr[g.k]<=25)st++;else break}g.streak=st;
@@ -483,6 +518,7 @@ function insights(){
   INS.conviction=HIST.length?[`${plural(cs.length,'sector has','sectors have')} held the top 25 for ${th}+ weeks; ${plural(ss.length,'stock','stocks')} passed the rule ${th}+ weeks running`,`Based on ${wk} weeks of sheets. Sectors that hold strength week after week, and stocks that keep showing up in the shortlist, are the highest-conviction zone.`]:['Conviction builds week by week','This is the first week loaded, so everything shows 1 week. From the next sheet on, sectors that stay in the top 25 and stocks that keep passing the strong-stock rule climb these lists.'];
   STAT.conviction=[[wk,plural(wk,'week','weeks').replace(/^\d+ /,'')+' of history'],[cs.length,`sectors ${th}+ weeks`],[ss.length,`stocks ${th}+ weeks`]];
   INS.sector=['Look inside any sector','Pick a group, or find a stock, to see its rank journey and where every stock sits on earnings and price. Tapping a sector anywhere else opens it here.'];STAT.sector=null;
+  if(!PREV){INS.changes=['Segment changes start with your second week','Each group\'s segment this week is compared with last week\'s.'];STAT.changes=[['—','changed'],['—','new emerging'],['—','newly fading']];M.changed=[]}
   if(PREV){const ch=M.G.filter(g=>PREV.s[g.k]&&PREV.s[g.k]!==g.seg),ne=ch.filter(g=>g.seg==='E'),nf=ch.filter(g=>g.seg==='F');M.changed=ch;
     INS.changes=[`${plural(ch.length,'group','groups')} changed segment since ${fmtDate(PREV.d)}`+(ne.length?`, including ${plural(ne.length,'new emerging leader','new emerging leaders')}`:''),SRC==='upload'?'Compared with the previous week you loaded. Read the grid as "was" (rows) to "now" (columns).':'Compared with the previous published week. Read the grid as "was" (rows) to "now" (columns).'];
     STAT.changes=[[ch.length,'changed segment'],[ne.length,'new emerging leaders'],[nf.length,'newly fading']]}
@@ -493,12 +529,12 @@ function lead(id){const v=INS[id],st=STAT[id];if(!v)return;const j=$('#j-'+id),t
 
 /* ---------- navigation ---------- */
 const groupOf=v=>GROUPS.find(g=>g[3].includes(v));
-const tabsIn=g=>g[3].filter(t=>t!=='changes'||PREV);
+const tabsIn=g=>g[3];
 function nav(){const cg=groupOf(view);
   $('#gnav').innerHTML=GROUPS.map(g=>`<button data-g="${g[0]}" aria-current="${g===cg}"><svg><use href="#${g[2]}"/></svg>${g[1]}</button>`).join('');
   const T=tabsIn(cg);$('#chips').hidden=T.length<2;$('#chips').innerHTML=`<div class="scroll">${T.map(t=>`<a href="#${t}" data-v="${t}" aria-current="${t===view?'page':'false'}">${TABS[t]}</a>`).join('')}</div>`;
   $(`#chips a[data-v="${view}"]`)?.scrollIntoView({block:'nearest',inline:'center'})}
-function go(v){if(!TABS[v]||(v==='changes'&&!PREV))v='summary';view=v;lastIn[groupOf(v)[0]]=v;
+function go(v){if(!TABS[v])v='summary';view=v;lastIn[groupOf(v)[0]]=v;
   $$('.view').forEach(s=>s.hidden=s.id!=='v-'+v);nav();window.scrollTo(0,0);hideTip();requestAnimationFrame(drawVisible)}
 addEventListener('hashchange',()=>go(location.hash.slice(1)));
 $('#gnav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const g=GROUPS.find(x=>x[0]===b.dataset.g);const t=lastIn[g[0]]&&tabsIn(g).includes(lastIn[g[0]])?lastIn[g[0]]:tabsIn(g)[0];location.hash=t;if(t===view)go(t)});
@@ -572,7 +608,7 @@ function rSummary(){const G=M.G,cnt=k=>G.filter(g=>g.seg===k).length,R=themeRows
   const fill=k=>SEG[k].hollow?`repeating-linear-gradient(135deg,${SEG[k].c} 0 4px,transparent 4px 8px);box-shadow:inset 0 0 0 2px ${SEG[k].c}`:SEG[k].c;
   $('#compo').innerHTML=ORDER.map(k=>`<i style="width:${100*cnt(k)/M.N}%;background:${fill(k)}" data-tip="${esc(`<b>${SEG[k].n}</b><br>${cnt(k)} of ${M.N} groups`)}"></i>`).join('');
   $('#compoL').innerHTML=ORDER.map(k=>`<span><i class="dot" style="${SEG[k].hollow?`border:2.5px solid ${SEG[k].c}`:`background:${SEG[k].c}`}"></i>${SEG[k].n} <b>${cnt(k)}</b></span>`).join('');
-  const C=['changes','top25','emerging','leaders','fading','turnarounds','stocks','conviction','rotation','movers','breadth'].filter(k=>INS[k]&&(k!=='changes'||PREV));
+  const C=(PREV?['scorecard','shortlist','changes','speed']:[]).concat(['top25','emerging','leaders','fading','turnarounds','stocks','conviction','rotation','movers','breadth']).filter(k=>INS[k]);
   $('#cards').innerHTML=C.map(k=>`<a class="card" href="#${k}"><span>${TABS[k]}</span><div class="cn">${STAT[k]?.[0]?.[0]??''}</div><div>${INS[k][0]}</div><i>Open →</i></a>`).join('');
   chart('fig',drawMap)}
 function rTop25(){const V=[...vis()].sort((a,b)=>a.mr-b.mr).slice(0,25),mx=Math.max(...V.map(g=>g.score),1);
@@ -581,7 +617,7 @@ function rTop25(){const V=[...vis()].sort((a,b)=>a.mr-b.mr).slice(0,25),mx=Math.
 function dumb(id,G,col){const pos=v=>100*(v-1)/(M.N-1);
   $('#ax-'+id).innerHTML=`<span>Rank →</span><div style="position:relative;height:18px">${[[1,'1'],[45,'45'],[90,'90'],[M.N,''+M.N]].map(([v,l],i,a)=>`<span style="position:absolute;left:${pos(v)}%;transform:translateX(${i===0?0:i===a.length-1?-100:-50}%)">${l}</span>`).join('')}</div><span style="text-align:right">move</span>`;
   $('#z-'+id).innerHTML=G.length?G.map((g,i)=>{const a=pos(g.best),b=pos(g.R),l=Math.min(a,b),w=Math.abs(b-a);return `<div class="db" data-k="${g.k}" data-tip="${tipG(g)}"><span class="nm">${esc(clean(g.name))}<small>${g.n} stocks · YTD ${g.ytd==null?'—':sgn(Math.round(g.ytd))+'%'}</small></span><div class="tr"><span class="z"></span><i class="ln" style="left:${l}%;width:${w}%;background:${col};animation-delay:${i*30}ms;${b<a?'transform-origin:right':''}"></i><span class="a" style="left:${a}%"></span><span class="b" style="left:${b}%;background:${col}"></span></div><span class="v">${g.best} → ${g.R}</span></div>`}).join(''):'<div class="empty">Nothing in this segment this week.</div>'}
-function rChanges(){if(!PREV||!M.changed){$('#z-changes').innerHTML='';return}
+function rChanges(){if(!PREV||!M.changed){$('#z-changes').innerHTML=waitMsg(2,'Segment changes');return}
   const cnt={};for(const g of vis()){const a=PREV.s[g.k];if(!a)continue;cnt[a+g.seg]=(cnt[a+g.seg]||0)+1}const mx=Math.max(1,...Object.entries(cnt).filter(([k])=>k[0]!==k[1]).map(e=>e[1]));
   const L={E:'Emerging',T:'Turnaround',L:'Established',F:'Fading',R:'Rangebound'};
   let h=`<div class="mx" style="grid-template-columns:minmax(0,1.2fr) repeat(5,minmax(0,1fr))"><div class="h">was ↓ / now →</div>${ORDER.map(k=>`<div class="h">${innerWidth<600?{E:'Emerg.',T:'Turn.',L:'Estab.',F:'Fading',R:'Range'}[k]:L[k]}</div>`).join('')}`;
@@ -653,11 +689,89 @@ function openDrill(k){dk=k;$('#dsel').value=k;drill();if(view!=='sector')locatio
 function convTables(){GT['t-conv']();const S=M.S.filter(s=>s.streak>0).sort((a,b)=>b.streak-a.streak||a.g.mr-b.g.mr);
   $('#convs').innerHTML='<thead><tr><th>Stock</th><th class="num">Weeks passing</th><th>Sector (MRank)</th><th>Master</th><th class="num">EPS</th><th class="num">Price str.</th><th>Demand</th></tr></thead><tbody>'+(S.length?S.map(s=>`<tr class="click" data-tk="${s.g.k}"><td>${sname(s)}</td><td class="num"><b>${s.streak}</b></td><td>${esc(clean(s.g.name))} <span class="note">(${s.g.mr})</span></td><td><span class="grade ${esc(s.ms)}">${esc(s.ms)}</span></td><td class="num ${shade(s.eps)}">${s.eps}</td><td class="num ${shade(s.rs)}">${s.rs}</td><td class="${bdShade(s.bd)}">${esc(s.bd)}</td></tr>`).join(''):'<tr><td colspan="7">No stock passes the rule this week.</td></tr>')+'</tbody>'}
 
+/* ---------- weekly: scorecard, shortlist changes, speed, trends ---------- */
+const pct=v=>v==null?'—':(v>0?'+':'')+v.toFixed(1)+'%';
+const med=a=>{const v=[...a].sort((x,y)=>x-y),n=v.length;return n?(n%2?v[n>>1]:(v[n/2-1]+v[n/2])/2):null};
+function computeSc(){if(!PS||!PREV)return null;const ret={};for(const s of M.S){const p=PS[s.sym];if(p&&p[5]&&s.px){const r=(s.px/p[5]-1)*100;if(Math.abs(r)<=40)ret[s.sym]=Math.round(r*100)/100}}
+  const pr=PREV.picks.filter(x=>x in ret).map(x=>[x,ret[x]]);if(!pr.length)return null;const mk=med(Object.values(ret)),vals=pr.map(x=>x[1]);
+  return {from:PREV.d,n:pr.length,pick_med:Math.round(med(vals)*100)/100,pick_mean:Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*100)/100,mkt_med:Math.round(mk*100)/100,beat:Math.round(100*vals.filter(r=>r>mk).length/vals.length),ret:Object.fromEntries(pr)}}
+const waitMsg=(need,what)=>`<div class="wait"><b>Fills in with more weeks.</b> ${what} needs ${need} weekly sheets; ${plural(HIST.length+1,'week is','weeks are')} loaded so far. Upload each new sheet to the repo's uploads folder.</div>`;
+function wkInsights(){const sc=CURSC;
+  if(sc){const b=sc.pick_med>sc.mkt_med;INS.scorecard=[`Last week's shortlist ${b?'beat':'lagged'} the market: ${pct(sc.pick_med)} vs ${pct(sc.mkt_med)}`,`Median weekly price change of the ${sc.n} stocks that passed the strong-stock rule on ${fmtDate(sc.from)}, against the median of all stocks. ${sc.beat}% of them did better than the typical stock.`];
+    STAT.scorecard=[[pct(sc.pick_med),'shortlist (median)'],[pct(sc.mkt_med),'all stocks (median)'],[sc.beat+'%','beat the market']]}
+  else{INS.scorecard=['The scorecard starts with your second week','Each week it checks how the previous week\'s shortlist moved against every other stock, and keeps a running record.'];STAT.scorecard=[['—','shortlist'],['—','all stocks'],['—','beat the market']]}
+  if(PREV&&PS){const now=new Set(M.S.filter(isPick).map(s=>s.sym)),was=new Set(PREV.picks);const nw=[...now].filter(x=>!was.has(x)),dr=[...was].filter(x=>!now.has(x)),up=upgrades();
+    INS.shortlist=[`${plural(nw.length,'stock','stocks')} joined the shortlist and ${dr.length} dropped off`,(nw.length?`New this week: ${list(nw.slice(0,4).map(x=>'<b>'+esc(x)+'</b>'))}. `:'')+`${plural(up.length,'more stock is','more stocks are')} showing rising grades in the top sectors, often an early sign.`];
+    STAT.shortlist=[[nw.length,'new on the shortlist'],[dr.length,'dropped off'],[up.length,'grades rising']]}
+  else{INS.shortlist=['Shortlist changes start with your second week','New entries, drop-outs and rising grades appear once there is a previous week to compare with.'];STAT.shortlist=[['—','new'],['—','dropped'],['—','grades rising']]}
+  const SP=speedRows();if(SP){const acc=SP.filter(r=>r.g.mr<=60).sort((a,b)=>b.a-a.a)[0],dec=SP.filter(r=>r.g.mr<=25).sort((a,b)=>a.a-b.a)[0],tu=SP.filter(r=>r.l<=0&&r.t>0).length,td=SP.filter(r=>r.l>=0&&r.t<0).length;
+    INS.speed=[acc&&dec?`${nm(acc.g)} is picking up speed fastest; ${nm(dec.g)} is the leader slowing most`:'Rank speed this week',`Speed compares this week's rank change with the week before. A leader that is still high but losing ranks faster each week can turn before its segment label changes. ${tu} groups turned up this week and ${td} turned down.`];
+    STAT.speed=[[tu,'turned up'],[td,'turned down'],[SP.filter(r=>r.l>0&&r.t>0).length,'kept climbing']]}
+  else{INS.speed=['Speed starts with your second week','It compares each sector\'s rank change this week with the week before.'];STAT.speed=[['—','turned up'],['—','turned down'],['—','kept climbing']]}
+  const BR=brRows();if(BR){const w=BR.filter(r=>r.d>0).length,n=BR.filter(r=>r.d<0).length;
+    INS.trends=[w||n?`Breadth is widening in ${w} of the top ${BR.length} sectors`+(n?` and narrowing in ${n}`:', and narrowing in none'):`Breadth is unchanged across the top ${BR.length} sectors`,`Week-by-week lines show whether today's leaders got here steadily or suddenly. Early warnings flag leaders whose rank and breadth both weakened two weeks running.`];
+    STAT.trends=[[HIST.length+1,'weeks loaded'],[w,'widening'],[n,'narrowing']]}
+  else{INS.trends=['Trends build up week by week','Rank lines, breadth changes and early warnings appear as you add weekly sheets.'];STAT.trends=[[HIST.length+1,'weeks loaded'],['—','widening'],['—','narrowing']]}}
+function upgrades(){if(!PS)return [];return M.S.filter(s=>s.g.mr<=44&&!s.g.thin&&PS[s.sym]).map(s=>{const p=PS[s.sym],w=[];
+    if(/^[AB]$/.test(s.ms)&&/^[CDE]$/.test(p[1]))w.push(`MasterScore ${p[1]} → ${s.ms}`);if(bdRank(s.bd)>=11&&bdRank(p[4])<11&&p[4])w.push(`Demand ${p[4]} → ${s.bd}`);return {s,w}}).filter(x=>x.w.length&&!isPick(x.s)).sort((a,b)=>((b.s.eps||0)+(b.s.rs||0))-((a.s.eps||0)+(a.s.rs||0)))}
+function speedRows(){if(!PREV||!Object.keys(PREV.W).length)return null;return vis().filter(g=>PREV.R[g.k]!=null&&PREV.W[g.k]!=null).map(g=>{const t=PREV.R[g.k]-g.R,l=PREV.W[g.k]-PREV.R[g.k];return {g,t,l,a:t-l}})}
+function brRows(){if(!PREV||!Object.keys(PREV.br).length)return null;return [...vis()].filter(g=>g.st.length>=5&&g.br!=null&&PREV.br[g.k]!=null).sort((a,b)=>a.mr-b.mr).slice(0,12).map(g=>({g,a:PREV.br[g.k],b:g.br,d:g.br-PREV.br[g.k]}))}
+function rScorecard(){const sc=CURSC;
+  if(!sc){$('#z-scbig').innerHTML=waitMsg(2,'The scorecard');$('#z-scst').innerHTML='';$('#h-scst').hidden=true;$('#z-schist').innerHTML='';return}
+  $('#h-scst').hidden=false;const mx=Math.max(Math.abs(sc.pick_med),Math.abs(sc.pick_mean),Math.abs(sc.mkt_med),1);
+  rBars($('#z-scbig'),[{n:'Shortlist, median',v:sc.pick_med,c:'var(--up)'},{n:'Shortlist, average',v:sc.pick_mean,c:'var(--up)'},{n:'All stocks, median',v:sc.mkt_med,c:'var(--rb)'}],mx,0,pct);
+  const by=Object.fromEntries(M.S.map(s=>[s.sym,s])),R=Object.entries(sc.ret).sort((a,b)=>b[1]-a[1]),m2=Math.max(...R.map(r=>Math.abs(r[1])),1);
+  rBars($('#z-scst'),R.map(([k,v])=>({n:k,v,k:by[k]?.g.k,tip:by[k]?tipS(by[k]):'',c:v>=sc.mkt_med?'var(--up)':'var(--dn)',mark:50+50*sc.mkt_med/m2})),m2,0,pct);
+  const H=[...HIST.map(h=>h.sc&&{...h.sc,to:h.d}).filter(Boolean),{...sc,to:M.date}].filter((x,i,a)=>a.findIndex(y=>y.to===x.to)===i),m3=Math.max(...H.map(h=>Math.abs(h.pick_med-h.mkt_med)),1);
+  rBars($('#z-schist'),H.map(h=>({n:fmtDate(h.to),v:h.pick_med-h.mkt_med,tip:esc(`Shortlist ${pct(h.pick_med)} vs market ${pct(h.mkt_med)} · ${h.beat}% beat`)})),m3,0,v=>(v>0?'+':'')+v.toFixed(1)+' pts');
+  if(H.length<3)$('#z-schist').insertAdjacentHTML('beforeend','<p class="note" style="margin-top:6px">Bars show the shortlist\'s lead (blue) or lag (orange) over the market each week. The record grows with every upload.</p>')}
+const item=(s,cls,why)=>`<div class="sitem ${cls}" data-sk="${s.g?s.g.k:''}"><b>${esc(s.sym)}</b> <span class="sec">${s.g?esc(clean(s.g.name))+' · MRank '+s.g.mr:''}</span><div class="why">${why.map(w=>`<span>${esc(w)}</span>`).join('')}</div></div>`;
+function rShortlist(){if(!PREV||!PS){['#z-new','#z-drop','#z-upg'].forEach(x=>$(x).innerHTML='');$('#z-new').innerHTML=waitMsg(2,'Shortlist changes');['#c-new','#c-drop','#c-up'].forEach(x=>$(x).textContent='');return}
+  const now=M.S.filter(isPick),was=new Set(PREV.picks),bySym=Object.fromEntries(M.S.map(s=>[s.sym,s]));
+  const nw=now.filter(s=>!was.has(s.sym)).map(s=>{const p=PS[s.sym],w=[];if(!(PREV.mr[s.g.k]<=25))w.push('Sector entered top 25');if(p){if(p[1]!==s.ms&&!/^[AB]$/.test(p[1]))w.push(`MasterScore ${p[1]||'—'} → ${s.ms}`);if((p[2]||0)<80)w.push(`EPS ${p[2]??'—'} → ${s.eps}`);if((p[3]||0)<80)w.push(`Price str. ${p[3]??'—'} → ${s.rs}`);if(bdRank(p[4])<10)w.push(`Demand ${p[4]||'—'} → ${s.bd}`)}else w.push('New listing in the sheet');return item(s,'',w.length?w:['Passes the rule'])});
+  const dr=[...was].filter(x=>!now.some(s=>s.sym===x)).map(x=>{const s=bySym[x];if(!s)return item({sym:x},'dn',['Not in this week\'s sheet']);const w=[];if(s.g.mr>25)w.push(`Sector fell to MRank ${s.g.mr}`);if(!/^[AB]$/.test(s.ms))w.push(`MasterScore now ${s.ms||'—'}`);if((s.eps||0)<80)w.push(`EPS now ${s.eps??'—'}`);if((s.rs||0)<80)w.push(`Price str. now ${s.rs??'—'}`);if(bdRank(s.bd)<10)w.push(`Demand now ${s.bd||'—'}`);return item(s,'dn',w.length?w:['No longer passes'])});
+  const up=upgrades();$('#c-new').textContent=nw.length;$('#c-drop').textContent=dr.length;$('#c-up').textContent=up.length;
+  $('#z-new').innerHTML=nw.join('')||'<div class="empty">No new names this week.</div>';$('#z-drop').innerHTML=dr.join('')||'<div class="empty">Nobody dropped off.</div>';
+  $('#z-upg').innerHTML=up.slice(0,15).map(x=>item(x.s,'ug',x.w)).join('')+(up.length>15?`<p class="note">+${up.length-15} more. Open a sector to see them all.</p>`:'')||'<div class="empty">No grade upgrades in the top sectors.</div>'}
+function speedChart(rows){return(svg,W,H)=>{const narrow=W<520,lim=Math.max(10,...rows.map(r=>Math.max(Math.abs(r.t),Math.abs(r.l))))*1.08,p={l:narrow?32:42,r:14,t:16,b:30},x=v=>p.l+(v+lim)/(2*lim)*(W-p.l-p.r),y=v=>p.t+(lim-v)/(2*lim)*(H-p.t-p.b);
+  const q=(x0,y0,x1,y1,c,t,ax,ay,anc)=>`<rect x="${x(x0)}" y="${y(y1)}" width="${x(x1)-x(x0)}" height="${y(y0)-y(y1)}" fill="${c}" opacity=".18"/><text x="${ax}" y="${ay}" font-size="11.5" font-weight="600" fill="var(--ink2)" text-anchor="${anc}">${t}</text>`;
+  let o=q(0,0,lim,lim,'var(--up)','Kept climbing',W-p.r-4,p.t+14,'end')+q(-lim,0,0,lim,'var(--est)','Turned up',p.l+4,p.t+14,'start')+q(0,-lim,lim,0,'var(--dn)','Turned down',W-p.r-4,H-p.b-6,'end')+q(-lim,-lim,0,0,'var(--rb)','Kept falling',p.l+4,H-p.b-6,'start');
+  o+=`<line x1="${x(0)}" x2="${x(0)}" y1="${p.t}" y2="${H-p.b}" stroke="var(--mute)"/><line x1="${p.l}" x2="${W-p.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--mute)"/>`;
+  const tk=Math.round(lim/2/5)*5||5;o+=[-tk*2,-tk,tk,tk*2].filter(v=>Math.abs(v)<lim).map(v=>`<text x="${x(v)}" y="${H-p.b+15}" font-size="11" text-anchor="middle" fill="var(--mute)">${v>0?'+':''}${v}</text><text x="${p.l-5}" y="${y(v)+4}" font-size="11" text-anchor="end" fill="var(--mute)">${v>0?'+':''}${v}</text>`).join('');
+  o+=`<text x="${W-p.r}" y="${H-3}" font-size="11.5" text-anchor="end" fill="var(--ink2)">week before →</text><text x="${p.l}" y="10" font-size="11.5" fill="var(--ink2)">↑ this week</text>`;
+  const col=g=>g.seg==='E'||g.seg==='T'?'var(--up)':g.seg==='L'?'var(--est)':g.seg==='F'?'var(--dn)':'var(--rb)';
+  o+=[...rows].sort((a,b)=>(a.g.seg==='R')-(b.g.seg==='R')).reverse().map(r=>`<g data-k="${r.g.k}" data-tip="${esc(`<b>${esc(clean(r.g.name))}</b><br>Week before: ${sgn(r.l)} ranks · this week: ${sgn(r.t)}<br>MRank ${r.g.mr}`)}" style="cursor:pointer"><circle cx="${x(r.l)}" cy="${y(r.t)}" r="12" fill="transparent"/><circle cx="${x(r.l)}" cy="${y(r.t)}" r="${r.g.mr<=25?5.5:3.5}" fill="${col(r.g)}" stroke="var(--bg)" stroke-width="1.5" ${r.g.seg==='R'?'opacity=".7"':''}/></g>`).join('');
+  const used=[];for(const r of rows.filter(r=>r.g.mr<=25&&!r.g.thin).sort((a,b)=>Math.abs(b.a)-Math.abs(a.a)).slice(0,narrow?3:5)){const cx=x(r.l),cy=y(r.t);if(used.some(u=>Math.abs(u-cy)<14))continue;used.push(cy);const t=short(r.g.name),anc=cx>W/2?'end':'start';o+=`<text x="${cx+(anc==='end'?-9:9)}" y="${cy+4}" font-size="11.5" font-weight="600" text-anchor="${anc}" fill="var(--ink)" paint-order="stroke" stroke="var(--bg)" stroke-width="3" pointer-events="none">${esc(t.length>22?t.slice(0,21)+'…':t)}</text>`}
+  svg.innerHTML=o}}
+function rSpeed(){const SP=speedRows();if(!SP){$('#z-speed').querySelector('svg').innerHTML='';delete CH['z-speed'];$('#z-acc').innerHTML=waitMsg(2,'Speed');$('#z-dec').innerHTML='';return}
+  chart('z-speed',speedChart(SP));const A=SP.filter(r=>r.g.mr<=60).sort((a,b)=>b.a-a.a).slice(0,8),D=SP.filter(r=>r.g.mr<=25).sort((a,b)=>a.a-b.a).slice(0,8),mx=Math.max(...A.map(r=>r.a),...D.map(r=>-r.a),1);
+  rBars($('#z-acc'),A.map(r=>({n:clean(r.g.name),v:r.a,k:r.g.k,tip:esc(`<b>${esc(clean(r.g.name))}</b><br>Week before ${sgn(r.l)} → this week ${sgn(r.t)} ranks`)})),mx,1,v=>sgn(Math.round(v)));
+  rBars($('#z-dec'),D.map(r=>({n:clean(r.g.name),v:r.a,c:'var(--dn)',k:r.g.k,tip:esc(`<b>${esc(clean(r.g.name))}</b><br>Week before ${sgn(r.l)} → this week ${sgn(r.t)} ranks`)})),mx,1,v=>sgn(Math.round(v)))}
+function trendLines(G,weeks){return(svg,W,H)=>{const narrow=W<520,N=M.N,pr=Math.min(narrow?120:200,W*.36),p={l:narrow?30:40,r:pr,t:24,b:14},n=weeks.length,x=i=>p.l+(n<2?0:i*(W-p.l-p.r)/(n-1)),
+  vals=G.flatMap(g=>weeks.map(w=>w.R[g.k]).filter(v=>v!=null)),lo=Math.max(1,Math.min(...vals)-5),hi=Math.min(N,Math.max(...vals)+5),y=v=>p.t+(v-lo)/(hi-lo||1)*(H-p.t-p.b);
+  let o=weeks.map((w,i)=>`<line x1="${x(i)}" x2="${x(i)}" y1="${p.t}" y2="${H-p.b}" stroke="var(--line)"/><text x="${x(i)}" y="14" font-size="11.5" font-weight="600" text-anchor="middle" fill="var(--ink2)">${(narrow?fmtDate(w.d).replace(/ \d{4}$/,''):fmtDate(w.d))}</text>`).join('');
+  const t5=[lo,Math.round((lo+hi)/2),hi];o+=t5.map(t=>`<text x="${p.l-8}" y="${y(t)+4}" font-size="11" text-anchor="end" fill="var(--mute)">${t}</text>`).join('');
+  const L=[];G.forEach((g,gi)=>{const pts=weeks.map((w,i)=>w.R[g.k]!=null?[x(i),y(w.R[g.k])]:null).filter(Boolean);if(!pts.length)return;const c=SEG[g.seg].c;
+    o+=`<g data-k="${g.k}" data-tip="${esc(`<b>${esc(clean(g.name))}</b><br>`+weeks.map(w=>fmtDate(w.d)+': rank '+(w.R[g.k]??'—')).join('<br>'))}" style="cursor:pointer"><polyline points="${pts.map(q=>q.join(',')).join(' ')}" fill="none" stroke="transparent" stroke-width="14"/><polyline points="${pts.map(q=>q.join(',')).join(' ')}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linejoin="round"/>${pts.map((q,i)=>`<circle cx="${q[0]}" cy="${q[1]}" r="${i===pts.length-1?4.5:3}" fill="${i===pts.length-1?c:'var(--bg)'}" stroke="${c}" stroke-width="2"/>`).join('')}</g>`;L.push({g,y:pts[pts.length-1][1]})});
+  L.sort((a,b)=>a.y-b.y);for(let i=1;i<L.length;i++)if(L[i].y-L[i-1].y<15)L[i].y=L[i-1].y+15;const ov=L.length?L[L.length-1].y-(H-p.b):0;if(ov>0)L.forEach(l=>l.y-=ov);const mx=Math.floor((pr-14)/6.4);
+  o+=L.map(l=>{const t=`${l.g.R} ${short(l.g.name)}`;return `<text x="${x(n-1)+10}" y="${l.y+4}" font-size="12" font-weight="600" fill="var(--ink)" pointer-events="none">${esc(t.length>mx?t.slice(0,mx-1)+'…':t)}</text>`}).join('');
+  svg.innerHTML=o}}
+function rTrends(){const weeks=[...HIST,{d:M.date,R:Object.fromEntries(M.G.map(g=>[g.k,g.R])),s:Object.fromEntries(M.G.map(g=>[g.k,g.seg])),br:Object.fromEntries(M.G.map(g=>[g.k,g.br]))}].slice(-12);
+  const top=[...vis()].filter(g=>!g.thin).sort((a,b)=>a.mr-b.mr).slice(0,8);chart('z-trank',trendLines(top,weeks));
+  const BR=brRows();if(BR)rBars($('#z-tbr'),BR.map(r=>({n:clean(r.g.name),v:r.b,k:r.g.k,c:r.d>0?'var(--est)':r.d<0?'var(--dn)':'var(--rb)',mark:r.a,tip:esc(`<b>${esc(clean(r.g.name))}</b><br>Breadth ${r.a}% → ${r.b}%`)})),100,1,v=>v+'%');else $('#z-tbr').innerHTML=waitMsg(2,'Breadth change');
+  if(BR)$('#z-tbr').insertAdjacentHTML('beforeend','<p class="note" style="margin-top:6px">Dashed line = last week. Green widened, orange narrowed, grey unchanged.</p>');
+  const fill=k=>SEG[k].hollow?`repeating-linear-gradient(135deg,${SEG[k].c} 0 4px,transparent 4px 8px);box-shadow:inset 0 0 0 2px ${SEG[k].c}`:SEG[k].c;
+  $('#z-mix').innerHTML=weeks.map(w=>{const c={};for(const k in w.s)c[w.s[k]]=(c[w.s[k]]||0)+1;const t=Object.values(c).reduce((a,b)=>a+b,0)||1;return `<div class="mixrow"><span>${fmtDate(w.d).replace(/ \d{4}$/,'')}</span><div class="compo">${ORDER.map(k=>`<i style="width:${100*(c[k]||0)/t}%;background:${fill(k)}" data-tip="${esc(`<b>${SEG[k].n}</b><br>${c[k]||0} groups`)}"></i>`).join('')}</div></div>`}).join('')+`<div class="legend" style="margin-top:8px">${ORDER.map(k=>`<span><i class="dot" style="${SEG[k].hollow?`border:2.5px solid ${SEG[k].c}`:`background:${SEG[k].c}`}"></i>${SEG[k].n}</span>`).join('')}</div>`;
+  if(weeks.length<3){$('#z-warn').innerHTML=waitMsg(3,'Early warnings');return}
+  const [a,b]=weeks.slice(-3),Wn=vis().filter(g=>g.mr<=25||(b.mr?.[g.k]??999)<=25).filter(g=>a.R[g.k]!=null&&b.R[g.k]!=null&&b.R[g.k]>a.R[g.k]&&g.R>b.R[g.k]&&a.br?.[g.k]!=null&&b.br?.[g.k]!=null&&b.br[g.k]<a.br[g.k]&&g.br<b.br[g.k]);
+  $('#z-warn').innerHTML=Wn.length?`<div class="sc">${Wn.map(g=>`<div class="sitem dn" data-sk="${g.k}"><b>${esc(clean(g.name))}</b> <span class="sec">MRank ${g.mr}</span><div class="why"><span>Rank ${a.R[g.k]} → ${b.R[g.k]} → ${g.R}</span><span>Breadth ${a.br[g.k]}% → ${b.br[g.k]}% → ${g.br}%</span></div></div>`).join('')}</div>`:'<div class="empty">No leader has weakened in both rank and breadth for two weeks running.</div>'}
+document.addEventListener('click',e=>{const t=e.target.closest('.sitem[data-sk]');if(t&&t.dataset.sk)openDrill(t.dataset.sk)});
+
 /* ---------- render ---------- */
-function renderAll(){insights();screen();
-  for(const k of ['top25','emerging','leaders','fading','turnarounds','conviction','rotation','movers','breadth','changes'])lead(k);
+function renderAll(){insights();CURSC=computeSc();wkInsights();screen();
+  for(const k of ['scorecard','shortlist','speed','trends','top25','emerging','leaders','fading','turnarounds','conviction','rotation','movers','breadth','changes'])lead(k);
   rTop25();chart('z-emerging',slope(by('E')));chart('z-turnarounds',slope(by('T')));dumb('leaders',by('L'),'var(--est)');dumb('fading',by('F').sort((a,b)=>b.n-a.n),'var(--dn)');
-  rChanges();rRotation();rMovers();rBreadth();rConv();Object.values(GT).forEach(f=>f());convTables();rSummary();drillOpts();drill();
+  rChanges();rScorecard();rShortlist();rSpeed();rTrends();rRotation();rMovers();rBreadth();rConv();Object.values(GT).forEach(f=>f());convTables();rSummary();drillOpts();drill();
   if(innerWidth>900)$$('details.more').forEach(d=>{if(!d.id)d.open=true})}
 function srcLine(){const d=fmtDate(M.date);$('#src').className='srcline'+(SRC==='repo'?' repo':'');$('#src').innerHTML=SRC==='repo'?`Published week of <b>${d}</b> · anyone with this link sees it`:SRC==='upload'?`Showing <b>your file</b> (${d}) on this device only · use Share → Download report to send it`:SRC==='snapshot'?`Report for the week of <b>${d}</b>`:`Week of <b>${d}</b>`}
 function load(raw,prev,src){M=build(raw);window.__raw=raw;SRC=src;PREV=prev!==undefined?prev:prevFor(raw.date);if(PREV)PREV=toPrev(PREV);computeHist();srcLine();renderAll();$('#msg').hidden=true;go(location.hash.slice(1)||view)}
@@ -687,16 +801,17 @@ async function share(text,title){try{if(navigator.share&&matchMedia('(pointer:co
 const head=()=>`📊 Sector momentum · week of ${fmtDate(M.date)}`;
 const tail=t=>(SRC==='upload'||!SITE?'':`\n\n${link(t)}`);
 function stocksText(){const rows=[...document.querySelectorAll('#stbl tbody tr[data-tk]')].slice(0,15).map(r=>`• ${r.cells[0].querySelector('b')?.textContent} (${r.cells[1].textContent.replace(/\s*\(\d+\)/,'')})`);return `${head()}\n\n${plain(INS.stocks[0])}:\n${rows.join('\n')}${tail('stocks')}\n\nA starting list for research, not a buy list.`}
+function shortText(){const g=id=>[...document.querySelectorAll(id+' .sitem b')].slice(0,10).map(b=>b.textContent);const n=g('#z-new'),d=g('#z-drop');return `${head()}\n\n${plain(INS.shortlist[0])}.\n`+(n.length?`\n🟦 New: ${n.join(', ')}`:'')+(d.length?`\n🟧 Dropped: ${d.join(', ')}`:'')+`${tail('shortlist')}\n\nCandidates for research, not recommendations.`}
 function insightText(id){const v=INS[id],st=STAT[id];return `${head()}\n\n${plain(v[0])}.\n`+(st?st.map(x=>`▸ ${x[0]} ${x[1]}`).join('\n')+'\n':'')+`\n${plain(v[1])}${tail(id)}`}
-function summaryText(){const C=[['changes','Since last week'],['top25','Top 25'],['emerging','Emerging'],['leaders','Leaders'],['fading','Fading'],['turnarounds','Turnarounds'],['rotation','Rotation'],['stocks','Stock picks'],['conviction','Conviction']].filter(([k])=>INS[k]&&(k!=='changes'||PREV));
+function summaryText(){const C=[['scorecard','Scorecard'],['shortlist','Shortlist'],['changes','Segments'],['top25','Top 25'],['emerging','Emerging'],['leaders','Leaders'],['fading','Fading'],['turnarounds','Turnarounds'],['rotation','Rotation'],['stocks','Stock picks'],['conviction','Conviction']].filter(([k])=>INS[k]&&(PREV||!['scorecard','shortlist','changes'].includes(k)));
   return `${head()}\n${$('#title').textContent}\n\n`+C.map(([k,l])=>`• ${l}: ${plain(INS[k][0])}`).join('\n')+(SRC==='upload'||!SITE?'':`\n\nFull dashboard: ${SITE}`)+'\n\nPrice-momentum screen for education, not investment advice.'}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-share]');if(!b||!M)return;const id=b.dataset.share;share(id==='stocks'?stocksText():insightText(id),head())});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-share]');if(!b||!M)return;const id=b.dataset.share;share(id==='stocks'?stocksText():id==='shortlist'?shortText():insightText(id),head())});
 const sheet=$('#sheet'),scrim=$('#scrim');const openSheet=o=>{sheet.classList.toggle('on',o);scrim.classList.toggle('on',o)};
 $('#shareBtn').addEventListener('click',()=>openSheet(true));scrim.addEventListener('click',()=>openSheet(false));$('#file').addEventListener('click',()=>openSheet(false));
 $('#shSum').addEventListener('click',()=>{openSheet(false);M&&share(summaryText(),head())});
 $('#shPdf').addEventListener('click',()=>{openSheet(false);if(!M)return;document.body.classList.add('printall');const was=view,op=$$('details.more').map(d=>d.open);$$('details.more').forEach(d=>d.open=true);go('summary');
   setTimeout(()=>{window.print();document.body.classList.remove('printall');$$('details.more').forEach((d,i)=>d.open=op[i]);go(was)},400)});
-$('#shRep').addEventListener('click',()=>{openSheet(false);if(!M)return;const json=JSON.stringify({cur:window.__raw,prev:PREV,hist:HIST,site:SITE}).replace(/</g,'\\u003c');
+$('#shRep').addEventListener('click',()=>{openSheet(false);if(!M)return;const json=JSON.stringify({cur:window.__raw,prev:PREV,hist:HIST,site:SITE,ps:PS}).replace(/</g,'\\u003c');
   const html='<!DOCTYPE html>\n'+TEMPLATE.replace('</head>',`<script id="embedded" type="application/json">${json}<\/script></head>`);
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=`Sector-Momentum-${M.date||'report'}.html`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast('Report downloaded. Send the file; it opens in any browser.')});
 let deferred=null;const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
@@ -708,17 +823,19 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
 /* ---------- loading ---------- */
 function readFile(f){if(!f)return;if(typeof XLSX==='undefined'){showErr('The spreadsheet reader did not load. Check your connection and try again.');return}
   $('#asof').textContent='Reading…';const r=new FileReader();
-  r.onload=()=>{try{load(parseWorkbook(XLSX.read(new Uint8Array(r.result),{type:'array'}),f.name),undefined,'upload');$('#wk').value='';toast('Loaded '+f.name)}catch(err){showErr(err.message||String(err))}};r.readAsArrayBuffer(f)}
+  r.onload=async()=>{try{const raw=parseWorkbook(XLSX.read(new Uint8Array(r.result),{type:'array'}),f.name);const pw=IDX?IDX.filter(w=>w.date<raw.date).pop():null;PS=null;if(pw){try{PS=compactPS(await getWeek(pw.date))}catch(e){}}else{try{const lp=JSON.parse(localStorage.getItem('sml-ps')||'null');if(lp&&lp.d<raw.date)PS=lp.ps}catch(e){}}
+    load(raw,undefined,'upload');try{localStorage.setItem('sml-ps',JSON.stringify({d:raw.date,ps:compactPS(raw)}))}catch(e){}$('#wk').value='';toast('Loaded '+f.name)}catch(err){showErr(err.message||String(err))}};r.readAsArrayBuffer(f)}
 function showErr(t){const m=$('#msg');m.hidden=false;m.textContent='Could not read that file: '+t}
 $('#file').addEventListener('change',e=>{readFile(e.target.files[0]);e.target.value=''});
 ['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{if(![...(e.dataTransfer?.types||[])].includes('Files'))return;e.preventDefault();document.body.classList.add('drop-on')}));
 ['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();if(ev==='drop'||!e.relatedTarget)document.body.classList.remove('drop-on')}));
 document.addEventListener('drop',e=>{const f=e.dataTransfer?.files?.[0];if(f)readFile(f)});
 function weekSel(){const w=$('#wk');if(!IDX||!IDX.length){w.hidden=true;return}w.hidden=false;w.innerHTML=[...IDX].reverse().map(x=>`<option value="${x.date}">${fmtDate(x.date)}</option>`).join('')}
-async function loadWeek(d){const r=await fetch(`data/weeks/${d}.json`,{cache:'no-cache'});if(!r.ok)throw new Error('missing week');const raw=await r.json();const i=IDX.findIndex(x=>x.date===d);HIST=IDX.slice(0,Math.max(i,0)).map(toPrev);load(raw,HIST.length?HIST[HIST.length-1]:null,'repo');$('#wk').value=d}
+const getWeek=d=>fetch(`data/weeks/${d}.json`,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('missing week');return r.json()});
+async function loadWeek(d){const i=IDX.findIndex(x=>x.date===d);const [raw,pr]=await Promise.all([getWeek(d),i>0?getWeek(IDX[i-1].date).catch(()=>null):null]);PS=pr?compactPS(pr):null;HIST=IDX.slice(0,Math.max(i,0)).map(toPrev);load(raw,HIST.length?HIST[HIST.length-1]:null,'repo');$('#wk').value=d}
 $('#wk').addEventListener('change',e=>loadWeek(e.target.value).catch(()=>showErr('Could not load that week.')));
 (async()=>{const emb=document.getElementById('embedded');
-  if(emb){try{const d=JSON.parse(emb.textContent);SITE=d.site||'';HIST=(d.hist||[]).map(toPrev);load(d.cur,d.prev||null,'snapshot');return}catch(e){console.error(e);showErr('This report could not be opened.')}}
+  if(emb){try{const d=JSON.parse(emb.textContent);SITE=d.site||'';HIST=(d.hist||[]).map(toPrev);PS=d.ps||null;load(d.cur,d.prev||null,'snapshot');return}catch(e){console.error(e);showErr('This report could not be opened.')}}
   try{const r=await fetch('data/index.json',{cache:'no-cache'});if(!r.ok)throw 0;IDX=await r.json();if(!IDX.length)throw 0;SITE=location.origin+location.pathname;weekSel();await loadWeek(IDX[IDX.length-1].date);return}catch(e){IDX=null}
   try{const r=await fetch('sample.json');if(!r.ok)throw 0;load(await r.json(),undefined,'sample');return}catch(e){}
   $('#asof').textContent='No data yet';$('#title').textContent='Open your weekly Ranked Sector List';$('#src').textContent='No published week yet. Tap the upload icon to open a sheet.';nav()})();

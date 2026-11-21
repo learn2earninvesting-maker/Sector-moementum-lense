@@ -6,6 +6,16 @@ A weekly dashboard for the NovaWealth / Markets Decoded **Weekly Ranked Sector L
 
 The tabs follow the guide's weekly routine: **Top 25** (new names by MomentumRank) → **Emerging / Established / Fading / Turnarounds** (rank journeys) → **Stock picks** (MasterScore A/B, EPS rank 80+, price strength 80+, buyer demand B+ or better, inside the top 25 sectors, plus a separate "price-led" list for high price strength with weak earnings) → **Conviction** (sectors and stocks that keep showing up week after week). Stock cells use the guide's colours: green for 80+ or A grades, amber for C, red for D/E or under 50.
 
+## Week vs week (the Weekly section)
+
+Each new sheet is compared with the previous one:
+
+- **Scorecard:** how last week's shortlist moved against every stock, plus a running record.
+- **Shortlist changes:** new names, drop-outs (with the reason) and stocks with rising grades.
+- **Speed:** sectors whose climb is speeding up or slowing down.
+- **Trends:** week-by-week rank lines, breadth changes, segment mix and early warnings (from 3 weeks).
+- **Segment changes:** which groups moved between segments.
+
 ## Each week (about 1 minute, works from a phone browser)
 
 1. Open this repo on github.com and go to the **uploads** folder.
