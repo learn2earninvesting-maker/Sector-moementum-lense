@@ -174,6 +174,7 @@ tr.top10 td{background:var(--gold)}
 .grade{font:700 13px "Space Grotesk",Inter,sans-serif;display:inline-block;min-width:24px;text-align:center;border-radius:6px;padding:1px 4px;background:var(--soft)}
 .grade.A,.grade.B{background:var(--mint);color:#0b0b0b}.grade.C{background:var(--amb)}.grade.D,.grade.E{background:var(--lo)}
 .hi{background:var(--hi)}.lo{background:var(--lo)}
+.tv{color:inherit;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--up) 60%,transparent);text-decoration-thickness:2px;text-underline-offset:3px;display:inline-flex;align-items:center;gap:3px;padding:2px 0}.tv svg{width:12px;height:12px;color:var(--up)}.tv:hover{color:var(--up)}
 .tag{font-size:11px;font-weight:600;padding:1px 6px;border-radius:99px;margin-left:6px;white-space:nowrap;vertical-align:1px}
 .tag.ok{background:var(--mint);color:#0b0b0b}.tag.warn{background:var(--amb);color:var(--ink)}.tag.new{background:var(--ink);color:var(--bg)}
 .filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:end;margin:14px 0}
@@ -244,6 +245,7 @@ tr.top10 td{background:var(--gold)}
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15l2.5 2.5L16 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-sec" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
@@ -549,16 +551,17 @@ function go(v){if(!TABS[v])v='summary';view=v;lastIn[groupOf(v)[0]]=v;
 addEventListener('hashchange',()=>go(location.hash.slice(1)));
 $('#gnav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const g=GROUPS.find(x=>x[0]===b.dataset.g);const t=lastIn[g[0]]&&tabsIn(g).includes(lastIn[g[0]])?lastIn[g[0]]:tabsIn(g)[0];location.hash=t;if(t===view)go(t)});
 
+document.addEventListener('click',e=>{if(e.target.closest('a.tv'))e.stopPropagation()},true);
 /* ---------- tooltip ---------- */
 const tip=$('#tip');let ptype='mouse';
 addEventListener('pointerdown',e=>{ptype=e.pointerType||'mouse'},true);
-function showTip(html,x,y,k){tip.innerHTML=html+(ptype!=='mouse'&&k?`<br><button data-open="${k}">Open sector →</button>`:'');tip.classList.toggle('touch',ptype!=='mouse');tip.classList.add('on');
+function showTip(html,x,y,k,sym){tip.innerHTML=html+(ptype!=='mouse'&&k?`<br><button data-open="${k}">Open sector →</button>`+(sym?` <a class="tv" style="color:var(--bg);margin-left:8px" href="${tvUrl(sym)}" target="_blank" rel="noopener">TradingView</a>`:''):'');tip.classList.toggle('touch',ptype!=='mouse');tip.classList.add('on');
   const w=tip.offsetWidth,h=tip.offsetHeight;tip.style.left=Math.max(8,Math.min(innerWidth-w-8,x+14))+'px';tip.style.top=Math.max(8,(y+h+20>innerHeight?y-h-14:y+14))+'px'}
 function hideTip(){tip.classList.remove('on','touch')}
 document.addEventListener('pointermove',e=>{if(ptype!=='mouse')return;const t=e.target.closest('[data-tip]');if(t)showTip(t.dataset.tip,e.clientX,e.clientY);else hideTip()});
 tip.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b){hideTip();openDrill(b.dataset.open)}});
 document.addEventListener('click',e=>{if(e.target.closest('#tip'))return;const t=e.target.closest('[data-k]');
-  if(t&&t.closest('svg')){if(ptype==='mouse')openDrill(t.dataset.k);else showTip(t.dataset.tip||'',e.clientX,e.clientY,t.dataset.k);return}
+  if(t&&t.closest('svg')){if(ptype==='mouse')openDrill(t.dataset.k);else showTip(t.dataset.tip||'',e.clientX,e.clientY,t.dataset.k,t.dataset.sym);return}
   if(t&&(t.classList.contains('row')||t.classList.contains('db'))){openDrill(t.dataset.k);return}
   if(!t)hideTip()});
 addEventListener('scroll',()=>{if(ptype!=='mouse')hideTip()},{passive:true});
@@ -600,7 +603,7 @@ function scatter(S,pass,opt={}){return(svg,W,H)=>{const narrow=W<520,p={l:narrow
   o+=[0,50,80,99].map(t=>`<line x1="${x(t)}" x2="${x(t)}" y1="${p.t}" y2="${H-p.b}" stroke="var(--line)"/><line x1="${p.l}" x2="${W-p.r}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${x(t)}" y="${H-p.b+15}" font-size="11" text-anchor="middle" fill="var(--mute)">${t}</text><text x="${p.l-6}" y="${y(t)+4}" font-size="11" text-anchor="end" fill="var(--mute)">${t}</text>`).join('');
   o+=`<text x="${W-p.r}" y="${H-4}" font-size="12" text-anchor="end" fill="var(--ink2)">EPS rank →</text><text x="${p.l}" y="11" font-size="12" fill="var(--ink2)">↑ Price strength</text>`;
   const P=new Set(pass),rest=S.filter(s=>!P.has(s)&&s.eps!=null&&s.rs!=null),sp=rest.filter(s=>s.spec),ot=rest.filter(s=>!s.spec);
-  const dot=(s,c,r)=>`<g data-k="${s.g.k}" data-tip="${tipS(s)}" style="cursor:pointer"><circle cx="${x(s.eps)}" cy="${y(s.rs)}" r="${r+5}" fill="transparent"/><circle cx="${x(s.eps)}" cy="${y(s.rs)}" r="${r}" fill="${c}" stroke="var(--bg)" stroke-width="1.5"/></g>`;
+  const dot=(s,c,r)=>`<g data-k="${s.g.k}" data-sym="${esc(s.sym)}" data-tip="${tipS(s)}" style="cursor:pointer"><circle cx="${x(s.eps)}" cy="${y(s.rs)}" r="${r+5}" fill="transparent"/><circle cx="${x(s.eps)}" cy="${y(s.rs)}" r="${r}" fill="${c}" stroke="var(--bg)" stroke-width="1.5"/></g>`;
   o+=ot.map(s=>dot(s,'var(--rb)',3)).join('')+sp.map(s=>dot(s,'var(--dn)',4)).join('')+pass.filter(s=>s.eps!=null&&s.rs!=null).map(s=>dot(s,'var(--up)',narrow?5:6)).join('');
   if(opt.label!==false){const L=[...pass].sort((a,b)=>(b.cap||0)-(a.cap||0)).slice(0,narrow?3:5);const used=[];for(const s of L){const cx=x(s.eps),cy=y(s.rs);if(used.some(u=>Math.abs(u-cy)<14))continue;used.push(cy);o+=`<text x="${cx-9}" y="${cy+4}" font-size="11.5" font-weight="600" text-anchor="end" fill="var(--ink)" paint-order="stroke" stroke="var(--bg)" stroke-width="3" pointer-events="none">${esc(s.sym)}</text>`}}
   svg.innerHTML=o}}
@@ -668,7 +671,9 @@ $$('table[id^="t-"]').forEach(t=>t.addEventListener('click',e=>{const th=e.targe
   const tr=e.target.closest('tr[data-tk]');if(tr)openDrill(tr.dataset.tk)}));
 const shade=v=>v==null?'':v>=80?'hi':v<50?'lo':'';
 const bdShade=b=>bdRank(b)>=11?'hi':bdRank(b)>0&&bdRank(b)<=4?'lo':'';
-const sname=s=>`<b>${esc(s.sym)}</b>${s.strong?'<span class="tag ok">passes rule</span>':''}${s.spec?'<span class="tag warn">price-led</span>':''}<br><span class="note">${esc(s.name)}</span>`;
+const tvUrl=sym=>'https://in.tradingview.com/chart/?symbol='+encodeURIComponent((/^\d+$/.test(sym)?'BSE:':'NSE:')+sym);
+const tvA=sym=>`<a class="tv" href="${tvUrl(sym)}" target="_blank" rel="noopener" title="Open ${esc(sym)} on TradingView">${esc(sym)}<svg aria-hidden="true"><use href="#i-ext"/></svg></a>`;
+const sname=s=>`<b>${tvA(s.sym)}</b>${s.strong?'<span class="tag ok">passes rule</span>':''}${s.spec?'<span class="tag warn">price-led</span>':''}<br><span class="note">${esc(s.name)}</span>`;
 function stockHead(cols,st){return `<thead><tr>${cols.map(([k,l,n])=>`<th data-k="${k}" class="${n?'num':''}">${l}${st&&st.k===k?(st.d>0?' ↑':' ↓'):''}</th>`).join('')}</tr></thead>`}
 function stockCells(s){return `<td><span class="grade ${esc(s.ms)}">${esc(s.ms||'—')}</span></td><td class="num ${shade(s.eps)}">${s.eps??'—'}</td><td class="num ${shade(s.rs)}">${s.rs??'—'}</td><td class="${bdShade(s.bd)}">${esc(s.bd||'—')}</td><td class="num">${fmtCr(s.cap)}</td><td class="num">${s.px==null?'—':s.px.toLocaleString('en-IN')}</td><td class="num ${s.chg>0?'pos':s.chg<0?'neg':''}">${s.chg==null?'—':s.chg.toFixed(2)}</td>`}
 const SCOLS=[['sym','Stock'],['sec','Sector (MRank)'],['ms','Master'],['eps','EPS',1],['rs','Price str.',1],['bd','Demand'],['cap','Mkt cap',1],['px','Price',1],['chg','Chg %',1]];
@@ -735,7 +740,7 @@ function rScorecard(){const sc=CURSC;
   const H=[...HIST.map(h=>h.sc&&{...h.sc,to:h.d}).filter(Boolean),{...sc,to:M.date}].filter((x,i,a)=>a.findIndex(y=>y.to===x.to)===i),m3=Math.max(...H.map(h=>Math.abs(h.pick_med-h.mkt_med)),1);
   rBars($('#z-schist'),H.map(h=>({n:fmtDate(h.to),v:h.pick_med-h.mkt_med,tip:esc(`Shortlist ${pct(h.pick_med)} vs market ${pct(h.mkt_med)} · ${h.beat}% beat`)})),m3,0,v=>(v>0?'+':'')+v.toFixed(1)+' pts');
   if(H.length<3)$('#z-schist').insertAdjacentHTML('beforeend','<p class="note" style="margin-top:6px">Bars show the shortlist\'s lead (blue) or lag (orange) over the market each week. The record grows with every upload.</p>')}
-const item=(s,cls,why)=>`<div class="sitem ${cls}" data-sk="${s.g?s.g.k:''}"><b>${esc(s.sym)}</b> <span class="sec">${s.g?esc(clean(s.g.name))+' · MRank '+s.g.mr:''}</span><div class="why">${why.map(w=>`<span>${esc(w)}</span>`).join('')}</div></div>`;
+const item=(s,cls,why)=>`<div class="sitem ${cls}" data-sk="${s.g?s.g.k:''}"><b>${tvA(s.sym)}</b> <span class="sec">${s.g?esc(clean(s.g.name))+' · MRank '+s.g.mr:''}</span><div class="why">${why.map(w=>`<span>${esc(w)}</span>`).join('')}</div></div>`;
 function rShortlist(){if(!PREV||!PS){['#z-new','#z-drop','#z-upg'].forEach(x=>$(x).innerHTML='');$('#z-new').innerHTML=waitMsg(2,'Shortlist changes');['#c-new','#c-drop','#c-up'].forEach(x=>$(x).textContent='');return}
   const now=M.S.filter(isPick),was=new Set(PREV.picks),bySym=Object.fromEntries(M.S.map(s=>[s.sym,s]));
   const nw=now.filter(s=>!was.has(s.sym)).map(s=>{const p=PS[s.sym],w=[];if(!(PREV.mr[s.g.k]<=25))w.push('Sector entered top 25');if(p){if(p[1]!==s.ms&&!/^[AB]$/.test(p[1]))w.push(`MasterScore ${p[1]||'—'} → ${s.ms}`);if((p[2]||0)<80)w.push(`EPS ${p[2]??'—'} → ${s.eps}`);if((p[3]||0)<80)w.push(`Price str. ${p[3]??'—'} → ${s.rs}`);if(bdRank(p[4])<10)w.push(`Demand ${p[4]||'—'} → ${s.bd}`)}else w.push('New listing in the sheet');return item(s,'',w.length?w:['Passes the rule'])});
@@ -787,7 +792,7 @@ function rStrong25(){const {A,P}=strong25(),weak=P.filter(s=>s.g.mr>44).length,s
     `${s25m==='str'?`Picked by score from all ${A.length} stocks that pass the strong-stock rule in any sector`:`The ${P.length} largest of all ${A.length} stocks that pass the strong-stock rule`}, listed from largest to smallest market cap. The sheet has no trading-volume or free-float data, so market cap stands in for liquidity: bigger companies are usually easier to buy and sell. Check traded volume before acting on small names.`+(weak?` ${weak} sit in weak sectors; the guide prefers strong stocks inside strong sectors.`:'')]:['No stock passes the strong-stock rule this week',''];
   STAT.strong25=[[A.length,'pass the rule, any sector'],[caps.length?fmtCr(med(caps)):'—','median market cap'],[secs,'sectors']];lead('strong25');
   const lg=v=>Math.log10(Math.max(v||1,1)),lo=Math.min(...caps.map(lg),2),hi=Math.max(...caps.map(lg),3);
-  $('#z-s25').innerHTML=P.map((s,i)=>`<div class="row s25" data-k="${s.g.k}" data-tip="${tipS(s)}"><span class="rk" style="font:700 15px 'Space Grotesk',Inter,sans-serif;color:var(--ink2)">${i+1}</span><span class="nm"><b>${esc(s.sym)}</b>${s.g.mr>44?'<span class="tag warn">weak sector</span>':''}<small>${esc(clean(s.g.name))} · MRank ${s.g.mr}</small><span class="chips4"><i>${esc(s.ms)}</i><i>EPS ${s.eps}</i><i>PS ${s.rs}</i><i>${esc(s.bd)}</i></span></span><div class="tr"><i style="left:0;width:${8+92*(lg(s.cap)-lo)/(hi-lo||1)}%;background:var(--up);animation-delay:${i*25}ms"></i></div><span class="v">${fmtCr(s.cap)}</span></div>`).join('')||'<div class="empty">No stock passes the rule this week.</div>';
+  $('#z-s25').innerHTML=P.map((s,i)=>`<div class="row s25" data-k="${s.g.k}" data-tip="${tipS(s)}"><span class="rk" style="font:700 15px 'Space Grotesk',Inter,sans-serif;color:var(--ink2)">${i+1}</span><span class="nm"><b>${tvA(s.sym)}</b>${s.g.mr>44?'<span class="tag warn">weak sector</span>':''}<small>${esc(clean(s.g.name))} · MRank ${s.g.mr}</small><span class="chips4"><i>${esc(s.ms)}</i><i>EPS ${s.eps}</i><i>PS ${s.rs}</i><i>${esc(s.bd)}</i></span></span><div class="tr"><i style="left:0;width:${8+92*(lg(s.cap)-lo)/(hi-lo||1)}%;background:var(--up);animation-delay:${i*25}ms"></i></div><span class="v">${fmtCr(s.cap)}</span></div>`).join('')||'<div class="empty">No stock passes the rule this week.</div>';
   $('#t-s25').innerHTML=stockHead([['n','#'],['sec','Sector (MRank)'],['ms','Master'],['eps','EPS',1],['rs','Price str.',1],['bd','Demand'],['cap','Mkt cap',1],['px','Price',1],['chg','Chg %',1]])+'<tbody>'+P.map((s,i)=>`<tr class="click" data-tk="${s.g.k}"><td>${i+1}. ${sname(s)}</td><td>${esc(clean(s.g.name))} <span class="note">(${s.g.mr})</span></td>${stockCells(s)}</tr>`).join('')+'</tbody>'}
 $('#s25m').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;s25m=b.dataset.k;[...$('#s25m').children].forEach(x=>x.setAttribute('aria-pressed',x===b));rStrong25()});
 $('#t-s25').addEventListener('click',e=>{const tr=e.target.closest('tr[data-tk]');if(tr)openDrill(tr.dataset.tk)});
