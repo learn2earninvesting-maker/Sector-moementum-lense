@@ -106,6 +106,10 @@ select,input[type=search],input[type=number]{font:16px Inter,sans-serif;min-heig
 .sitem.dn{border-left-color:var(--dn)}.sitem.ug{border-left-color:var(--est)}
 .sitem b{font-family:"Space Grotesk",Inter,sans-serif;font-size:16px}.sitem .sec{font-size:12.5px;color:var(--ink2)}
 .why{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.why span{font-size:11.5px;font-weight:600;border-radius:99px;padding:2px 8px;background:var(--bg);border:1px solid var(--line)}
+.s25 .nm{white-space:normal;line-height:1.25}.s25 .nm b{font-family:"Space Grotesk",Inter,sans-serif;font-size:15px}.s25 .nm small{display:block;color:var(--ink2);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row.s25{grid-template-columns:1.8em minmax(0,13em) minmax(0,1fr) 5.6em;min-height:54px;align-items:center}
+.chips4{display:flex;gap:3px;margin-top:3px}.chips4 i{font:600 10.5px Inter,sans-serif;font-style:normal;padding:1px 5px;border-radius:5px;background:var(--hi);color:var(--ink)}
+@media(max-width:600px){.row.s25{grid-template-columns:1.6em minmax(0,1fr) 5.4em;grid-template-areas:'rk nm nm' 'rk tr v';row-gap:4px;padding:8px 4px}.s25 .rk{grid-area:rk;align-self:start}.s25 .nm{grid-area:nm}.s25 .tr{grid-area:tr}.s25 .v{grid-area:v}.stat b{font-size:22px}}
 .mixrow{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:10px;align-items:center;min-height:34px;font-size:13px}
 .mixrow .compo{margin:0;height:22px}
 .wait{padding:18px;border-radius:16px;border:1.5px dashed var(--line);color:var(--ink2);font-size:15px;margin:10px 0}
@@ -340,6 +344,12 @@ tr.top10 td{background:var(--gold)}
   <details class="more" open><summary id="sumS">The shortlist</summary><div class="tbl"><table class="stk ws" id="stbl"></table></div></details>
   <details class="more"><summary id="sumP">Running on price, not earnings</summary><p class="def note" id="specNote"></p><div class="tbl"><table class="stk ws" id="spectbl"></table></div></details>
 </div></section>
+<section class="view pall band" id="v-strong25" hidden><div class="wrap"><div class="lead" id="i-strong25"></div>
+  <div class="ctl"><span style="font-size:14px;color:var(--ink2)">Choose the 25 by</span><div class="seg" id="s25m"><button data-k="str" aria-pressed="true">Strongest scores</button><button data-k="cap">Largest among strong</button></div></div>
+  <div class="rows viz" id="z-s25"></div>
+  <div class="cap">Bar = market cap on a log scale (each step is 10× bigger), used as the liquidity guide. Chips show MasterScore, EPS rank, price strength and buyer demand. "Weak sector" = its sector is outside the top 44 by MomentumRank.</div>
+  <div class="after" id="j-strong25"></div>
+  <details class="more"><summary>Strong 25 as a table</summary><div class="tbl"><table class="stk ws" id="t-s25"></table></div></details></div></section>
 <section class="view pall band" id="v-conviction" hidden><div class="wrap"><div class="lead" id="i-conviction"></div><div class="weeks" id="weeks"></div>
   <div class="split"><div><h3>Sectors holding the top 25</h3><div class="rows" id="z-conv"></div></div><div><h3>Stocks repeatedly passing the rule</h3><div class="rows" id="z-convs"></div></div></div><div class="after" id="j-conviction"></div>
   <details class="more"><summary>Conviction as tables</summary><div class="tbl"><table class="stack" id="t-conv"></table></div><div class="tbl" style="margin-top:16px"><table class="stack" id="convs"></table></div></details></div></section>
@@ -406,8 +416,8 @@ const TEMPLATE=(()=>{const c=document.documentElement.cloneNode(true);c.querySel
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const SEG={E:{n:'Emerging Leader',c:'var(--up)'},T:{n:'Turnaround Candidate',c:'var(--up)',hollow:1},L:{n:'Established Leader',c:'var(--est)'},F:{n:'Fading Sector',c:'var(--dn)'},R:{n:'Rangebound',c:'var(--rb)'}};
 const ORDER=['E','T','L','F','R'];
-const GROUPS=[['home','Home','i-home',['summary']],['weekly','Weekly','i-cal',['changes','scorecard','shortlist','speed','trends']],['sectors','Sectors','i-sec',['top25','emerging','leaders','fading','turnarounds']],['stocks','Stocks','i-stk',['stocks','conviction','sector']],['flows','Flows','i-flow',['rotation','movers','breadth']],['more','More','i-more',['all','method']]];
-const TABS={summary:'Summary',changes:'Segment changes',scorecard:'Scorecard',shortlist:'Shortlist changes',speed:'Speed',trends:'Trends',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',all:'All sectors',method:'Method'};
+const GROUPS=[['home','Home','i-home',['summary']],['weekly','Weekly','i-cal',['changes','scorecard','shortlist','speed','trends']],['sectors','Sectors','i-sec',['top25','emerging','leaders','fading','turnarounds']],['stocks','Stocks','i-stk',['stocks','strong25','conviction','sector']],['flows','Flows','i-flow',['rotation','movers','breadth']],['more','More','i-more',['all','method']]];
+const TABS={summary:'Summary',changes:'Segment changes',scorecard:'Scorecard',shortlist:'Shortlist changes',speed:'Speed',trends:'Trends',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',strong25:'Strong 25',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',all:'All sectors',method:'Method'};
 let M=null,PREV=null,HIST=[],IDX=null,SRC='',SITE='',cmp='M3',mv='W',show=new Set(ORDER),view='summary',lastIn={};
 const sorts={};let sortT={k:'cmp',d:-1},sortD={k:'ms',d:1},dk=null;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -608,7 +618,7 @@ function rSummary(){const G=M.G,cnt=k=>G.filter(g=>g.seg===k).length,R=themeRows
   const fill=k=>SEG[k].hollow?`repeating-linear-gradient(135deg,${SEG[k].c} 0 4px,transparent 4px 8px);box-shadow:inset 0 0 0 2px ${SEG[k].c}`:SEG[k].c;
   $('#compo').innerHTML=ORDER.map(k=>`<i style="width:${100*cnt(k)/M.N}%;background:${fill(k)}" data-tip="${esc(`<b>${SEG[k].n}</b><br>${cnt(k)} of ${M.N} groups`)}"></i>`).join('');
   $('#compoL').innerHTML=ORDER.map(k=>`<span><i class="dot" style="${SEG[k].hollow?`border:2.5px solid ${SEG[k].c}`:`background:${SEG[k].c}`}"></i>${SEG[k].n} <b>${cnt(k)}</b></span>`).join('');
-  const C=(PREV?['scorecard','shortlist','changes','speed']:[]).concat(['top25','emerging','leaders','fading','turnarounds','stocks','conviction','rotation','movers','breadth']).filter(k=>INS[k]);
+  const C=(PREV?['scorecard','shortlist','changes','speed']:[]).concat(['top25','emerging','leaders','fading','turnarounds','stocks','strong25','conviction','rotation','movers','breadth']).filter(k=>INS[k]);
   $('#cards').innerHTML=C.map(k=>`<a class="card" href="#${k}"><span>${TABS[k]}</span><div class="cn">${STAT[k]?.[0]?.[0]??''}</div><div>${INS[k][0]}</div><i>Open →</i></a>`).join('');
   chart('fig',drawMap)}
 function rTop25(){const V=[...vis()].sort((a,b)=>a.mr-b.mr).slice(0,25),mx=Math.max(...V.map(g=>g.score),1);
@@ -767,11 +777,27 @@ function rTrends(){const weeks=[...HIST,{d:M.date,R:Object.fromEntries(M.G.map(g
   $('#z-warn').innerHTML=Wn.length?`<div class="sc">${Wn.map(g=>`<div class="sitem dn" data-sk="${g.k}"><b>${esc(clean(g.name))}</b> <span class="sec">MRank ${g.mr}</span><div class="why"><span>Rank ${a.R[g.k]} → ${b.R[g.k]} → ${g.R}</span><span>Breadth ${a.br[g.k]}% → ${b.br[g.k]}% → ${g.br}%</span></div></div>`).join('')}</div>`:'<div class="empty">No leader has weakened in both rank and breadth for two weeks running.</div>'}
 document.addEventListener('click',e=>{const t=e.target.closest('.sitem[data-sk]');if(t&&t.dataset.sk)openDrill(t.dataset.sk)});
 
+/* ---------- strong 25: across all sectors, ordered by market cap ---------- */
+let s25m='str';
+function strong25(){const A=M.S.filter(s=>s.strong),sc=s=>(s.ms==='A'?10:0)+(s.eps||0)+(s.rs||0)+bdRank(s.bd)*3;
+  const P=s25m==='str'?[...A].sort((a,b)=>sc(b)-sc(a)||(b.cap||0)-(a.cap||0)).slice(0,25):[...A].sort((a,b)=>(b.cap||0)-(a.cap||0)).slice(0,25);
+  return {A,P:[...P].sort((a,b)=>(b.cap||0)-(a.cap||0))}}
+function rStrong25(){const {A,P}=strong25(),weak=P.filter(s=>s.g.mr>44).length,secs=new Set(P.map(s=>s.g.k)).size,caps=P.map(s=>s.cap||0).filter(Boolean);
+  INS.strong25=P.length?[`The ${P.length} strongest stocks in any sector, led by ${list(P.slice(0,3).map(s=>'<b>'+esc(s.sym)+'</b>'))}`,
+    `${s25m==='str'?`Picked by score from all ${A.length} stocks that pass the strong-stock rule in any sector`:`The ${P.length} largest of all ${A.length} stocks that pass the strong-stock rule`}, listed from largest to smallest market cap. The sheet has no trading-volume or free-float data, so market cap stands in for liquidity: bigger companies are usually easier to buy and sell. Check traded volume before acting on small names.`+(weak?` ${weak} sit in weak sectors; the guide prefers strong stocks inside strong sectors.`:'')]:['No stock passes the strong-stock rule this week',''];
+  STAT.strong25=[[A.length,'pass the rule, any sector'],[caps.length?fmtCr(med(caps)):'—','median market cap'],[secs,'sectors']];lead('strong25');
+  const lg=v=>Math.log10(Math.max(v||1,1)),lo=Math.min(...caps.map(lg),2),hi=Math.max(...caps.map(lg),3);
+  $('#z-s25').innerHTML=P.map((s,i)=>`<div class="row s25" data-k="${s.g.k}" data-tip="${tipS(s)}"><span class="rk" style="font:700 15px 'Space Grotesk',Inter,sans-serif;color:var(--ink2)">${i+1}</span><span class="nm"><b>${esc(s.sym)}</b>${s.g.mr>44?'<span class="tag warn">weak sector</span>':''}<small>${esc(clean(s.g.name))} · MRank ${s.g.mr}</small><span class="chips4"><i>${esc(s.ms)}</i><i>EPS ${s.eps}</i><i>PS ${s.rs}</i><i>${esc(s.bd)}</i></span></span><div class="tr"><i style="left:0;width:${8+92*(lg(s.cap)-lo)/(hi-lo||1)}%;background:var(--up);animation-delay:${i*25}ms"></i></div><span class="v">${fmtCr(s.cap)}</span></div>`).join('')||'<div class="empty">No stock passes the rule this week.</div>';
+  $('#t-s25').innerHTML=stockHead([['n','#'],['sec','Sector (MRank)'],['ms','Master'],['eps','EPS',1],['rs','Price str.',1],['bd','Demand'],['cap','Mkt cap',1],['px','Price',1],['chg','Chg %',1]])+'<tbody>'+P.map((s,i)=>`<tr class="click" data-tk="${s.g.k}"><td>${i+1}. ${sname(s)}</td><td>${esc(clean(s.g.name))} <span class="note">(${s.g.mr})</span></td>${stockCells(s)}</tr>`).join('')+'</tbody>'}
+$('#s25m').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;s25m=b.dataset.k;[...$('#s25m').children].forEach(x=>x.setAttribute('aria-pressed',x===b));rStrong25()});
+$('#t-s25').addEventListener('click',e=>{const tr=e.target.closest('tr[data-tk]');if(tr)openDrill(tr.dataset.tk)});
+function s25Text(){const {P}=strong25();return `${head()}\n\nStrong 25 (any sector), largest first:\n`+P.map((s,i)=>`${i+1}. ${s.sym} · ${fmtCr(s.cap)} · ${s.ms}/EPS ${s.eps}/PS ${s.rs}/${s.bd}`).join('\n')+`${tail('strong25')}\n\nMarket cap used as a liquidity guide. Candidates for research, not recommendations.`}
+
 /* ---------- render ---------- */
 function renderAll(){insights();CURSC=computeSc();wkInsights();screen();
   for(const k of ['scorecard','shortlist','speed','trends','top25','emerging','leaders','fading','turnarounds','conviction','rotation','movers','breadth','changes'])lead(k);
   rTop25();chart('z-emerging',slope(by('E')));chart('z-turnarounds',slope(by('T')));dumb('leaders',by('L'),'var(--est)');dumb('fading',by('F').sort((a,b)=>b.n-a.n),'var(--dn)');
-  rChanges();rScorecard();rShortlist();rSpeed();rTrends();rRotation();rMovers();rBreadth();rConv();Object.values(GT).forEach(f=>f());convTables();rSummary();drillOpts();drill();
+  rStrong25();rChanges();rScorecard();rShortlist();rSpeed();rTrends();rRotation();rMovers();rBreadth();rConv();Object.values(GT).forEach(f=>f());convTables();rSummary();drillOpts();drill();
   if(innerWidth>900)$$('details.more').forEach(d=>{if(!d.id)d.open=true})}
 function srcLine(){const d=fmtDate(M.date);$('#src').className='srcline'+(SRC==='repo'?' repo':'');$('#src').innerHTML=SRC==='repo'?`Published week of <b>${d}</b> · anyone with this link sees it`:SRC==='upload'?`Showing <b>your file</b> (${d}) on this device only · use Share → Download report to send it`:SRC==='snapshot'?`Report for the week of <b>${d}</b>`:`Week of <b>${d}</b>`}
 function load(raw,prev,src){M=build(raw);window.__raw=raw;SRC=src;PREV=prev!==undefined?prev:prevFor(raw.date);if(PREV)PREV=toPrev(PREV);computeHist();srcLine();renderAll();$('#msg').hidden=true;go(location.hash.slice(1)||view)}
@@ -805,7 +831,7 @@ function shortText(){const g=id=>[...document.querySelectorAll(id+' .sitem b')].
 function insightText(id){const v=INS[id],st=STAT[id];return `${head()}\n\n${plain(v[0])}.\n`+(st?st.map(x=>`▸ ${x[0]} ${x[1]}`).join('\n')+'\n':'')+`\n${plain(v[1])}${tail(id)}`}
 function summaryText(){const C=[['scorecard','Scorecard'],['shortlist','Shortlist'],['changes','Segments'],['top25','Top 25'],['emerging','Emerging'],['leaders','Leaders'],['fading','Fading'],['turnarounds','Turnarounds'],['rotation','Rotation'],['stocks','Stock picks'],['conviction','Conviction']].filter(([k])=>INS[k]&&(PREV||!['scorecard','shortlist','changes'].includes(k)));
   return `${head()}\n${$('#title').textContent}\n\n`+C.map(([k,l])=>`• ${l}: ${plain(INS[k][0])}`).join('\n')+(SRC==='upload'||!SITE?'':`\n\nFull dashboard: ${SITE}`)+'\n\nPrice-momentum screen for education, not investment advice.'}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-share]');if(!b||!M)return;const id=b.dataset.share;share(id==='stocks'?stocksText():id==='shortlist'?shortText():insightText(id),head())});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-share]');if(!b||!M)return;const id=b.dataset.share;share(id==='stocks'?stocksText():id==='strong25'?s25Text():id==='shortlist'?shortText():insightText(id),head())});
 const sheet=$('#sheet'),scrim=$('#scrim');const openSheet=o=>{sheet.classList.toggle('on',o);scrim.classList.toggle('on',o)};
 $('#shareBtn').addEventListener('click',()=>openSheet(true));scrim.addEventListener('click',()=>openSheet(false));$('#file').addEventListener('click',()=>openSheet(false));
 $('#shSum').addEventListener('click',()=>{openSheet(false);M&&share(summaryText(),head())});
