@@ -16,6 +16,14 @@ Each new sheet is compared with the previous one:
 - **Trends:** week-by-week rank lines, breadth changes, segment mix and early warnings (from 3 weeks).
 - **Segment changes:** which groups moved between segments.
 
+## Daily VCP setups (Setups section)
+
+Upload each day's `vcp_setups_YYYY-MM-DD.xlsx` to the same **uploads** folder. The site recognises it and adds:
+
+- **VCP setups:** every setup checked against the weekly sector sheet, with a fit score out of 100 (sector 30, grades 30, pattern 25, liquidity 15), daily swing in ₹, trade-up-to size and links. A liquidity filter (default ₹2.5 Cr+ traded per day) hides thin names.
+- **Setup clusters:** which sectors the setups sit in, coloured by that sector's MomentumRank.
+- **Setup tracker:** new, dropped and days-on-list, with the price move since first listed (from the second day).
+
 ## Each week (about 1 minute, works from a phone browser)
 
 1. Open this repo on github.com and go to the **uploads** folder.

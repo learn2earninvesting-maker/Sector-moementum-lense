@@ -182,9 +182,59 @@ def scorecard(prev_raw, prev_picks, raw):
     }
 
 
+VCPDIR = os.path.join(ROOT, "data", "vcp")
+VCOLS = {"Rank": "rk", "Symbol": "sym", "Exchange": "ex", "Close (₹)": "close", "ADR %": "adr", "% from 52w High": "hi",
+         "20d Value (Cr)": "val", "RS 63d %": "rs", "Inside Day": "inside", "Sector": "sector", "Industry": "industry"}
+
+
+def is_vcp(path):
+    wb = openpyxl.load_workbook(path, read_only=True)
+    names = set(wb.sheetnames)
+    wb.close()
+    return "Mainboard" in names and "SME" in names
+
+
+def parse_vcp(path):
+    """Daily VCP setup sheet -> {date, main:[...], sme:[...]}; 'code' is the key into the sector sheet."""
+    fname = os.path.basename(path)
+    m = re.search(r"(\d{4})-(\d{2})-(\d{2})", fname) or re.search(r"(\d{2})[_\-.](\d{2})[_\-.](\d{4})", fname)
+    if m:
+        date = f"{m.group(1)}-{m.group(2)}-{m.group(3)}" if len(m.group(1)) == 4 else f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
+    else:
+        date = dt.date.fromtimestamp(os.path.getmtime(path)).isoformat()
+    wb = openpyxl.load_workbook(path, data_only=True)
+    out = {"date": date, "file": fname}
+    for sheet, key in (("Mainboard", "main"), ("SME", "sme")):
+        ws = wb[sheet]
+        head = [c.value for c in ws[1]]
+        rows = []
+        for r in ws.iter_rows(min_row=2):
+            if r[0].value is None or r[1].value is None:
+                continue
+            o = {}
+            for i, h in enumerate(head):
+                if h in VCOLS:
+                    v = r[i].value
+                    o[VCOLS[h]] = v if not isinstance(v, str) else v.strip()
+                if h == "Screener" and r[i].hyperlink is not None:
+                    o["code"] = r[i].hyperlink.target.rstrip("/").split("/")[-1]
+            o["inside"] = str(o.get("inside") or "").lower().startswith("y")
+            o.setdefault("code", re.sub(r"-SM$", "", str(o["sym"])))
+            rows.append(o)
+        out[key] = rows
+    return out
+
+
 def main():
     os.makedirs(WEEKS, exist_ok=True)
+    os.makedirs(VCPDIR, exist_ok=True)
     for path in sorted(glob.glob(os.path.join(UPLOADS, "*.xls*"))):
+        if is_vcp(path):
+            v = parse_vcp(path)
+            with open(os.path.join(VCPDIR, v["date"] + ".json"), "w") as f:
+                json.dump(v, f, separators=(",", ":"), default=str)
+            print(f"{os.path.basename(path)} -> data/vcp/{v['date']}.json ({len(v['main'])} mainboard, {len(v['sme'])} SME)")
+            continue
         raw = parse(path)
         out = os.path.join(WEEKS, raw["date"] + ".json")
         with open(out, "w") as f:
@@ -209,6 +259,15 @@ def main():
             e["liq"] = os.path.exists(os.path.join(ROOT, "data", "liq", e["date"] + ".json"))
     with open(INDEX, "w") as f:
         json.dump(index, f, separators=(",", ":"))
+    vidx = []
+    for out in sorted(glob.glob(os.path.join(VCPDIR, "????-??-??.json"))):
+        with open(out) as f:
+            v = json.load(f)
+        vidx.append({"date": v["date"], "main": [r["code"] for r in v["main"]], "sme": [r["code"] for r in v["sme"]],
+                     "close": {r["code"]: r.get("close") for r in v["main"] + v["sme"]}})
+    with open(os.path.join(VCPDIR, "index.json"), "w") as f:
+        json.dump(vidx, f, separators=(",", ":"))
+    print(f"data/vcp/index.json: {len(vidx)} day(s)")
     print(f"data/index.json: {len(index)} week(s)")
 
 
