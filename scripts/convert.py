@@ -264,14 +264,14 @@ def main():
         with open(out) as f:
             v = json.load(f)
         rows = v["main"] + v["sme"]
-        if os.environ.get("SKIP_LIQUIDITY") != "1" and any(r.get("vv") != 3 for r in rows):
+        if os.environ.get("SKIP_LIQUIDITY") != "1" and (any(r.get("vv") != 4 for r in rows) or (v.get("voldays") or [None, None])[1] != v["date"]):
             import liquidity
             keyof = lambda r: str(r["code"]) if r.get("ex") == "BSE" else re.sub(r"-SM$", "", str(r["sym"]))
             try:
-                days, vol, chg = liquidity.volumes(v["date"], sorted({keyof(r) for r in rows}))
+                days, vol, chg, hlc = liquidity.volumes(v["date"], sorted({keyof(r) for r in rows}))
             except Exception as e:  # volume is optional; never break the build
                 print(f"volume {v['date']}: failed ({e})")
-                days, vol, chg = [], {}, {}
+                days, vol, chg, hlc = [], {}, {}, {}
             if days:
                 for r in rows:
                     ser = vol.get(keyof(r), [])
@@ -279,7 +279,8 @@ def main():
                     r["dry"] = liquidity.dryup(ser)
                     r["chgh"] = chg.get(keyof(r), [])
                     r["vt"] = liquidity.voltrend(ser, r["chgh"]) if ser else None
-                    r["vv"] = 3
+                    r["hlc"] = hlc.get(keyof(r), [])
+                    r["vv"] = 4
                 v["voldays"] = [days[0], days[-1], len(days)]
                 with open(out, "w") as f:
                     json.dump(v, f, separators=(",", ":"), default=str)

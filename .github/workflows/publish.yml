@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: "30 14 * * 1-5"   # 8:00 pm IST on weekdays, after the exchanges publish end-of-day files
 
 permissions:
   contents: write

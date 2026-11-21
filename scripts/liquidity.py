@@ -253,6 +253,42 @@ def parse_bse_chg(text):
     return out
 
 
+def parse_nse_px(text):
+    """SYMBOL -> (high, low, close, delivery %)."""
+    out = {}
+    rows = csv.reader(io.StringIO(text))
+    head = [h.strip().upper() for h in next(rows)]
+    ix = {h: i for i, h in enumerate(head)}
+    if not all(k in ix for k in ("HIGH_PRICE", "LOW_PRICE", "CLOSE_PRICE")):
+        return out
+    for r in rows:
+        if len(r) < len(head) or r[ix["SERIES"]].strip().upper() not in ("EQ", "BE", "BZ", "SM", "ST", "SZ"):
+            continue
+        h, l, c = _num(r[ix["HIGH_PRICE"]]), _num(r[ix["LOW_PRICE"]]), _num(r[ix["CLOSE_PRICE"]])
+        d = _num(r[ix["DELIV_PER"]]) if "DELIV_PER" in ix else None
+        if h and l and c:
+            out[r[ix["SYMBOL"]].strip()] = (h, l, c, d)
+    return out
+
+
+def parse_bse_px(text):
+    out = {}
+    rows = csv.reader(io.StringIO(text))
+    head = [h.strip() for h in next(rows)]
+    ix = {h: i for i, h in enumerate(head)}
+    if not all(k in ix for k in ("FinInstrmId", "TckrSymb", "HghPric", "LwPric", "ClsPric")):
+        return out
+    for r in rows:
+        if len(r) < len(head):
+            continue
+        h, l, c = _num(r[ix["HghPric"]]), _num(r[ix["LwPric"]]), _num(r[ix["ClsPric"]])
+        if h and l and c:
+            for k in (r[ix["FinInstrmId"]].strip(), r[ix["TckrSymb"]].strip()):
+                if k:
+                    out.setdefault(k, (h, l, c, None))
+    return out
+
+
 def prune_raw(keep_days=140):
     if not os.path.isdir(RAW):
         return
@@ -270,7 +306,7 @@ def volumes(date_str, keys, sessions=55, lookback=95):
         return [], {}
     s = _session()
     d = dt.date.fromisoformat(date_str)
-    days, rows, chg = [], [], []
+    days, rows, chg, px = [], [], [], []
     for back in range(lookback):
         if len(days) >= sessions:
             break
@@ -287,6 +323,9 @@ def volumes(date_str, keys, sessions=55, lookback=95):
         bv = parse_bse_vol(b) if b else {}
         nc = parse_nse_chg(n) if n else {}
         bc = parse_bse_chg(b) if b else {}
+        npx = parse_nse_px(n) if n else {}
+        bpx = parse_bse_px(b) if b else {}
+        px.append({k: (npx.get(k) or bpx.get(k)) for k in keys})
         days.append(day.isoformat())
         chg.append({k: (round(nc[k], 2) if k in nc else round(bc[k], 2) if k in bc else None) for k in keys})
         row = {}
@@ -301,7 +340,9 @@ def volumes(date_str, keys, sessions=55, lookback=95):
     days.reverse()
     rows.reverse()
     chg.reverse()
-    return days, {k: [None if r[k] is None else int(r[k]) for r in rows] for k in keys}, {k: [c[k] for c in chg] for k in keys}
+    px.reverse()
+    hlc = {k: [None if p[k] is None else [round(p[k][0], 2), round(p[k][1], 2), round(p[k][2], 2), p[k][3]] for p in px[-20:]] for k in keys}
+    return days, {k: [None if r[k] is None else int(r[k]) for r in rows] for k in keys}, {k: [c[k] for c in chg] for k in keys}, hlc
 
 
 def voltrend(vol, chg):

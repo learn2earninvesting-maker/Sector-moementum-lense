@@ -120,6 +120,17 @@ select,input[type=search],input[type=number]{font:16px Inter,sans-serif;min-heig
 .mtr span:last-child{text-align:right;font-weight:600;color:var(--ink)}
 .facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.facts div{background:var(--bg);border-radius:10px;padding:6px 8px;font-size:11.5px;color:var(--ink2)}.facts b{display:block;font:700 15px "Space Grotesk",Inter,sans-serif;color:var(--ink)}
 .vlinks{display:flex;gap:12px;font-size:13px}.vlinks a{font-weight:600}
+.pt{border-radius:16px;padding:14px;display:grid;gap:8px;background:var(--soft);border-left:6px solid var(--c);cursor:pointer}
+.pt.sme{background:color-mix(in srgb,var(--dn) 16%,var(--bg));border-left-color:var(--dn);box-shadow:inset 0 0 0 1.5px var(--dn)}
+.pt .h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pt .h b{font:700 20px "Space Grotesk",Inter,sans-serif}
+.pt .st{margin-left:auto;font:700 12px Inter,sans-serif;padding:3px 10px;border-radius:99px;background:var(--c);color:#0b0b0b}
+.lvl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.lvl div{background:var(--bg);border-radius:10px;padding:7px 8px;font-size:11.5px;color:var(--ink2)}.lvl b{display:block;font:700 16px "Space Grotesk",Inter,sans-serif;color:var(--ink)}
+.lvl .buy b{color:var(--up)}.lvl .stp b{color:var(--dn)}
+.sigs{display:flex;flex-wrap:wrap;gap:4px}.sigs span{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--bg);border:1px solid var(--line)}.sigs span.on{background:var(--mint);border-color:transparent;color:#0b0b0b}
+.calc{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:end;margin:10px 0 14px;padding:12px;border-radius:14px;background:var(--soft)}.calc label{display:grid;gap:4px;font-size:13px;color:var(--ink2)}
+.smew{font-size:12.5px;font-weight:600;color:var(--dn)}
+@media(max-width:600px){.lvl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}.tabs button{font:600 14px Inter,sans-serif;min-height:40px;padding:0 16px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.tabs button[aria-selected=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .mixrow{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:10px;align-items:center;min-height:34px;font-size:13px}
 .mixrow .compo{margin:0;height:22px}
 .wait{padding:18px;border-radius:16px;border:1.5px dashed var(--line);color:var(--ink2);font-size:15px;margin:10px 0}
@@ -314,6 +325,12 @@ tr.top10 td{background:var(--gold)}
 </section>
 
 <section class="view pall band" id="v-changes" hidden><div class="wrap"><div class="lead" id="i-changes"></div><div class="viz" id="z-changes"></div><div class="after" id="j-changes"></div><details class="more"><summary>Every group that changed segment</summary><div class="tbl"><table class="stack" id="t-changes"></table></div></details></div></section>
+<section class="view pall band" id="v-plan" hidden><div class="wrap"><div class="lead" id="i-plan"></div>
+  <div class="calc"><label>Capital (₹)<input type="number" id="pCap" value="1000000" min="0" step="50000" style="width:10em"></label><label>Risk per trade (%)<input type="number" id="pRisk" value="1" min="0.1" max="5" step="0.1" style="width:6em"></label><label>Stop<select id="pStop"><option value="tight" selected>Tighter of coil low / 1.5× swing</option><option value="coil">Coil low</option><option value="adr">1.5× daily swing</option></select></label><span class="note">Saved on this device.</span></div>
+  <div class="tabs" id="pTabs" role="tablist"></div>
+  <div class="vgrid" id="z-plan"></div>
+  <div class="cap">Trigger = the coil's high (or the inside day's high). Buy only above the trigger and not beyond the max entry (trigger + 1%); stocks can gap past it at the open. Stop = below the coil, or 1.5× the usual daily swing, whichever is closer. Size = capital × risk % ÷ (entry − stop). Planned levels, not orders. For education only, not a buy/sell recommendation.</div>
+  <div class="after" id="j-plan"></div></div></section>
 <section class="view pall band" id="v-setups" hidden><div class="wrap"><div class="lead" id="i-setups"></div>
   <div class="ctl"><div class="seg" id="vseg"><button data-k="all" aria-pressed="true">All</button><button data-k="main">Mainboard</button><button data-k="sme">SME</button></div><label class="chip" style="cursor:pointer;min-height:40px">Sort <select id="vsort" aria-label="Sort setups" style="min-height:32px;border:0;padding:0 4px;font-size:14px"><option value="conf">Best fit</option><option value="rk">Scan order</option><option value="val">Most liquid</option><option value="rs">Strongest RS 63d</option><option value="adr">Tightest range (ADR)</option><option value="hi">Closest to 52-wk high</option><option value="dry">Driest volume</option><option value="vt">Volume rising</option></select></label><label class="chip" style="cursor:pointer;min-height:40px">Liquidity <select id="vliq" aria-label="Minimum traded value per day" style="min-height:32px;border:0;padding:0 4px;font-size:14px"><option value="0">Any</option><option value="0.25">₹25 L+/day</option><option value="2.5" selected>₹2.5 Cr+/day</option><option value="25">₹25 Cr+/day</option></select></label><select id="vday" aria-label="Choose day" hidden></select></div>
   <div class="note" id="vhid" style="margin:-2px 0 8px"></div>
@@ -463,8 +480,8 @@ const TEMPLATE=(()=>{const c=document.documentElement.cloneNode(true);c.querySel
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const SEG={E:{n:'Emerging Leader',c:'var(--up)'},T:{n:'Turnaround Candidate',c:'var(--up)',hollow:1},L:{n:'Established Leader',c:'var(--est)'},F:{n:'Fading Sector',c:'var(--dn)'},R:{n:'Rangebound',c:'var(--rb)'}};
 const ORDER=['E','T','L','F','R'];
-const GROUPS=[['home','Home','i-home',['summary']],['weekly','Weekly','i-cal',['changes','scorecard','shortlist','speed','trends']],['sectors','Sectors','i-sec',['top25','emerging','leaders','fading','turnarounds','rotation','movers','breadth']],['stocks','Stocks','i-stk',['stocks','strong25','conviction','sector']],['setups','Setups','i-vcp',['setups','clusters','vcptrack']],['more','More','i-more',['all','method']]];
-const TABS={summary:'Summary',setups:'VCP setups',clusters:'Setup clusters',vcptrack:'Setup tracker',changes:'Segment changes',scorecard:'Scorecard',shortlist:'Shortlist changes',speed:'Speed',trends:'Trends',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',strong25:'Strong 25',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',all:'All sectors',method:'Method'};
+const GROUPS=[['home','Home','i-home',['summary']],['weekly','Weekly','i-cal',['changes','scorecard','shortlist','speed','trends']],['sectors','Sectors','i-sec',['top25','emerging','leaders','fading','turnarounds','rotation','movers','breadth']],['stocks','Stocks','i-stk',['stocks','strong25','conviction','sector']],['setups','Setups','i-vcp',['plan','setups','clusters','vcptrack']],['more','More','i-more',['all','method']]];
+const TABS={summary:'Summary',plan:'Next-session plan',setups:'VCP setups',clusters:'Setup clusters',vcptrack:'Setup tracker',changes:'Segment changes',scorecard:'Scorecard',shortlist:'Shortlist changes',speed:'Speed',trends:'Trends',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',strong25:'Strong 25',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',all:'All sectors',method:'Method'};
 let M=null,PREV=null,HIST=[],IDX=null,SRC='',SITE='',cmp='M3',mv='W',show=new Set(ORDER),view='summary',lastIn={};
 const sorts={};let sortT={k:'cmp',d:-1},sortD={k:'ms',d:1},dk=null;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -582,7 +599,7 @@ function insights(){
 }
 const shareIco='<svg><use href="#i-share"/></svg>';
 function lead(id){const v=INS[id],st=STAT[id];if(!v)return;const j=$('#j-'+id),tail=(v[1]?`<p>${v[1]}</p>`:'')+(id==='sector'?'':`<button class="share" data-share="${id}">${shareIco}Share this insight</button>`);
-  $('#i-'+id).innerHTML=`<div class="kicker"><i></i>${TABS[id]} · ${['setups','clusters','vcptrack'].includes(id)&&V?'scan of '+fmtDate(V.date):'week of '+fmtDate(M.date)}</div><h2>${v[0]}</h2>`+(st?`<div class="stats">${st.map((x,i)=>`<div class="stat${i===0?' m':''}"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div>`:'')+(j?'':tail);if(j)j.innerHTML=tail}
+  $('#i-'+id).innerHTML=`<div class="kicker"><i></i>${TABS[id]} · ${['plan','setups','clusters','vcptrack'].includes(id)&&V?'scan of '+fmtDate(V.date):'week of '+fmtDate(M.date)}</div><h2>${v[0]}</h2>`+(st?`<div class="stats">${st.map((x,i)=>`<div class="stat${i===0?' m':''}"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div>`:'')+(j?'':tail);if(j)j.innerHTML=tail}
 
 /* ---------- navigation ---------- */
 const groupOf=v=>GROUPS.find(g=>g[3].includes(v));
@@ -666,7 +683,7 @@ function rSummary(){const G=M.G,cnt=k=>G.filter(g=>g.seg===k).length,R=themeRows
   const fill=k=>SEG[k].hollow?`repeating-linear-gradient(135deg,${SEG[k].c} 0 4px,transparent 4px 8px);box-shadow:inset 0 0 0 2px ${SEG[k].c}`:SEG[k].c;
   $('#compo').innerHTML=ORDER.map(k=>`<i style="width:${100*cnt(k)/M.N}%;background:${fill(k)}" data-tip="${esc(`<b>${SEG[k].n}</b><br>${cnt(k)} of ${M.N} groups`)}"></i>`).join('');
   $('#compoL').innerHTML=ORDER.map(k=>`<span><i class="dot" style="${SEG[k].hollow?`border:2.5px solid ${SEG[k].c}`:`background:${SEG[k].c}`}"></i>${SEG[k].n} <b>${cnt(k)}</b></span>`).join('');
-  const C=(V?['setups']:[]).concat(PREV?['scorecard','shortlist','changes','speed']:[]).concat(['top25','emerging','leaders','fading','turnarounds','stocks','strong25','conviction','rotation','movers','breadth']).filter(k=>INS[k]);
+  const C=(V?['plan','setups']:[]).concat(PREV?['scorecard','shortlist','changes','speed']:[]).concat(['top25','emerging','leaders','fading','turnarounds','stocks','strong25','conviction','rotation','movers','breadth']).filter(k=>INS[k]);
   $('#cards').innerHTML=C.map(k=>`<a class="card" href="#${k}"><span>${TABS[k]}</span><div class="cn">${STAT[k]?.[0]?.[0]??''}</div><div>${INS[k][0]}</div><i>Open →</i></a>`).join('');
   chart('fig',drawMap)}
 function rTop25(){const V=[...vis()].sort((a,b)=>a.mr-b.mr).slice(0,25),mx=Math.max(...V.map(g=>g.score),1);
@@ -921,19 +938,60 @@ function rSetups(){if(!V){$('#z-vcards').innerHTML='<div class="wait"><b>No VCP 
   const T=vTrack();if(T.days<2){$('#z-vtrack').innerHTML=`<div class="wait"><b>Fills in from tomorrow's sheet.</b> Each new daily VCP file adds a day. You will see:<br>• <b>New today</b> and <b>dropped off</b> since the previous day<br>• <b>Days on the list</b> for every setup (a name that keeps appearing is still coiling)<br>• <b>Price move since it first appeared</b>, so you can see which setups broke out</div>`;return}
   const byC=Object.fromEntries(vEnrich().map(r=>[r.code,r]));const it=(c,cls,why)=>`<div class="sitem ${cls}" ${byC[c]?.g?`data-sk="${byC[c].g.k}"`:''}><b>${esc(byC[c]?.sym||c)}</b><div class="why">${why.map(w=>`<span>${esc(w)}</span>`).join('')}</div></div>`;
   $('#z-vtrack').innerHTML=`<div class="cols3"><div class="col"><h3>New today <span class="ct">${T.nw.length}</span></h3><div class="sc">${T.nw.map(c=>it(c,'',['First seen '+fmtDate(V.date)])).join('')||'<div class="empty">None</div>'}</div></div><div class="col"><h3>Dropped off <span class="ct">${T.dr.length}</span></h3><div class="sc">${T.dr.map(c=>it(c,'dn',['Last on '+fmtDate(T.prv.date)])).join('')||'<div class="empty">None</div>'}</div></div><div class="col"><h3>Staying on the list</h3><div class="sc">${T.stay.filter(x=>x.d>1).sort((a,b)=>b.d-a.d).map(x=>it(x.c,'ug',[x.d+' days',x.ret==null?'':'Since '+fmtDate(x.since).replace(/ \d{4}$/,'')+': '+pct(x.ret)].filter(Boolean))).join('')||'<div class="empty">None yet</div>'}</div></div></div>`}
-$('#vliq').addEventListener('change',e=>{vliq=+e.target.value;vInsights();['setups','clusters'].forEach(lead);rSetups();rSummary()});
+$('#vliq').addEventListener('change',e=>{vliq=+e.target.value;vInsights();planInsights();['plan','setups','clusters'].forEach(lead);rSetups();rPlan();rSummary()});
 document.addEventListener('click',e=>{if(e.target.id==='vshow'){e.preventDefault();vliq=0;$('#vliq').value='0';vInsights();['setups','clusters'].forEach(lead);rSetups();rSummary()}});
 $('#vseg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;vseg=b.dataset.k;[...$('#vseg').children].forEach(x=>x.setAttribute('aria-pressed',x===b));rSetups()});
 $('#vsort').addEventListener('change',e=>{vsort=e.target.value;rSetups()});
-async function loadVcpDay(d){const r=await fetch(`data/vcp/${d}.json`,{cache:'no-cache'});if(!r.ok)throw 0;V=await r.json();if(M){vInsights();['setups','clusters','vcptrack'].forEach(lead);rSetups();rSummary()}$('#vday').value=d}
+async function loadVcpDay(d){const r=await fetch(`data/vcp/${d}.json`,{cache:'no-cache'});if(!r.ok)throw 0;V=await r.json();if(M){vInsights();planInsights();['plan','setups','clusters','vcptrack'].forEach(lead);rSetups();rPlan();rSummary()}$('#vday').value=d}
 $('#vday').addEventListener('change',e=>loadVcpDay(e.target.value).catch(()=>showErr('Could not load that day.')));
 async function bootVcp(){try{const r=await fetch('data/vcp/index.json',{cache:'no-cache'});if(!r.ok)return;VIDX=await r.json();if(!VIDX.length)return;const sel=$('#vday');sel.hidden=VIDX.length<2;sel.innerHTML=[...VIDX].reverse().map(x=>`<option value="${x.date}">${fmtDate(x.date)}</option>`).join('');await loadVcpDay(VIDX[VIDX.length-1].date)}catch(e){}}
 
+/* ---------- next-session plan from end-of-day data ---------- */
+let ptab='ready';
+try{const c=JSON.parse(localStorage.getItem('sml-calc')||'null');if(c){$('#pCap').value=c.cap;$('#pRisk').value=c.risk;$('#pStop').value=c.stop||'tight'}}catch(e){}
+const nextSession=d=>{const x=new Date(d+'T00:00:00');do x.setDate(x.getDate()+1);while(x.getDay()===0||x.getDay()===6);return x};
+const fmtR=v=>v==null?'—':'₹'+(v>=1000?Math.round(v).toLocaleString('en-IN'):v.toFixed(v<100?2:1));
+function planRow(r){const H=(r.hlc||[]).filter(Boolean);if(H.length<7)return {...r,ok:false};
+  const t=H[H.length-1],last10=H.slice(-10),inside=r.inside,trig=inside?t[0]:Math.max(...last10.map(x=>x[0])),coilLow=inside?t[1]:Math.min(...last10.map(x=>x[1])),c=t[2];
+  const swing=c*r.adr/100,mode=$('#pStop').value,stop=mode==='coil'?coilLow:mode==='adr'?trig-1.5*swing:Math.max(coilLow,trig-1.5*swing);
+  const rng=H.slice(-7).map(x=>x[0]-x[1]),nr7=rng[rng.length-1]<=Math.min(...rng.slice(0,-1)),cpos=t[0]>t[1]?(c-t[1])/(t[0]-t[1]):0.5,dist=(trig/c-1)*100;
+  const dl=H.map(x=>x[3]).filter(x=>x!=null),delUp=dl.length>=10?(dl.slice(-5).reduce((a,b)=>a+b,0)/5)-(dl.slice(0,-5).reduce((a,b)=>a+b,0)/(dl.length-5)):null;
+  const quiet=(r.dry&&r.dry.r1!=null&&r.dry.r1<0.6)||(r.dry&&r.dry.r5<0.85),vl=vtLab(r.vt),acc=vl&&vl[2]==='acc',dis=vl&&vl[2]==='dis';
+  const risk=trig-stop,cap=+$('#pCap').value||0,rp=(+$('#pRisk').value||0)/100,qty=risk>0?Math.floor(cap*rp/risk):0,val=qty*trig,maxv=(r.val||0)*1e7*0.1;
+  const sigs=[['Within 3% of trigger',dist<=3],['NR7 / inside day',nr7||inside],['Volume quiet',quiet],['Closed near high',cpos>=0.7],['Delivery rising',delUp!=null&&delUp>=5],['Volume rising on up days',acc],['Fit 70+',r.sc>=70]];
+  const extra=sigs.slice(1).filter(x=>x[1]).length,avoid=dis||(r.g&&r.g.seg==='F')||(r.val??0)<vliq||risk<=0;
+  const status=avoid?'avoid':dist<=3&&extra>=2?'ready':'watch';
+  const why=avoid?[dis?'Selling volume':null,r.g&&r.g.seg==='F'?'Fading sector':null,(r.val??0)<vliq?'Below liquidity filter':null,risk<=0?'No room for a stop':null].filter(Boolean):[];
+  return {...r,ok:true,trig,stop,max:trig*1.01,dist,risk,riskPct:risk/trig*100,qty,val,t2:trig+2*risk,t3:trig+3*risk,nr7,cpos,delUp,sigs,status,why,over:val>maxv&&maxv>0,c}}
+function planInsights(){if(!V){INS.plan=['The plan appears with the first daily VCP sheet',''];STAT.plan=null;return}
+  const P=vEnrich().map(planRow),ok=P.filter(x=>x.ok),rd=ok.filter(x=>x.status==='ready'),sme=rd.filter(x=>x.b==='sme'),ns=nextSession(V.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+  INS.plan=!ok.length?['Price history for these setups arrives after the next GitHub update','The plan needs each stock\'s last 20 sessions of high, low and close from the exchange files.']:[rd.length?`${plural(rd.length,'setup is','setups are')} ready for ${ns}: ${list(rd.slice(0,3).map(x=>'<b>'+esc(x.sym)+'</b>'))}`:`No setup is ready for ${ns}; ${ok.filter(x=>x.status==='watch').length} to watch`,
+    `Ready = within 3% of its trigger plus at least two quiet-before-the-move signals (tight range, quiet volume, close near the high, rising delivery, buying volume, fit 70+). Built from the ${fmtDate(V.date)} close. Check exchange holidays before ${ns}.`+(sme.length?` ${sme.length} of the ready names are SME stocks (red tiles): thin, wide spreads and lot sizes, so trade them smaller or skip.`:'')];
+  STAT.plan=ok.length?[[rd.length,'ready next session'],[ok.filter(x=>x.status==='watch').length,'watching'],[ok.filter(x=>x.status==='avoid').length,'avoid']]:null}
+function rPlan(){if(!V){$('#z-plan').innerHTML='<div class="wait"><b>No VCP sheet yet.</b> Upload the daily vcp_setups file; the plan for the next session is built from it.</div>';$('#pTabs').innerHTML='';return}
+  const P=vEnrich().map(planRow),ok=P.filter(x=>x.ok);
+  if(!ok.length){$('#pTabs').innerHTML='';$('#z-plan').innerHTML='<div class="wait"><b>Price history pending.</b> The trigger, stop and signals use each stock\'s last 20 sessions from the exchange files. They appear after the next GitHub update (automatic at about 8 pm IST on weekdays).</div>';return}
+  const L={ready:'Ready',watch:'Watching',avoid:'Avoid'},C={ready:'var(--est)',watch:'var(--up)',avoid:'var(--rb)'};
+  $('#pTabs').innerHTML=Object.keys(L).map(k=>`<button role="tab" data-p="${k}" aria-selected="${k===ptab}">${L[k]} · ${ok.filter(x=>x.status===k).length}</button>`).join('');
+  const S=ok.filter(x=>x.status===ptab).sort((a,b)=>a.dist-b.dist||b.sc-a.sc);
+  $('#z-plan').innerHTML=S.map(x=>`<div class="pt${x.b==='sme'?' sme':''}" style="--c:${C[x.status]}" ${x.g?`data-sk="${x.g.k}"`:''}>
+    <div class="h"><b><a class="tv" href="${tvV(x)}" target="_blank" rel="noopener">${esc(x.sym)}<svg aria-hidden="true"><use href="#i-ext"/></svg></a></b><span class="note">${x.b==='sme'?'SME':'Main'} · ${esc(x.ex)} · fit ${x.sc}</span><span class="st">${L[x.status]}</span></div>
+    ${x.b==='sme'?'<div class="smew">⚠ SME stock: thin trading, wide spreads and fixed lot sizes. Higher risk; size small or skip.</div>':''}
+    ${x.why.length?`<div class="smew" style="color:var(--ink2)">Avoid: ${x.why.join(' · ')}</div>`:''}
+    <div class="lvl"><div class="buy">Buy above<b>${fmtR(x.trig)}</b></div><div>Max entry<b>${fmtR(x.max)}</b></div><div class="stp">Stop<b>${fmtR(x.stop)}</b></div><div>Risk<b>${x.riskPct.toFixed(1)}%</b></div><div>Target 2R<b>${fmtR(x.t2)}</b></div><div>Target 3R<b>${fmtR(x.t3)}</b></div><div>Size<b>${x.qty.toLocaleString('en-IN')} sh</b></div><div>Value<b>${fmtV(x.val/1e7)}</b></div></div>
+    ${x.over?'<div class="smew">Position is above 10% of daily traded value: reduce size.</div>':''}
+    <div class="sigs">${x.sigs.map(([n,on])=>`<span class="${on?'on':''}">${on?'✓ ':''}${n}</span>`).join('')}</div>
+    <div class="sec">Close ${fmtR(x.c)} · trigger ${x.dist.toFixed(1)}% above · ${x.g?esc(clean(x.g.name))+' MRank '+x.g.mr:'not in sector sheet'}${x.delUp!=null?` · delivery ${x.delUp>=0?'+':''}${x.delUp.toFixed(0)} pts`:''}</div></div>`).join('')||'<div class="empty">Nothing in this list.</div>'}
+$('#pTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ptab=b.dataset.p;rPlan()});
+['#pCap','#pRisk','#pStop'].forEach(id=>$(id).addEventListener('input',()=>{try{localStorage.setItem('sml-calc',JSON.stringify({cap:$('#pCap').value,risk:$('#pRisk').value,stop:$('#pStop').value}))}catch(e){}planInsights();lead('plan');rPlan()}));
+function planText(){const P=vEnrich().map(planRow).filter(x=>x.ok&&x.status==='ready').sort((a,b)=>a.dist-b.dist),ns=nextSession(V.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+  return `📋 Plan for ${ns} (from ${fmtDate(V.date)} close)\n\n`+(P.length?P.map(x=>`${x.b==='sme'?'🔴 SME ':''}${x.sym}: buy above ${fmtR(x.trig)} (max ${fmtR(x.max)}), stop ${fmtR(x.stop)}, targets ${fmtR(x.t2)} / ${fmtR(x.t3)}`).join('\n'):'No setup ready.')+`${tail('plan')}\n\nPlanned levels for education, not recommendations. Check exchange holidays.`}
+
 /* ---------- render ---------- */
-function renderAll(){insights();CURSC=computeSc();wkInsights();vInsights();screen();
-  for(const k of ['setups','clusters','vcptrack','scorecard','shortlist','speed','trends','top25','emerging','leaders','fading','turnarounds','conviction','rotation','movers','breadth','changes'])lead(k);
+function renderAll(){insights();CURSC=computeSc();wkInsights();vInsights();planInsights();screen();
+  for(const k of ['plan','setups','clusters','vcptrack','scorecard','shortlist','speed','trends','top25','emerging','leaders','fading','turnarounds','conviction','rotation','movers','breadth','changes'])lead(k);
   rTop25();chart('z-emerging',slope(by('E')));chart('z-turnarounds',slope(by('T')));dumb('leaders',by('L'),'var(--est)');dumb('fading',by('F').sort((a,b)=>b.n-a.n),'var(--dn)');
-  rStrong25();rSetups();rChanges();rScorecard();rShortlist();rSpeed();rTrends();rRotation();rMovers();rBreadth();rConv();Object.values(GT).forEach(f=>f());convTables();rSummary();drillOpts();drill();
+  rStrong25();rSetups();rPlan();rChanges();rScorecard();rShortlist();rSpeed();rTrends();rRotation();rMovers();rBreadth();rConv();Object.values(GT).forEach(f=>f());convTables();rSummary();drillOpts();drill();
   if(innerWidth>900)$$('details.more').forEach(d=>{if(!d.id)d.open=true})}
 function srcLine(){const d=fmtDate(M.date);$('#src').className='srcline'+(SRC==='repo'?' repo':'');$('#src').innerHTML=SRC==='repo'?`Published week of <b>${d}</b> · anyone with this link sees it`:SRC==='upload'?`Showing <b>your file</b> (${d}) on this device only · use Share → Download report to send it`:SRC==='snapshot'?`Report for the week of <b>${d}</b>`:`Week of <b>${d}</b>`}
 function load(raw,prev,src){M=build(raw);window.__raw=raw;SRC=src;PREV=prev!==undefined?prev:prevFor(raw.date);if(PREV)PREV=toPrev(PREV);computeHist();srcLine();renderAll();$('#msg').hidden=true;go(location.hash.slice(1)||view)}
@@ -967,7 +1025,7 @@ function shortText(){const g=id=>[...document.querySelectorAll(id+' .sitem b')].
 function insightText(id){const v=INS[id],st=STAT[id];return `${head()}\n\n${plain(v[0])}.\n`+(st?st.map(x=>`▸ ${x[0]} ${x[1]}`).join('\n')+'\n':'')+`\n${plain(v[1])}${tail(id)}`}
 function summaryText(){const C=[['scorecard','Scorecard'],['shortlist','Shortlist'],['changes','Segments'],['top25','Top 25'],['emerging','Emerging'],['leaders','Leaders'],['fading','Fading'],['turnarounds','Turnarounds'],['rotation','Rotation'],['stocks','Stock picks'],['conviction','Conviction']].filter(([k])=>INS[k]&&(PREV||!['scorecard','shortlist','changes'].includes(k)));
   return `${head()}\n${$('#title').textContent}\n\n`+C.map(([k,l])=>`• ${l}: ${plain(INS[k][0])}`).join('\n')+(SRC==='upload'||!SITE?'':`\n\nFull dashboard: ${SITE}`)+'\n\nPrice-momentum screen for education, not investment advice.'}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-share]');if(!b||!M)return;const id=b.dataset.share;share(id==='stocks'?stocksText():id==='strong25'?s25Text():id==='shortlist'?shortText():insightText(id),head())});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-share]');if(!b||!M)return;const id=b.dataset.share;share(id==='plan'?planText():id==='stocks'?stocksText():id==='strong25'?s25Text():id==='shortlist'?shortText():insightText(id),head())});
 const sheet=$('#sheet'),scrim=$('#scrim');const openSheet=o=>{sheet.classList.toggle('on',o);scrim.classList.toggle('on',o)};
 $('#shareBtn').addEventListener('click',()=>openSheet(true));scrim.addEventListener('click',()=>openSheet(false));$('#file').addEventListener('click',()=>openSheet(false));
 $('#shSum').addEventListener('click',()=>{openSheet(false);M&&share(summaryText(),head())});
@@ -985,7 +1043,7 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
 /* ---------- loading ---------- */
 function readFile(f){if(!f)return;if(typeof XLSX==='undefined'){showErr('The spreadsheet reader did not load. Check your connection and try again.');return}
   $('#asof').textContent='Reading…';const r=new FileReader();
-  r.onload=async()=>{try{const wb=XLSX.read(new Uint8Array(r.result),{type:'array'});if(isVcpBook(wb)){V=parseVcpWorkbook(wb,f.name);if(M){vInsights();['setups','clusters','vcptrack'].forEach(lead);rSetups()}location.hash='setups';toast('Loaded VCP setups for '+fmtDate(V.date));return}const raw=parseWorkbook(wb,f.name);const pw=IDX?IDX.filter(w=>w.date<raw.date).pop():null;setLiq(IDX?await getLiq(raw.date):null);PS=null;if(pw){try{PS=compactPS(await getWeek(pw.date))}catch(e){}}else{try{const lp=JSON.parse(localStorage.getItem('sml-ps')||'null');if(lp&&lp.d<raw.date)PS=lp.ps}catch(e){}}
+  r.onload=async()=>{try{const wb=XLSX.read(new Uint8Array(r.result),{type:'array'});if(isVcpBook(wb)){V=parseVcpWorkbook(wb,f.name);try{const vd=await fetch(`data/vcp/${V.date}.json`,{cache:'no-cache'}).then(x=>x.ok?x.json():null);if(vd){const by=Object.fromEntries([...vd.main,...vd.sme].map(x=>[x.code,x]));for(const x of [...V.main,...V.sme]){const o=by[x.code];if(o)Object.assign(x,{volh:o.volh,dry:o.dry,vt:o.vt,chgh:o.chgh,hlc:o.hlc})}}}catch(e){}if(M){vInsights();planInsights();['plan','setups','clusters','vcptrack'].forEach(lead);rSetups();rPlan()}location.hash='plan';toast('Loaded VCP setups for '+fmtDate(V.date));return}const raw=parseWorkbook(wb,f.name);const pw=IDX?IDX.filter(w=>w.date<raw.date).pop():null;setLiq(IDX?await getLiq(raw.date):null);PS=null;if(pw){try{PS=compactPS(await getWeek(pw.date))}catch(e){}}else{try{const lp=JSON.parse(localStorage.getItem('sml-ps')||'null');if(lp&&lp.d<raw.date)PS=lp.ps}catch(e){}}
     load(raw,undefined,'upload');try{localStorage.setItem('sml-ps',JSON.stringify({d:raw.date,ps:compactPS(raw)}))}catch(e){}$('#wk').value='';toast('Loaded '+f.name)}catch(err){showErr(err.message||String(err))}};r.readAsArrayBuffer(f)}
 function showErr(t){const m=$('#msg');m.hidden=false;m.textContent='Could not read that file: '+t}
 $('#file').addEventListener('change',e=>{readFile(e.target.files[0]);e.target.value=''});

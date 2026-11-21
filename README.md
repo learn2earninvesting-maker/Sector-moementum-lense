@@ -24,6 +24,10 @@ Upload each day's `vcp_setups_YYYY-MM-DD.xlsx` to the same **uploads** folder. T
 - **Setup clusters:** which sectors the setups sit in, coloured by that sector's MomentumRank.
 - **Setup tracker:** new, dropped and days-on-list, with the price move since first listed (from the second day).
 
+## Next-session plan (Setups → Next-session plan)
+
+Built from each daily VCP sheet plus the last 20 sessions of exchange data: **Ready / Watching / Avoid**, each with buy-above trigger, max entry, stop, 2R/3R targets and position size from your capital and risk %. SME stocks always show as red tiles. The site refreshes automatically at about 8 pm IST on weekdays so the day's exchange files are included.
+
 ## Each week (about 1 minute, works from a phone browser)
 
 1. Open this repo on github.com and go to the **uploads** folder.
