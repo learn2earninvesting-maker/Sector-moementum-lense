@@ -584,7 +584,7 @@ function dumb(id,G,col){const pos=v=>100*(v-1)/(M.N-1);
 function rChanges(){if(!PREV||!M.changed){$('#z-changes').innerHTML='';return}
   const cnt={};for(const g of vis()){const a=PREV.s[g.k];if(!a)continue;cnt[a+g.seg]=(cnt[a+g.seg]||0)+1}const mx=Math.max(1,...Object.entries(cnt).filter(([k])=>k[0]!==k[1]).map(e=>e[1]));
   const L={E:'Emerging',T:'Turnaround',L:'Established',F:'Fading',R:'Rangebound'};
-  let h=`<div class="mx" style="grid-template-columns:minmax(0,1.2fr) repeat(5,minmax(0,1fr))"><div class="h">was ↓ / now →</div>${ORDER.map(k=>`<div class="h">${L[k]}</div>`).join('')}`;
+  let h=`<div class="mx" style="grid-template-columns:minmax(0,1.2fr) repeat(5,minmax(0,1fr))"><div class="h">was ↓ / now →</div>${ORDER.map(k=>`<div class="h">${innerWidth<600?{E:'Emerg.',T:'Turn.',L:'Estab.',F:'Fading',R:'Range'}[k]:L[k]}</div>`).join('')}`;
   for(const a of ORDER){h+=`<div class="h" style="justify-items:start">${L[a]}</div>`;for(const b of ORDER){const n=cnt[a+b]||0,d=a===b;h+=`<div class="c" style="background:${d?'var(--soft)':n?`color-mix(in srgb,${b==='F'?'var(--dn)':b==='R'?'var(--mute)':'var(--up)'} ${15+70*n/mx}%,transparent)`:'transparent'};color:${d?'var(--mute)':'var(--ink)'}" data-tip="${esc(`${n} groups: ${L[a]} → ${L[b]}`)}">${n||''}</div>`}}
   $('#z-changes').innerHTML=h+'</div><p class="note" style="margin-top:8px">Grey diagonal = stayed in the same segment.</p>'}
 function rBars(el,rows,max,half,fmt=v=>sgn(Math.round(v))){el.innerHTML=rows.map((r,i)=>{const w=Math.min(100,Math.abs(r.v)/max*(half?100:50)),left=half?0:r.v>=0?50:50-w;
