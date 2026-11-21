@@ -176,3 +176,94 @@ def ensure(date_str):
             json.dump(data, f, separators=(",", ":"))
         return True
     return os.path.exists(path)
+
+
+# ---------------------------------------------------------------- volume history (VCP "volume drying up")
+
+def parse_nse_vol(text):
+    """SYMBOL -> traded quantity (equity-type series, summed)."""
+    out = {}
+    rows = csv.reader(io.StringIO(text))
+    head = [h.strip().upper() for h in next(rows)]
+    ix = {h: i for i, h in enumerate(head)}
+    for r in rows:
+        if len(r) < len(head):
+            continue
+        if r[ix["SERIES"]].strip().upper() not in ("EQ", "BE", "BZ", "SM", "ST", "SZ"):
+            continue
+        q = _num(r[ix["TTL_TRD_QNTY"]])
+        if q is not None:
+            sym = r[ix["SYMBOL"]].strip()
+            out[sym] = out.get(sym, 0.0) + q
+    return out
+
+
+def parse_bse_vol(text):
+    """Scrip code and ticker -> traded quantity."""
+    out = {}
+    rows = csv.reader(io.StringIO(text))
+    head = [h.strip() for h in next(rows)]
+    ix = {h: i for i, h in enumerate(head)}
+    if not all(k in ix for k in ("FinInstrmId", "TckrSymb", "TtlTradgVol")):
+        return out
+    for r in rows:
+        if len(r) < len(head):
+            continue
+        q = _num(r[ix["TtlTradgVol"]])
+        if q is None:
+            continue
+        for k in (r[ix["FinInstrmId"]].strip(), r[ix["TckrSymb"]].strip()):
+            if k:
+                out[k] = out.get(k, 0.0) + q
+    return out
+
+
+def prune_raw(keep_days=140):
+    if not os.path.isdir(RAW):
+        return
+    cut = (dt.date.today() - dt.timedelta(days=keep_days)).strftime("%Y%m%d")
+    for f in os.listdir(RAW):
+        stamp = f.split("_")[-1].split(".")[0]
+        if stamp.isdigit() and stamp < cut:
+            os.remove(os.path.join(RAW, f))
+
+
+def volumes(date_str, keys, sessions=55, lookback=95):
+    """Daily traded quantity for each key (NSE symbol or BSE code/ticker), oldest -> newest, for the
+    last `sessions` trading days on or before date_str. Returns (days, {key: [qty, ...]})."""
+    if requests is None:
+        return [], {}
+    s = _session()
+    d = dt.date.fromisoformat(date_str)
+    days, rows = [], []
+    for back in range(lookback):
+        if len(days) >= sessions:
+            break
+        day = d - dt.timedelta(days=back)
+        if day.weekday() >= 5:
+            continue
+        n = _get(s, f"https://nsearchives.nseindia.com/products/content/sec_bhavdata_full_{day:%d%m%Y}.csv",
+                 "https://www.nseindia.com/all-reports", os.path.join(RAW, f"nse_{day:%Y%m%d}.csv"))
+        b = _get(s, f"https://www.bseindia.com/download/BhavCopy/Equity/BhavCopy_BSE_CM_0_0_0_{day:%Y%m%d}_F_0000.CSV",
+                 "https://www.bseindia.com/markets/MarketInfo/BhavCopy.aspx", os.path.join(RAW, f"bse_{day:%Y%m%d}.csv"))
+        if not n and not b:
+            continue
+        nv = parse_nse_vol(n) if n else {}
+        bv = parse_bse_vol(b) if b else {}
+        days.append(day.isoformat())
+        rows.append({k: nv.get(k, 0.0) + bv.get(k, 0.0) for k in keys})
+        time.sleep(0.3)
+    days.reverse()
+    rows.reverse()
+    return days, {k: [int(r[k]) for r in rows] for k in keys}
+
+
+def dryup(series):
+    """Average volume of the last 5 sessions against the 50 sessions before them."""
+    if len(series) < 25:
+        return None
+    last, base = series[-5:], series[:-5][-50:]
+    b = sum(base) / len(base) if base else 0
+    if b <= 0:
+        return None
+    return {"r5": round(sum(last) / 5 / b, 2), "r1": round(series[-1] / b, 2)}

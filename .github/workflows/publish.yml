@@ -27,10 +27,24 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Restore cached exchange files
+        uses: actions/cache/restore@v4
+        with:
+          path: data/liq/raw
+          key: bhav-${{ github.run_id }}
+          restore-keys: bhav-
+
       - name: Convert uploaded sheets to dashboard data
         run: |
           pip install --quiet openpyxl requests
           python scripts/convert.py
+
+      - name: Cache exchange files for next run
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/liq/raw
+          key: bhav-${{ github.run_id }}
 
       - name: Save converted data back to the repo
         run: |

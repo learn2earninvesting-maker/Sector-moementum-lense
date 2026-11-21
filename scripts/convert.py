@@ -263,11 +263,32 @@ def main():
     for out in sorted(glob.glob(os.path.join(VCPDIR, "????-??-??.json"))):
         with open(out) as f:
             v = json.load(f)
+        rows = v["main"] + v["sme"]
+        if os.environ.get("SKIP_LIQUIDITY") != "1" and any("volh" not in r for r in rows):
+            import liquidity
+            keyof = lambda r: str(r["code"]) if r.get("ex") == "BSE" else re.sub(r"-SM$", "", str(r["sym"]))
+            try:
+                days, vol = liquidity.volumes(v["date"], sorted({keyof(r) for r in rows}))
+            except Exception as e:  # volume is optional; never break the build
+                print(f"volume {v['date']}: failed ({e})")
+                days, vol = [], {}
+            if days:
+                for r in rows:
+                    ser = vol.get(keyof(r), [])
+                    r["volh"] = ser
+                    r["dry"] = liquidity.dryup(ser)
+                v["voldays"] = [days[0], days[-1], len(days)]
+                with open(out, "w") as f:
+                    json.dump(v, f, separators=(",", ":"), default=str)
+                print(f"volume {v['date']}: {len(days)} sessions for {len(rows)} setups")
         vidx.append({"date": v["date"], "main": [r["code"] for r in v["main"]], "sme": [r["code"] for r in v["sme"]],
                      "close": {r["code"]: r.get("close") for r in v["main"] + v["sme"]}})
     with open(os.path.join(VCPDIR, "index.json"), "w") as f:
         json.dump(vidx, f, separators=(",", ":"))
     print(f"data/vcp/index.json: {len(vidx)} day(s)")
+    if os.environ.get("SKIP_LIQUIDITY") != "1":
+        import liquidity
+        liquidity.prune_raw()
     print(f"data/index.json: {len(index)} week(s)")
 
 
