@@ -12,6 +12,9 @@ import os
 import re
 
 import openpyxl
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOADS = os.path.join(ROOT, "uploads")
@@ -197,6 +200,13 @@ def main():
             entry["sc"] = scorecard(prev[0], prev[1]["picks"], raw)
         index.append(entry)
         prev = (raw, entry)
+    if os.environ.get("SKIP_LIQUIDITY") != "1":
+        import liquidity
+        for e in index:
+            e["liq"] = liquidity.ensure(e["date"])
+    else:
+        for e in index:
+            e["liq"] = os.path.exists(os.path.join(ROOT, "data", "liq", e["date"] + ".json"))
     with open(INDEX, "w") as f:
         json.dump(index, f, separators=(",", ":"))
     print(f"data/index.json: {len(index)} week(s)")

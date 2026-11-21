@@ -29,7 +29,7 @@ jobs:
 
       - name: Convert uploaded sheets to dashboard data
         run: |
-          pip install --quiet openpyxl
+          pip install --quiet openpyxl requests
           python scripts/convert.py
 
       - name: Save converted data back to the repo
@@ -47,6 +47,7 @@ jobs:
           mkdir _site
           cp index.html manifest.webmanifest sw.js _site/
           cp -r data icons _site/
+          rm -rf _site/data/liq/raw
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5

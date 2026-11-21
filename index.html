@@ -108,7 +108,7 @@ select,input[type=search],input[type=number]{font:16px Inter,sans-serif;min-heig
 .why{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.why span{font-size:11.5px;font-weight:600;border-radius:99px;padding:2px 8px;background:var(--bg);border:1px solid var(--line)}
 .s25 .nm{white-space:normal;line-height:1.25}.s25 .nm b{font-family:"Space Grotesk",Inter,sans-serif;font-size:15px}.s25 .nm small{display:block;color:var(--ink2);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row.s25{grid-template-columns:1.8em minmax(0,13em) minmax(0,1fr) 5.6em;min-height:54px;align-items:center}
-.chips4{display:flex;gap:3px;margin-top:3px}.chips4 i{font:600 10.5px Inter,sans-serif;font-style:normal;padding:1px 5px;border-radius:5px;background:var(--hi);color:var(--ink)}
+.chips4{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}.chips4 i{font:600 10.5px Inter,sans-serif;font-style:normal;padding:1px 5px;border-radius:5px;background:var(--hi);color:var(--ink)}
 @media(max-width:600px){.row.s25{grid-template-columns:1.6em minmax(0,1fr) 5.4em;grid-template-areas:'rk nm nm' 'rk tr v';row-gap:4px;padding:8px 4px}.s25 .rk{grid-area:rk;align-self:start}.s25 .nm{grid-area:nm}.s25 .tr{grid-area:tr}.s25 .v{grid-area:v}.stat b{font-size:22px}}
 .mixrow{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:10px;align-items:center;min-height:34px;font-size:13px}
 .mixrow .compo{margin:0;height:22px}
@@ -176,6 +176,7 @@ tr.top10 td{background:var(--gold)}
 .hi{background:var(--hi)}.lo{background:var(--lo)}
 .tv{color:inherit;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--up) 60%,transparent);text-decoration-thickness:2px;text-underline-offset:3px;display:inline-flex;align-items:center;gap:3px;padding:2px 0}.tv svg{width:12px;height:12px;color:var(--up)}.tv:hover{color:var(--up)}
 .tag{font-size:11px;font-weight:600;padding:1px 6px;border-radius:99px;margin-left:6px;white-space:nowrap;vertical-align:1px}
+.tag.lqt{background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--ink);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 60%,transparent)}
 .tag.ok{background:var(--mint);color:#0b0b0b}.tag.warn{background:var(--amb);color:var(--ink)}.tag.new{background:var(--ink);color:var(--bg)}
 .filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:end;margin:14px 0}
 .filters label{display:grid;gap:4px;font-size:13px;color:var(--ink2)}
@@ -348,8 +349,9 @@ tr.top10 td{background:var(--gold)}
 </div></section>
 <section class="view pall band" id="v-strong25" hidden><div class="wrap"><div class="lead" id="i-strong25"></div>
   <div class="ctl"><span style="font-size:14px;color:var(--ink2)">Choose the 25 by</span><div class="seg" id="s25m"><button data-k="str" aria-pressed="true">Strongest scores</button><button data-k="cap">Largest among strong</button></div></div>
+  <div class="legend" id="lqLegend" hidden><span><i class="dot" style="background:var(--est)"></i>High ₹25 Cr+/day</span><span><i class="dot" style="background:var(--up)"></i>Medium ₹2.5–25 Cr</span><span><i class="dot" style="background:var(--amb)"></i>Low ₹25 L–2.5 Cr</span><span><i class="dot" style="background:var(--dn)"></i>Very low under ₹25 L</span></div>
   <div class="rows viz" id="z-s25"></div>
-  <div class="cap">Bar = market cap on a log scale (each step is 10× bigger), used as the liquidity guide. Chips show MasterScore, EPS rank, price strength and buyer demand. "Weak sector" = its sector is outside the top 44 by MomentumRank.</div>
+  <div class="cap">Bar = average value traded per day on a log scale (each step is 10× more), coloured by liquidity tier. Chips show MasterScore, EPS rank, price strength, buyer demand, how much you could trade in a day at 10% of volume, and delivery %. "Weak sector" = outside the top 44 by MomentumRank.</div>
   <div class="after" id="j-strong25"></div>
   <details class="more"><summary>Strong 25 as a table</summary><div class="tbl"><table class="stk ws" id="t-s25"></table></div></details></div></section>
 <section class="view pall band" id="v-conviction" hidden><div class="wrap"><div class="lead" id="i-conviction"></div><div class="weeks" id="weeks"></div>
@@ -393,6 +395,8 @@ tr.top10 td{background:var(--gold)}
     <div><b>Buyer demand A+ to E</b>Buying vs selling pressure. A = heavy accumulation, C neutral, D/E distribution.</div>
   </div>
   <p><b>Price without earnings:</b> high price strength with a low EPS rank is often speculation. Sometimes the market is pricing earnings still to come, so a low EPS rank needs a stronger fundamental case, not an automatic rejection.</p>
+  <h3>Liquidity</h3>
+  <p>Liquidity is the average value traded per day over the last 5 sessions on NSE and BSE, taken from the exchanges' end-of-day files when each week is published. <b>High</b> ₹25 Cr+/day, <b>Medium</b> ₹2.5–25 Cr, <b>Low</b> ₹25 lakh–2.5 Cr, <b>Very low</b> under ₹25 lakh. "Trade up to" is 10% of the daily value, a common rule of thumb for how much you can buy or sell in a day without moving the price much. Low-liquidity stocks can gap and be hard to exit, so position size should shrink with liquidity. Free-float data is not included.</p>
   <h3>Scores and segments</h3>
   <p>Momentum Score = 40% current strength (groups + 1 − current rank) + 35% ranks gained vs 3 months ago + 15% vs 6 months ago + 10% vs last week. MRank sorts that score, ties broken by the better current rank.</p>
   <p><b>Established Leader</b> top 45 in all four periods. <b>Emerging Leader</b> top 45 now and 60+ ranks better than 6 months ago. <b>Turnaround Candidate</b> 120 or worse 3 and 6 months ago, 15+ ranks better than 3 months ago and still climbing weekly. <b>Fading Sector</b> top 45 at some point in the last 6 months, slipped 40+ ranks since. Everything else is <b>Rangebound</b>. Thin groups (3 or fewer stocks) are hidden unless you untick "Ignore thin groups" on the All sectors tab.</p>
@@ -571,7 +575,7 @@ const CH={};const chartRO=new ResizeObserver(es=>{for(const e of es){const f=CH[
 function chart(id,fn){CH[id]=fn;const el=$('#'+id);chartRO.unobserve(el);chartRO.observe(el);if(el.clientWidth)fn(el.querySelector('svg'),el.clientWidth,el.clientHeight)}
 function drawVisible(){for(const id in CH){const el=$('#'+id);if(el&&el.clientWidth)CH[id](el.querySelector('svg'),el.clientWidth,el.clientHeight)}}
 const tipG=g=>esc(`<b>${esc(clean(g.name))}</b><br>${SEG[g.seg].n} · MRank ${g.mr}<br>Rank now ${g.R} · 1 wk ${g.W} · 3 mo ${g.M3} · 6 mo ${g.M6}<br>${g.n} stocks · YTD ${g.ytd==null?'—':g.ytd.toFixed(1)+'%'}`);
-const tipS=s=>esc(`<b>${esc(s.sym)}</b> · ${esc(s.name)}<br>${esc(clean(s.g.name))} (MRank ${s.g.mr})<br>MasterScore ${esc(s.ms||'—')} · EPS ${s.eps??'—'} · Price str. ${s.rs??'—'} · Demand ${esc(s.bd||'—')}`);
+const tipS=s=>esc(`<b>${esc(s.sym)}</b> · ${esc(s.name)}<br>${esc(clean(s.g.name))} (MRank ${s.g.mr})<br>MasterScore ${esc(s.ms||'—')} · EPS ${s.eps??'—'} · Price str. ${s.rs??'—'} · Demand ${esc(s.bd||'—')}`+(LIQ&&LIQ[s.sym]?`<br>Traded ${fmtV(LIQ[s.sym][0])}/day · ${tierOf(LIQ[s.sym][0])[1]} liquidity`:''));
 function drawMap(svg,W,H){const narrow=W<520,N=M.N,p={l:narrow?34:46,r:18,t:16,b:narrow?30:36},x=v=>p.l+(v-1)/(N-1)*(W-p.l-p.r),y=v=>p.t+(v-1)/(N-1)*(H-p.t-p.b);
   const ticks=[1,45,90,135,N];let o=`<rect x="${x(1)}" y="${y(1)}" width="${x(45)-x(1)}" height="${y(45)-y(1)}" fill="var(--mint)" opacity=".35" rx="6"/>`;
   o+=ticks.map(t=>`<line x1="${x(t)}" x2="${x(t)}" y1="${p.t}" y2="${H-p.b}" stroke="var(--line)"/><line x1="${p.l}" x2="${W-p.r}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/>`+(narrow&&t!==1&&t!==N?'':`<text x="${x(t)}" y="${H-p.b+16}" font-size="12" text-anchor="middle" fill="var(--ink2)">${t}</text><text x="${p.l-6}" y="${y(t)+4}" font-size="12" text-anchor="end" fill="var(--ink2)">${t}</text>`)).join('');
@@ -673,7 +677,7 @@ const shade=v=>v==null?'':v>=80?'hi':v<50?'lo':'';
 const bdShade=b=>bdRank(b)>=11?'hi':bdRank(b)>0&&bdRank(b)<=4?'lo':'';
 const tvUrl=sym=>'https://in.tradingview.com/chart/?symbol='+encodeURIComponent((/^\d+$/.test(sym)?'BSE:':'NSE:')+sym);
 const tvA=sym=>`<a class="tv" href="${tvUrl(sym)}" target="_blank" rel="noopener" title="Open ${esc(sym)} on TradingView">${esc(sym)}<svg aria-hidden="true"><use href="#i-ext"/></svg></a>`;
-const sname=s=>`<b>${tvA(s.sym)}</b>${s.strong?'<span class="tag ok">passes rule</span>':''}${s.spec?'<span class="tag warn">price-led</span>':''}<br><span class="note">${esc(s.name)}</span>`;
+const sname=s=>`<b>${tvA(s.sym)}</b>${lqTag(s)}${s.strong?'<span class="tag ok">passes rule</span>':''}${s.spec?'<span class="tag warn">price-led</span>':''}<br><span class="note">${esc(s.name)}</span>`;
 function stockHead(cols,st){return `<thead><tr>${cols.map(([k,l,n])=>`<th data-k="${k}" class="${n?'num':''}">${l}${st&&st.k===k?(st.d>0?' ↑':' ↓'):''}</th>`).join('')}</tr></thead>`}
 function stockCells(s){return `<td><span class="grade ${esc(s.ms)}">${esc(s.ms||'—')}</span></td><td class="num ${shade(s.eps)}">${s.eps??'—'}</td><td class="num ${shade(s.rs)}">${s.rs??'—'}</td><td class="${bdShade(s.bd)}">${esc(s.bd||'—')}</td><td class="num">${fmtCr(s.cap)}</td><td class="num">${s.px==null?'—':s.px.toLocaleString('en-IN')}</td><td class="num ${s.chg>0?'pos':s.chg<0?'neg':''}">${s.chg==null?'—':s.chg.toFixed(2)}</td>`}
 const SCOLS=[['sym','Stock'],['sec','Sector (MRank)'],['ms','Master'],['eps','EPS',1],['rs','Price str.',1],['bd','Demand'],['cap','Mkt cap',1],['px','Price',1],['chg','Chg %',1]];
@@ -740,7 +744,7 @@ function rScorecard(){const sc=CURSC;
   const H=[...HIST.map(h=>h.sc&&{...h.sc,to:h.d}).filter(Boolean),{...sc,to:M.date}].filter((x,i,a)=>a.findIndex(y=>y.to===x.to)===i),m3=Math.max(...H.map(h=>Math.abs(h.pick_med-h.mkt_med)),1);
   rBars($('#z-schist'),H.map(h=>({n:fmtDate(h.to),v:h.pick_med-h.mkt_med,tip:esc(`Shortlist ${pct(h.pick_med)} vs market ${pct(h.mkt_med)} · ${h.beat}% beat`)})),m3,0,v=>(v>0?'+':'')+v.toFixed(1)+' pts');
   if(H.length<3)$('#z-schist').insertAdjacentHTML('beforeend','<p class="note" style="margin-top:6px">Bars show the shortlist\'s lead (blue) or lag (orange) over the market each week. The record grows with every upload.</p>')}
-const item=(s,cls,why)=>`<div class="sitem ${cls}" data-sk="${s.g?s.g.k:''}"><b>${tvA(s.sym)}</b> <span class="sec">${s.g?esc(clean(s.g.name))+' · MRank '+s.g.mr:''}</span><div class="why">${why.map(w=>`<span>${esc(w)}</span>`).join('')}</div></div>`;
+const item=(s,cls,why)=>`<div class="sitem ${cls}" data-sk="${s.g?s.g.k:''}"><b>${tvA(s.sym)}</b>${s.g?lqTag(s):''} <span class="sec">${s.g?esc(clean(s.g.name))+' · MRank '+s.g.mr:''}</span><div class="why">${why.map(w=>`<span>${esc(w)}</span>`).join('')}</div></div>`;
 function rShortlist(){if(!PREV||!PS){['#z-new','#z-drop','#z-upg'].forEach(x=>$(x).innerHTML='');$('#z-new').innerHTML=waitMsg(2,'Shortlist changes');['#c-new','#c-drop','#c-up'].forEach(x=>$(x).textContent='');return}
   const now=M.S.filter(isPick),was=new Set(PREV.picks),bySym=Object.fromEntries(M.S.map(s=>[s.sym,s]));
   const nw=now.filter(s=>!was.has(s.sym)).map(s=>{const p=PS[s.sym],w=[];if(!(PREV.mr[s.g.k]<=25))w.push('Sector entered top 25');if(p){if(p[1]!==s.ms&&!/^[AB]$/.test(p[1]))w.push(`MasterScore ${p[1]||'—'} → ${s.ms}`);if((p[2]||0)<80)w.push(`EPS ${p[2]??'—'} → ${s.eps}`);if((p[3]||0)<80)w.push(`Price str. ${p[3]??'—'} → ${s.rs}`);if(bdRank(p[4])<10)w.push(`Demand ${p[4]||'—'} → ${s.bd}`)}else w.push('New listing in the sheet');return item(s,'',w.length?w:['Passes the rule'])});
@@ -783,20 +787,30 @@ function rTrends(){const weeks=[...HIST,{d:M.date,R:Object.fromEntries(M.G.map(g
 document.addEventListener('click',e=>{const t=e.target.closest('.sitem[data-sk]');if(t&&t.dataset.sk)openDrill(t.dataset.sk)});
 
 /* ---------- strong 25: across all sectors, ordered by market cap ---------- */
-let s25m='str';
-function strong25(){const A=M.S.filter(s=>s.strong),sc=s=>(s.ms==='A'?10:0)+(s.eps||0)+(s.rs||0)+bdRank(s.bd)*3;
-  const P=s25m==='str'?[...A].sort((a,b)=>sc(b)-sc(a)||(b.cap||0)-(a.cap||0)).slice(0,25):[...A].sort((a,b)=>(b.cap||0)-(a.cap||0)).slice(0,25);
-  return {A,P:[...P].sort((a,b)=>(b.cap||0)-(a.cap||0))}}
-function rStrong25(){const {A,P}=strong25(),weak=P.filter(s=>s.g.mr>44).length,secs=new Set(P.map(s=>s.g.k)).size,caps=P.map(s=>s.cap||0).filter(Boolean);
-  INS.strong25=P.length?[`The ${P.length} strongest stocks in any sector, led by ${list(P.slice(0,3).map(s=>'<b>'+esc(s.sym)+'</b>'))}`,
-    `${s25m==='str'?`Picked by score from all ${A.length} stocks that pass the strong-stock rule in any sector`:`The ${P.length} largest of all ${A.length} stocks that pass the strong-stock rule`}, listed from largest to smallest market cap. The sheet has no trading-volume or free-float data, so market cap stands in for liquidity: bigger companies are usually easier to buy and sell. Check traded volume before acting on small names.`+(weak?` ${weak} sit in weak sectors; the guide prefers strong stocks inside strong sectors.`:'')]:['No stock passes the strong-stock rule this week',''];
-  STAT.strong25=[[A.length,'pass the rule, any sector'],[caps.length?fmtCr(med(caps)):'—','median market cap'],[secs,'sectors']];lead('strong25');
-  const lg=v=>Math.log10(Math.max(v||1,1)),lo=Math.min(...caps.map(lg),2),hi=Math.max(...caps.map(lg),3);
-  $('#z-s25').innerHTML=P.map((s,i)=>`<div class="row s25" data-k="${s.g.k}" data-tip="${tipS(s)}"><span class="rk" style="font:700 15px 'Space Grotesk',Inter,sans-serif;color:var(--ink2)">${i+1}</span><span class="nm"><b>${tvA(s.sym)}</b>${s.g.mr>44?'<span class="tag warn">weak sector</span>':''}<small>${esc(clean(s.g.name))} · MRank ${s.g.mr}</small><span class="chips4"><i>${esc(s.ms)}</i><i>EPS ${s.eps}</i><i>PS ${s.rs}</i><i>${esc(s.bd)}</i></span></span><div class="tr"><i style="left:0;width:${8+92*(lg(s.cap)-lo)/(hi-lo||1)}%;background:var(--up);animation-delay:${i*25}ms"></i></div><span class="v">${fmtCr(s.cap)}</span></div>`).join('')||'<div class="empty">No stock passes the rule this week.</div>';
+let s25m='str',LIQ=null,LIQD=[];
+/* liquidity: average daily traded value (Rs Cr) over the last 5 sessions, from NSE + BSE bhavcopy */
+const lq=s=>LIQ&&LIQ[s.sym]?LIQ[s.sym]:null;
+const TIERS=[[25,'High','var(--est)','Easy to trade in size'],[2.5,'Medium','var(--up)','Fine for normal positions'],[0.25,'Low','var(--amb)','Size carefully; prices can jump'],[0,'Very low','var(--dn)','Hard to exit; high liquidity risk']];
+const tierOf=v=>TIERS.find(t=>v>=t[0])||TIERS[3];
+const fmtV=v=>v==null?'—':v>=100?'₹'+Math.round(v).toLocaleString('en-IN')+' Cr':v>=1?'₹'+v.toFixed(1)+' Cr':'₹'+Math.max(0.1,v*100).toFixed(v*100<10?1:0)+' L';
+const cap10=v=>fmtV(v*0.1);
+const lqTag=s=>{const l=lq(s);if(!l)return '';const t=tierOf(l[0]);return `<span class="tag lqt" style="--c:${t[2]}" title="${t[1]} liquidity: ${fmtV(l[0])} traded per day">${fmtV(l[0])}/day</span>`};
+function strong25(){const A=M.S.filter(s=>s.strong),sc=s=>(s.ms==='A'?10:0)+(s.eps||0)+(s.rs||0)+bdRank(s.bd)*3,size=s=>LIQ?(lq(s)?.[0]??-1):(s.cap||0);
+  const P=s25m==='str'?[...A].sort((a,b)=>sc(b)-sc(a)||(b.cap||0)-(a.cap||0)).slice(0,25):[...A].sort((a,b)=>size(b)-size(a)).slice(0,25);
+  return {A,P:[...P].sort((a,b)=>size(b)-size(a)||(b.cap||0)-(a.cap||0))}}
+function rStrong25(){const {A,P}=strong25(),weak=P.filter(s=>s.g.mr>44).length,has=!!LIQ,cnt=k=>P.filter(s=>lq(s)&&tierOf(lq(s)[0])[1]===k).length,thin=cnt('Low')+cnt('Very low'),easy=cnt('High')+cnt('Medium'),nodata=has?P.filter(s=>!lq(s)).length:0;
+  $('#s25m button[data-k="cap"]').textContent=has?'Most liquid among strong':'Largest among strong';
+  INS.strong25=P.length?[has?`${easy} of the strongest 25 are easy to trade; ${thin} are thin and carry liquidity risk`:`The ${P.length} strongest stocks in any sector, led by ${list(P.slice(0,3).map(s=>'<b>'+esc(s.sym)+'</b>'))}`,
+    `${s25m==='str'?`Picked by score from all ${A.length} stocks that pass the strong-stock rule in any sector`:`The ${P.length} ${has?'most liquid':'largest'} of all ${A.length} stocks that pass the strong-stock rule`}, ranked from most to least liquid. `+
+    (has?`Liquidity is the average value traded per day over the last ${LIQD.length} sessions on NSE and BSE (${fmtDate(LIQD[LIQD.length-1])} to ${fmtDate(LIQD[0])}). "Trade up to" is 10% of that: roughly what you can buy or sell in a day without moving the price much. Low and very low names can gap and be hard to exit, so size them small.`:'Exchange trading data for this week is not available yet, so market cap stands in for liquidity. It appears after the next GitHub update.')+(weak?` ${weak} sit in weak sectors.`:'')+(nodata?` ${nodata} had no trades found in the period.`:'')]:['No stock passes the strong-stock rule this week',''];
+  STAT.strong25=has?[[easy,'easy to trade (high/medium)'],[thin,'thin: low or very low'],[A.length,'pass the rule, any sector']]:[[A.length,'pass the rule, any sector'],[fmtCr(med(P.map(s=>s.cap||0))),'median market cap'],[new Set(P.map(s=>s.g.k)).size,'sectors']];lead('strong25');
+  const val=s=>has?(lq(s)?.[0]||0.001):(s.cap||1),lg=v=>Math.log10(Math.max(v,0.001)),vals=P.map(val),lo=Math.min(...vals.map(lg)),hi=Math.max(...vals.map(lg));
+  $('#lqLegend').hidden=!has;
+  $('#z-s25').innerHTML=P.map((s,i)=>{const l=lq(s),t=l?tierOf(l[0]):null;return `<div class="row s25" data-k="${s.g.k}" data-tip="${tipS(s)}"><span class="rk" style="font:700 15px 'Space Grotesk',Inter,sans-serif;color:var(--ink2)">${i+1}</span><span class="nm"><b>${tvA(s.sym)}</b>${t?`<span class="tag lqt" style="--c:${t[2]}">${t[1]}</span>`:''}${s.g.mr>44?'<span class="tag warn">weak sector</span>':''}<small>${esc(clean(s.g.name))} · MRank ${s.g.mr} · ${fmtCr(s.cap)}</small><span class="chips4"><i>${esc(s.ms)}</i><i>EPS ${s.eps}</i><i>PS ${s.rs}</i><i>${esc(s.bd)}</i>${l?`<i style="background:var(--soft)">Trade up to ${cap10(l[0])}/day</i>${l[1]!=null?`<i style="background:var(--soft)">Delivery ${Math.round(l[1])}%</i>`:''}${l[2]<LIQD.length?`<i style="background:var(--amb)">Traded ${l[2]}/${LIQD.length} days</i>`:''}`:''}</span></span><div class="tr"><i style="left:0;width:${hi>lo?6+94*(lg(val(s))-lo)/(hi-lo):60}%;background:${t?t[2]:'var(--up)'};animation-delay:${i*25}ms"></i></div><span class="v">${has?(l?fmtV(l[0])+'<small style="display:block;font-weight:500;color:var(--mute);font-size:11px">per day</small>':'no trades'):fmtCr(s.cap)}</span></div>`}).join('')||'<div class="empty">No stock passes the rule this week.</div>';
   $('#t-s25').innerHTML=stockHead([['n','#'],['sec','Sector (MRank)'],['ms','Master'],['eps','EPS',1],['rs','Price str.',1],['bd','Demand'],['cap','Mkt cap',1],['px','Price',1],['chg','Chg %',1]])+'<tbody>'+P.map((s,i)=>`<tr class="click" data-tk="${s.g.k}"><td>${i+1}. ${sname(s)}</td><td>${esc(clean(s.g.name))} <span class="note">(${s.g.mr})</span></td>${stockCells(s)}</tr>`).join('')+'</tbody>'}
 $('#s25m').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;s25m=b.dataset.k;[...$('#s25m').children].forEach(x=>x.setAttribute('aria-pressed',x===b));rStrong25()});
 $('#t-s25').addEventListener('click',e=>{const tr=e.target.closest('tr[data-tk]');if(tr)openDrill(tr.dataset.tk)});
-function s25Text(){const {P}=strong25();return `${head()}\n\nStrong 25 (any sector), largest first:\n`+P.map((s,i)=>`${i+1}. ${s.sym} · ${fmtCr(s.cap)} · ${s.ms}/EPS ${s.eps}/PS ${s.rs}/${s.bd}`).join('\n')+`${tail('strong25')}\n\nMarket cap used as a liquidity guide. Candidates for research, not recommendations.`}
+function s25Text(){const {P}=strong25();return `${head()}\n\nStrong 25 (any sector), most liquid first:\n`+P.map((s,i)=>{const l=lq(s);return `${i+1}. ${s.sym} · ${l?fmtV(l[0])+'/day ('+tierOf(l[0])[1]+')':fmtCr(s.cap)} · ${s.ms}/EPS ${s.eps}/PS ${s.rs}/${s.bd}`}).join('\n')+`${tail('strong25')}\n\n${LIQ?'Liquidity = average value traded per day, last '+LIQD.length+' sessions (NSE+BSE).':'Market cap used as a liquidity guide.'} Candidates for research, not recommendations.`}
 
 /* ---------- render ---------- */
 function renderAll(){insights();CURSC=computeSc();wkInsights();screen();
@@ -842,7 +856,7 @@ $('#shareBtn').addEventListener('click',()=>openSheet(true));scrim.addEventListe
 $('#shSum').addEventListener('click',()=>{openSheet(false);M&&share(summaryText(),head())});
 $('#shPdf').addEventListener('click',()=>{openSheet(false);if(!M)return;document.body.classList.add('printall');const was=view,op=$$('details.more').map(d=>d.open);$$('details.more').forEach(d=>d.open=true);go('summary');
   setTimeout(()=>{window.print();document.body.classList.remove('printall');$$('details.more').forEach((d,i)=>d.open=op[i]);go(was)},400)});
-$('#shRep').addEventListener('click',()=>{openSheet(false);if(!M)return;const json=JSON.stringify({cur:window.__raw,prev:PREV,hist:HIST,site:SITE,ps:PS}).replace(/</g,'\\u003c');
+$('#shRep').addEventListener('click',()=>{openSheet(false);if(!M)return;const json=JSON.stringify({cur:window.__raw,prev:PREV,hist:HIST,site:SITE,ps:PS,liq:LIQ?{days:LIQD,s:LIQ}:null}).replace(/</g,'\\u003c');
   const html='<!DOCTYPE html>\n'+TEMPLATE.replace('</head>',`<script id="embedded" type="application/json">${json}<\/script></head>`);
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=`Sector-Momentum-${M.date||'report'}.html`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast('Report downloaded. Send the file; it opens in any browser.')});
 let deferred=null;const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
@@ -854,7 +868,7 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
 /* ---------- loading ---------- */
 function readFile(f){if(!f)return;if(typeof XLSX==='undefined'){showErr('The spreadsheet reader did not load. Check your connection and try again.');return}
   $('#asof').textContent='Reading…';const r=new FileReader();
-  r.onload=async()=>{try{const raw=parseWorkbook(XLSX.read(new Uint8Array(r.result),{type:'array'}),f.name);const pw=IDX?IDX.filter(w=>w.date<raw.date).pop():null;PS=null;if(pw){try{PS=compactPS(await getWeek(pw.date))}catch(e){}}else{try{const lp=JSON.parse(localStorage.getItem('sml-ps')||'null');if(lp&&lp.d<raw.date)PS=lp.ps}catch(e){}}
+  r.onload=async()=>{try{const raw=parseWorkbook(XLSX.read(new Uint8Array(r.result),{type:'array'}),f.name);const pw=IDX?IDX.filter(w=>w.date<raw.date).pop():null;setLiq(IDX?await getLiq(raw.date):null);PS=null;if(pw){try{PS=compactPS(await getWeek(pw.date))}catch(e){}}else{try{const lp=JSON.parse(localStorage.getItem('sml-ps')||'null');if(lp&&lp.d<raw.date)PS=lp.ps}catch(e){}}
     load(raw,undefined,'upload');try{localStorage.setItem('sml-ps',JSON.stringify({d:raw.date,ps:compactPS(raw)}))}catch(e){}$('#wk').value='';toast('Loaded '+f.name)}catch(err){showErr(err.message||String(err))}};r.readAsArrayBuffer(f)}
 function showErr(t){const m=$('#msg');m.hidden=false;m.textContent='Could not read that file: '+t}
 $('#file').addEventListener('change',e=>{readFile(e.target.files[0]);e.target.value=''});
@@ -862,11 +876,13 @@ $('#file').addEventListener('change',e=>{readFile(e.target.files[0]);e.target.va
 ['dragleave','drop'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();if(ev==='drop'||!e.relatedTarget)document.body.classList.remove('drop-on')}));
 document.addEventListener('drop',e=>{const f=e.dataTransfer?.files?.[0];if(f)readFile(f)});
 function weekSel(){const w=$('#wk');if(!IDX||!IDX.length){w.hidden=true;return}w.hidden=false;w.innerHTML=[...IDX].reverse().map(x=>`<option value="${x.date}">${fmtDate(x.date)}</option>`).join('')}
+const getLiq=d=>fetch(`data/liq/${d}.json`,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null);
+const setLiq=l=>{LIQ=l&&l.s?l.s:null;LIQD=l&&l.days?l.days:[]};
 const getWeek=d=>fetch(`data/weeks/${d}.json`,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('missing week');return r.json()});
-async function loadWeek(d){const i=IDX.findIndex(x=>x.date===d);const [raw,pr]=await Promise.all([getWeek(d),i>0?getWeek(IDX[i-1].date).catch(()=>null):null]);PS=pr?compactPS(pr):null;HIST=IDX.slice(0,Math.max(i,0)).map(toPrev);load(raw,HIST.length?HIST[HIST.length-1]:null,'repo');$('#wk').value=d}
+async function loadWeek(d){const i=IDX.findIndex(x=>x.date===d);const [raw,pr,lqd]=await Promise.all([getWeek(d),i>0?getWeek(IDX[i-1].date).catch(()=>null):null,getLiq(d)]);setLiq(lqd);PS=pr?compactPS(pr):null;HIST=IDX.slice(0,Math.max(i,0)).map(toPrev);load(raw,HIST.length?HIST[HIST.length-1]:null,'repo');$('#wk').value=d}
 $('#wk').addEventListener('change',e=>loadWeek(e.target.value).catch(()=>showErr('Could not load that week.')));
 (async()=>{const emb=document.getElementById('embedded');
-  if(emb){try{const d=JSON.parse(emb.textContent);SITE=d.site||'';HIST=(d.hist||[]).map(toPrev);PS=d.ps||null;load(d.cur,d.prev||null,'snapshot');return}catch(e){console.error(e);showErr('This report could not be opened.')}}
+  if(emb){try{const d=JSON.parse(emb.textContent);SITE=d.site||'';HIST=(d.hist||[]).map(toPrev);PS=d.ps||null;setLiq(d.liq||null);load(d.cur,d.prev||null,'snapshot');return}catch(e){console.error(e);showErr('This report could not be opened.')}}
   try{const r=await fetch('data/index.json',{cache:'no-cache'});if(!r.ok)throw 0;IDX=await r.json();if(!IDX.length)throw 0;SITE=location.origin+location.pathname;weekSel();await loadWeek(IDX[IDX.length-1].date);return}catch(e){IDX=null}
   try{const r=await fetch('sample.json');if(!r.ok)throw 0;load(await r.json(),undefined,'sample');return}catch(e){}
   $('#asof').textContent='No data yet';$('#title').textContent='Open your weekly Ranked Sector List';$('#src').textContent='No published week yet. Tap the upload icon to open a sheet.';nav()})();
