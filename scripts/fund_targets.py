@@ -4,7 +4,7 @@ Universe (a superset of what the dashboard shows, so every final stock is covere
   - weekly sheet stocks that can pass the strong-stock rule (MasterScore A/B, EPS 80+, price strength 80+, demand B+)  -> Strong 25
   - every stock on the newest daily VCP sheet (mainboard and SME)                                            -> VCP setups, Confluence
   - delivery-thrusting A/B stocks in early-inflow or confirmed groups from data/flow/latest.json             -> Confluence watchlist
-A stock is listed when it has no saved fundamentals or they are older than MAX_AGE days.
+A stock is listed when it has no saved fundamentals, they are older than MAX_AGE days, or they lack metrics added later.
 
 Output (stdout, JSON): {"metrics": [...], "targets": [{"key", "q", "name", "why"}]}
   key = the id the dashboard uses (NSE symbol, or BSE code for BSE-only stocks)
@@ -23,11 +23,16 @@ FUND = os.path.join(ROOT, "data", "fund", "stocks.json")
 MAX_AGE = 7
 BD = {"A+": 13, "A": 12, "A-": 11, "B+": 10}  # buyer demand B+ or better, as in the strong-stock rule
 
-# exact StockScans metric names, in the order the dashboard reads them (keep in sync with FUNDM in index.html)
+# exact StockScans metric names (max 40 per getRatios call with Sector), in the order the dashboard reads them (keep in sync with FUNDM in index.html)
 METRICS = ["ROCE", "ROE", "Debt To Equity", "Interest Coverage", "Revenue Growth YoY", "PAT Growth YoY",
            "EPS Growth 3 Years", "CFO To PAT", "Promoter Holdings", "Change In Promoter Holdings 1 Year",
            "Pledged Percentage", "Change In FII Holdings Latest Quarter", "Change In DII Holdings Latest Quarter",
-           "Price To Earnings", "Industry PE Median", "PEG", "PAT", "Operating Cash Flow"]
+           "Price To Earnings", "Industry PE Median", "PEG", "PAT", "Operating Cash Flow",
+           # forward checks: peak margin, direction, what is priced in
+           "OPM", "OPM Median 5 Years", "OPM Latest Quarter", "OPM Preceding Year Quarter",
+           "Revenue Latest Quarter", "Revenue Preceding Year Quarter", "Revenue Growth 3 Years",
+           "PAT Latest Quarter", "PAT Preceding Year Quarter", "CWIP", "Fixed Assets",
+           "Price To Earnings Median 5 Years", "Days Receivable", "Days Receivable 1 Year Back"]
 
 
 def newest(pattern):
@@ -76,7 +81,9 @@ def main():
     cut = (dt.date.today() - dt.timedelta(days=MAX_AGE)).isoformat()
     out = []
     for key, e in sorted(want.items()):
-        if "--all" not in sys.argv and key in have and have[key].get("d", "") >= cut:
+        h = have.get(key)
+        fresh = h and h.get("d", "") >= cut and (h.get("m") is None or len(h["m"]) >= len(METRICS))
+        if "--all" not in sys.argv and fresh:
             continue
         e["q"] = e["name"] if key.isdigit() and e["name"] else key
         out.append(e)

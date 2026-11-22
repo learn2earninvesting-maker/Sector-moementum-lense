@@ -56,6 +56,16 @@ Every final stock (Strong 25, VCP setups, Confluence and its watchlist) gets a f
 - **Strong** 70+, **OK** 50–69, **Weak** under 50. **Red flag**: pledge over 10%, promoter stake down more than 3 points in a year, losses, negative operating cash flow, debt/equity over 2, interest cover under 1.5x.
 - A **Fundamentals** filter (Any / Hide weak & red flags / Strong only) sits on Strong 25, VCP setups and Confluence. In Confluence, A-list needs fundamentals OK or Strong, and a red flag moves a setup to Skip.
 
+### Forward check (past numbers can flatter a company at its peak)
+
+- **Is it a peak?** Margin vs its own 5-year normal (stricter in cyclical sectors), and sales growth vs its 3-year trend.
+- **Which way is it heading?** Latest quarter's profit vs sales growth, quarter margin vs a year ago, new capacity being built (work in progress vs fixed assets), receivable days.
+- **What is priced in?** PE vs its own 5-year median. A peak-looking margin at an above-normal PE is the classic trap.
+- **Management read** for the evening's A/B names: StockScans' guidance record (promises delivered vs missed), latest concall, growth drivers and forensic flags, summarised by the evening task into `data/fund/notes.json` (`scripts/fund_notes.py`).
+- Verdict: **Forward OK / watch / trap**. A trap (peak margin at a high PE, profit falling while sales rise, or guidance cut) moves a Confluence setup to Skip; the Fundamentals filter can hide traps everywhere.
+
+It screens out known traps; it does not predict the future.
+
 ## Install it as an app
 
 - **Android (Chrome):** open the link → Share icon in the dashboard → **Install the app** (or Chrome menu → Install app).

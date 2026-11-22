@@ -49,7 +49,11 @@ def main(path):
             missing += 1
             continue
         m = e.get("m") or {}
-        S[key] = {"d": today, "n": e.get("n", ""), "sec": e.get("sec", ""), "m": [num(m.get(k)) for k in METRICS]}
+        old = S.get(key) or {}
+        prev = dict(zip(old.get("metrics_order") or METRICS, old.get("m") or [])) if old.get("m") else {}
+        vals = [num(m[k]) if k in m else prev.get(k) for k in METRICS]  # a metric not fetched this time keeps its saved value
+        S[key] = {"d": today if len(m) >= len(METRICS) - 1 else old.get("d", today), "n": e.get("n") or old.get("n", ""),
+                  "sec": e.get("sec") or old.get("sec", ""), "m": vals}
         added += 1
     cut = (dt.date.today() - dt.timedelta(days=KEEP_DAYS)).isoformat()
     S = {k: v for k, v in S.items() if v.get("d", "") >= cut}
