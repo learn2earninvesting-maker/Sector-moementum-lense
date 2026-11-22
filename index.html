@@ -422,6 +422,17 @@ tr.top10 td{background:var(--gold)}
   <div class="seg" id="mvp" style="margin-bottom:16px"><button data-k="W" aria-pressed="true">1 week</button><button data-k="M3">3 months</button></div>
   <div class="split"><div><h3>Climbers</h3><div class="rows" id="up"></div></div><div><h3>Fallers</h3><div class="rows" id="dn"></div></div></div><div class="after" id="j-movers"></div></div></section>
 <section class="view pall band" id="v-breadth" hidden><div class="wrap"><div class="lead" id="i-breadth"></div><div class="rows viz" id="z-breadth" style="max-width:860px"></div><p class="note">Bar = share of the group's stocks with Price Strength 70+. The dashed line marks 30%: below it, a few names carry the group.</p><div class="after" id="j-breadth"></div><details class="more"><summary>Breadth as a table</summary><div class="tbl"><table class="stack" id="t-breadth"></table></div></details></div></section>
+<section class="view pall band" id="v-flow" hidden><div class="wrap"><div class="lead" id="i-liqflow"><div class="kicker"><i></i>Liquidity flow</div><h2>Loading delivery data…</h2></div>
+  <div class="legend"><span><i class="dot" style="background:var(--up)"></i>Early inflow (lead)</span><span><i class="dot" style="background:var(--est)"></i>Confirmed</span><span><i class="dot" style="background:var(--dn)"></i>Leaders losing flow</span><span><i class="dot" style="background:var(--rb)"></i>Neutral</span></div>
+  <div class="fig" id="z-flowmap"><svg></svg></div>
+  <div class="cap">Each dot is an industry group. Up = more delivery money coming in (Flow Score). Right = more of its stocks above their 50-day average (Price Score). The mint corner, high flow with price still weak, is where money arrives before price confirms. Tap a dot.</div>
+  <h3 style="margin-top:22px">Early inflow: delivery building, price not there yet</h3><div class="cards" id="z-flead"></div>
+  <h3 style="margin-top:22px">Confirmed: flow and price both strong</h3><div class="cards" id="z-fconf"></div>
+  <h3 style="margin-top:22px">Leaders losing flow</h3><div class="rows viz" id="z-ffade" style="max-width:860px"></div>
+  <h3 style="margin-top:22px">Does it lead? Track record</h3><div id="z-ftest"></div>
+  <div class="after" id="j-liqflow"></div>
+  <details class="more"><summary>Every group's flow as a table</summary><div class="tbl"><table class="stack" id="t-flow"></table></div></details>
+</div></section>
 <section class="view band" id="v-sector" hidden><div class="wrap">
   <div class="lead" id="i-sector"></div>
   <div class="ctl"><input type="search" id="sfind" placeholder="Find a stock by ticker or name" aria-label="Find a stock" style="width:min(100%,380px)"></div>
@@ -482,8 +493,8 @@ const TEMPLATE=(()=>{const c=document.documentElement.cloneNode(true);c.querySel
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const SEG={E:{n:'Emerging Leader',c:'var(--up)'},T:{n:'Turnaround Candidate',c:'var(--up)',hollow:1},L:{n:'Established Leader',c:'var(--est)'},F:{n:'Fading Sector',c:'var(--dn)'},R:{n:'Rangebound',c:'var(--rb)'}};
 const ORDER=['E','T','L','F','R'];
-const GROUPS=[['home','Home','i-home',['summary']],['weekly','Weekly','i-cal',['changes','scorecard','shortlist','speed','trends']],['sectors','Sectors','i-sec',['top25','emerging','leaders','fading','turnarounds','rotation','movers','breadth']],['stocks','Stocks','i-stk',['stocks','strong25','conviction','sector']],['setups','Setups','i-vcp',['plan','setups','clusters','vcptrack']],['more','More','i-more',['all','method']]];
-const TABS={summary:'Summary',plan:'Next-session plan',setups:'VCP setups',clusters:'Setup clusters',vcptrack:'Setup tracker',changes:'Segment changes',scorecard:'Scorecard',shortlist:'Shortlist changes',speed:'Speed',trends:'Trends',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',strong25:'Strong 25',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',all:'All sectors',method:'Method'};
+const GROUPS=[['home','Home','i-home',['summary']],['weekly','Weekly','i-cal',['changes','scorecard','shortlist','speed','trends']],['sectors','Sectors','i-sec',['top25','flow','emerging','leaders','fading','turnarounds','rotation','movers','breadth']],['stocks','Stocks','i-stk',['stocks','strong25','conviction','sector']],['setups','Setups','i-vcp',['plan','setups','clusters','vcptrack']],['more','More','i-more',['all','method']]];
+const TABS={summary:'Summary',plan:'Next-session plan',setups:'VCP setups',clusters:'Setup clusters',vcptrack:'Setup tracker',changes:'Segment changes',scorecard:'Scorecard',shortlist:'Shortlist changes',speed:'Speed',trends:'Trends',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',strong25:'Strong 25',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',flow:'Liquidity flow',all:'All sectors',method:'Method'};
 let M=null,PREV=null,HIST=[],IDX=null,SRC='',SITE='',cmp='M3',mv='W',show=new Set(ORDER),view='summary',lastIn={};
 const sorts={};let sortT={k:'cmp',d:-1},sortD={k:'ms',d:1},dk=null;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -603,6 +614,42 @@ const shareIco='<svg><use href="#i-share"/></svg>';
 function lead(id){const v=INS[id],st=STAT[id];if(!v)return;const j=$('#j-'+id),tail=(v[1]?`<p>${v[1]}</p>`:'')+(id==='sector'?'':`<button class="share" data-share="${id}">${shareIco}Share this insight</button>`);
   $('#i-'+id).innerHTML=`<div class="kicker"><i></i>${TABS[id]} · ${['plan','setups','clusters','vcptrack'].includes(id)&&V?'scan of '+fmtDate(V.date):'week of '+fmtDate(M.date)}</div><h2>${v[0]}</h2>`+(st?`<div class="stats">${st.map((x,i)=>`<div class="stat${i===0?' m':''}"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div>`:'')+(j?'':tail);if(j)j.innerHTML=tail}
 
+/* ---------- liquidity flow (NSE delivery data, scripts/flow.py) ---------- */
+let FL=null,flTried=false;
+const FQ={lead:['Early inflow','var(--up)'],confirmed:['Confirmed','var(--est)'],fading:['Leaders losing flow','var(--dn)'],neutral:['Neutral','var(--rb)']};
+const flTip=g=>esc(`<b>${esc(g.name)}</b> · ${FQ[g.q][0]}<br>Flow ${Math.round(g.F)} · Price ${Math.round(g.P)} · ${g.n} stocks`+(g.R?` · MRank ${g.R}`:'')+`<br>Delivery value ${g.rg}x its base · ${g.thr}% of stocks thrusting · ${g.up}% on up days`+(g.top&&g.top.length?`<br>`+g.top.slice(0,3).map(t=>`${esc(t.sym)} ${t.x}x, ${t.r10>0?'+':''}${t.r10}%`).join(' · '):''));
+async function rFlow(){if(!FL&&!flTried){flTried=true;try{const r=await fetch('data/flow/latest.json',{cache:'no-cache'});if(r.ok)FL=await r.json()}catch(e){}}
+  const L=$('#i-liqflow');
+  if(!FL){L.innerHTML='<div class="kicker"><i></i>Liquidity flow</div><h2>No delivery data yet</h2><p>The site builds this from NSE\'s daily delivery file at about 8 pm IST on weekdays. It needs 50 sessions of files, so the first run downloads about four months of history.</p>';return}
+  const G=FL.groups,by=q=>G.filter(g=>g.q===q),ld=by('lead'),cf=by('confirmed'),fd=by('fading');
+  const nm=a=>a.slice(0,3).map(g=>g.name).join(', ');
+  L.innerHTML=`<div class="kicker"><i></i>Liquidity flow · NSE delivery data to ${fmtDate(FL.date)}</div><h2>${ld.length?`Delivery money is building in ${esc(nm(ld))} before price confirms`:cf.length?`Delivery money is strongest in ${esc(nm(cf))}, already backed by price`:'No group shows a clear delivery build-up right now'}</h2>
+  <p>Built only from delivered shares, so intraday and high-frequency round trips (bought and sold the same day) count for nothing. ${G.length} groups, ${FL.stocks} stocks trading Rs ${FL.rules.min_tv} Cr+ a day.</p>
+  <div class="stats"><div class="stat m"><b>${ld.length}</b><span>early inflow</span></div><div class="stat"><b>${cf.length}</b><span>confirmed</span></div><div class="stat"><b>${fd.length}</b><span>leaders losing flow</span></div></div>`;
+  chart('z-flowmap',(svg,W,H)=>{const p={l:40,r:14,t:12,b:34},x=v=>p.l+v/100*(W-p.l-p.r),y=v=>p.t+(100-v)/100*(H-p.t-p.b);
+    let o=`<rect x="${x(0)}" y="${y(100)}" width="${x(50)-x(0)}" height="${y(60)-y(100)}" fill="var(--mint)" opacity=".4" rx="6"/>`;
+    o+=[0,25,50,75,100].map(t=>`<line x1="${x(t)}" x2="${x(t)}" y1="${y(100)}" y2="${y(0)}" stroke="var(--line)"/><line x1="${x(0)}" x2="${x(100)}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${x(t)}" y="${H-p.b+16}" font-size="12" text-anchor="middle" fill="var(--ink2)">${t}</text><text x="${p.l-6}" y="${y(t)+4}" font-size="12" text-anchor="end" fill="var(--ink2)">${t}</text>`).join('');
+    o+=`<line x1="${x(0)}" x2="${x(100)}" y1="${y(60)}" y2="${y(60)}" stroke="var(--ink2)" stroke-dasharray="4 4"/><line x1="${x(50)}" x2="${x(50)}" y1="${y(100)}" y2="${y(0)}" stroke="var(--ink2)" stroke-dasharray="4 4"/>`;
+    o+=`<text x="${x(100)}" y="${H-4}" font-size="12" text-anchor="end" fill="var(--ink2)">Price Score →</text><text x="${x(0)+4}" y="${y(100)+14}" font-size="12" fill="var(--ink2)">↑ Flow Score</text>`;
+    o+=[...G].sort((a,b)=>(a.q==='neutral')-(b.q==='neutral')).reverse().map(g=>`<circle data-k="${g.k}" data-tip="${flTip(g)}" cx="${x(g.P)}" cy="${y(g.F)}" r="${Math.max(4,Math.min(11,2+Math.sqrt(g.n)))}" fill="${FQ[g.q][1]}" fill-opacity="${g.q==='neutral'?.45:.9}" stroke="var(--bg)" style="cursor:pointer"/>`).join('');
+    o+=[...ld,...cf].slice(0,8).map(g=>`<text x="${g.P>60?x(g.P)-9:x(g.P)+9}" y="${y(g.F)+4}" font-size="12" text-anchor="${g.P>60?'end':'start'}" fill="var(--ink)" style="pointer-events:none">${esc(g.name.length>22?g.name.slice(0,21)+'…':g.name)}</text>`).join('');
+    svg.innerHTML=o});
+  const card=g=>`<div class="card" data-fk="${g.k}" style="cursor:pointer"><b>${esc(g.name)}</b><span>Flow ${Math.round(g.F)}${g.F5!=null?` (${g.F>=g.F5?'+':''}${Math.round(g.F-g.F5)} in 5 days)`:''} · Price ${Math.round(g.P)}${g.R?` · MRank ${g.R}`:''} · ${g.n} stocks</span>
+    <span>Delivery value <b>${g.rg}x</b> its base · ${g.thr}% of stocks thrusting · ${g.up}% delivered on up days · delivery % ${g.ds>=0?'+':''}${g.ds} pts</span>
+    <table class="stk" style="margin-top:6px;font-size:13px"><tr><th>Stock</th><th class="num">Deliv. x</th><th class="num">10d</th><th class="num">Deliv %</th></tr>${g.top.slice(0,5).map(t=>`<tr><td>${esc(t.sym)}${t.t?' ●':''}</td><td class="num">${t.x}</td><td class="num">${t.r10>0?'+':''}${t.r10}%</td><td class="num">${t.dp??'—'}${t.dpb!=null?` <small style="color:var(--mute)">(${t.dpb})</small>`:''}</td></tr>`).join('')}</table><i>Open sector →</i></div>`;
+  const none=t=>`<div class="wait">${t}</div>`;
+  $('#z-flead').innerHTML=ld.length?ld.slice(0,9).map(card).join(''):none('No group in the early-inflow corner today.');
+  $('#z-fconf').innerHTML=cf.length?cf.slice(0,6).map(card).join(''):none('No group has both strong flow and strong price today.');
+  rBars($('#z-ffade'),fd.slice(0,10).map(g=>({n:g.name,v:Math.round(100*(1-g.rg)),k:g.k,tip:flTip(g),c:'var(--dn)'})),60,1,v=>'−'+v+'%');
+  if(!fd.length)$('#z-ffade').innerHTML=none('No strong group is losing delivery money right now.');
+  const T=FL.test,tt=(q,lab)=>{const r=T[q];return `<div class="stat${q==='lead'?' m':''}"><b>${r&&r.hit!=null?r.hit+'%':'—'}</b><span>${lab}: beat the median group over the next ${FL.rules.fwd} sessions${r&&r.signals?` · ${r.signals} signals, ${r.excess>0?'+':''}${r.excess}% vs median`:''}</span></div>`};
+  const enough=T.lead&&T.lead.sessions>=20;
+  $('#z-ftest').innerHTML=`<div class="stats">${tt('lead','Early inflow')}${tt('confirmed','Confirmed')}${tt('fading','Losing flow')}</div><p class="note">${FL.hist_days} sessions of history. ${enough?'Signals on consecutive days overlap, so treat the count as a rough guide.':`Still building: a fair read needs early-inflow signals on at least 20 different sessions (${T.lead?T.lead.sessions:0} so far). It fills in by itself every weekday.`}</p>`;
+  $('#j-liqflow').innerHTML=`<p><b>How the Flow Score works (0–100).</b> For each stock, delivered value (delivered shares × average price) over the last ${FL.rules.recent} sessions is compared with the ${FL.rules.base} sessions before. A stock is <i>thrusting</i> when delivery value is ${FL.rules.thrust}x or more and its price is up over the 10 sessions (● in the cards). Group score = 35% share of stocks thrusting + 30% group delivery value vs base + 20% share of delivery done on up days + 15% change in delivery %. Price Score = share of the group's stocks above their 50-day average.</p><p>Only NSE's EQ series is used: trade-for-trade stocks (BE/BZ) are 100% delivery by rule, and SME boards are too thin. Groups need 3+ stocks trading Rs ${FL.rules.min_tv} Cr+ a day. Groups come from the weekly sheet of ${fmtDate(FL.week)}. Education, not investment advice.</p>`;
+  const cols=[['Group','name'],['Status','q'],['Flow','F'],['Price','P'],['Deliv. x','rg'],['Thrust %','thr'],['Up-day %','up'],['Deliv % Δ','ds'],['MRank','R'],['Stocks','n']];
+  $('#t-flow').innerHTML=`<tr>${cols.map(c=>`<th${c[1]==='name'||c[1]==='q'?'':' class="num"'}>${c[0]}</th>`).join('')}</tr>`+G.map(g=>`<tr data-k="${g.k}" class="row" style="display:table-row">${cols.map(c=>`<td${c[1]==='name'||c[1]==='q'?'':' class="num"'}>${c[1]==='q'?FQ[g.q][0]:esc(g[c[1]]??'—')}</td>`).join('')}</tr>`).join('')}
+$('#v-flow').addEventListener('click',e=>{const c=e.target.closest('[data-fk]');if(c)openDrill(c.dataset.fk)});
+
 /* ---------- navigation ---------- */
 const groupOf=v=>GROUPS.find(g=>g[3].includes(v));
 const tabsIn=g=>g[3];
@@ -611,7 +658,7 @@ function nav(){const cg=groupOf(view);
   const T=tabsIn(cg);$('#chips').hidden=T.length<2;$('#chips').innerHTML=`<div class="scroll">${T.map(t=>`<a href="#${t}" data-v="${t}" aria-current="${t===view?'page':'false'}">${TABS[t]}</a>`).join('')}</div>`;
   $(`#chips a[data-v="${view}"]`)?.scrollIntoView({block:'nearest',inline:'center'})}
 function go(v){if(!TABS[v])v='summary';view=v;lastIn[groupOf(v)[0]]=v;
-  $$('.view').forEach(s=>s.hidden=s.id!=='v-'+v);nav();window.scrollTo(0,0);hideTip();requestAnimationFrame(drawVisible)}
+  $$('.view').forEach(s=>s.hidden=s.id!=='v-'+v);nav();window.scrollTo(0,0);hideTip();if(v==='flow')rFlow().then(()=>requestAnimationFrame(drawVisible));requestAnimationFrame(drawVisible)}
 addEventListener('hashchange',()=>go(location.hash.slice(1)));
 $('#gnav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const g=GROUPS.find(x=>x[0]===b.dataset.g);const t=lastIn[g[0]]&&tabsIn(g).includes(lastIn[g[0]])?lastIn[g[0]]:tabsIn(g)[0];location.hash=t;if(t===view)go(t)});
 
