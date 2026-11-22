@@ -329,7 +329,11 @@ def main():
                               "t": d["thrust"]} for s, d in top]})
     rows.sort(key=lambda r: -r["F"])
     latest = {"date": days[-1], "week": wk["date"], "sessions": len(days), "scored": sum(1 for p in per_day if p),
-              "stocks": len(detail), "groups": rows, "test": track_record(H), "hist_days": len(H["days"]),
+              "stocks": len(detail), "groups": rows,
+              # per stock: [delivery x, 10d %, up-day delivery %, delivery % now, delivery % base, thrust, above 50D, Rs Cr/day]
+              "stk": {s: [round(d["ratio"], 2), round(100 * d["ret10"], 1), round(100 * d["up"]),
+                          None if d["dp"] is None else round(d["dp"], 1), None if d["dpb"] is None else round(d["dpb"], 1),
+                          1 if d["thrust"] else 0, 1 if d["above"] else 0, round(d["tv"], 1)] for s, d in detail.items()}, "test": track_record(H), "hist_days": len(H["days"]),
               "rules": {"recent": RECENT, "base": BASE, "thrust": THRUST, "min_tv": MIN_TV, "fwd": FWD}}
     with open(os.path.join(OUT, "latest.json"), "w") as f:
         json.dump(latest, f, separators=(",", ":"))
