@@ -10,7 +10,8 @@ ETF groups are left out. Stocks trading under Rs 2.5 Cr a day (20-session averag
 
 For each stock, on each session (recent = last 10 sessions, base = the 40 sessions before them):
   delivery value  = delivered qty x average traded price (Rs Cr)
-  thrust          = recent avg delivery value >= 1.3 x base avg, AND price up over the 10 sessions
+  thrust          = recent avg delivery value >= 1.3 x base avg, AND price up over the 10 sessions,
+                    AND delivery % not more than 5 pts below its base (else it is a volume spike, not accumulation)
   up-day share    = share of recent delivery value delivered on up-close days
   delivery % shift= delivered/traded qty, recent minus base (percentage points)
   above 50D       = close above its 50-session average (split-safe, from daily % changes)
@@ -191,7 +192,9 @@ def score_series(days, data, sym2g):
             dq_b = sum(a["r"][j][4] for j in base); tq_b = sum(a["r"][j][3] for j in base)
             ma50 = mean(a["lvl"][i - NEED + 1:i + 1])
             dvt = sum(a["dv"][j] for j in rec)
-            m = {"ratio": ratio, "thrust": ratio >= THRUST and ret10 > 0, "dvr": dv_rec, "dvb": dv_base, "dvt": dvt,
+            # thrust also needs delivery share holding up: a volume spike with falling delivery % is churn
+            dshare_ok = tq_r > 0 and tq_b > 0 and dq_r / tq_r >= dq_b / tq_b - 0.05
+            m = {"ratio": ratio, "thrust": ratio >= THRUST and ret10 > 0 and dshare_ok, "dvr": dv_rec, "dvb": dv_base, "dvt": dvt,
                  "up": up_dv, "dq_r": dq_r, "tq_r": tq_r, "dq_b": dq_b, "tq_b": tq_b,
                  "above": a["lvl"][i] > ma50, "ret10": ret10}
             G.setdefault(sym2g[s], []).append(m)
