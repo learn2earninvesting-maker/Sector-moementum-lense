@@ -36,6 +36,18 @@ Built from each daily VCP sheet plus the last 20 sessions of exchange data: **Re
 
 The week is taken from the date in the file name (`..._21_11_2026_...`) or from "Data as of" inside the sheet. Re-uploading a week replaces that week.
 
+## Liquidity flow (Sectors → Liquidity flow)
+
+Shows which industry groups **delivery-based** money is moving into, before price confirms it. Built every weekday at about 8 pm IST from NSE's daily delivery file (`sec_bhavdata_full`), with no upload needed.
+
+- **Delivery only:** delivered shares × average price. Intraday and high-frequency round trips (bought and sold the same day) deliver nothing, so they cannot move the score. Only the EQ series is used (BE/BZ are 100% delivery by rule; SME is too thin). Stocks under ₹2.5 Cr a day are left out.
+- **Flow Score (0–100) per group:** 35% share of stocks "thrusting" (10-session delivery value ≥ 1.3× the 40 sessions before, with price up) + 30% group delivery value vs base + 20% share delivered on up days + 15% change in delivery %.
+- **Price Score:** share of the group's stocks above their 50-day average.
+- **Reading:** Flow 60+ with Price under 50 = **Early inflow** (the lead signal). Flow 60+ with Price 50+ = **Confirmed**. Price 60+ with delivery value under 0.85× base = **Leaders losing flow**.
+- **Track record:** every session's signals are checked against the next 20 sessions (vs the median group), so you can see whether early inflow really leads. It needs about two months of history to mean much and fills in by itself.
+
+Groups come from the latest weekly sheet. `scripts/flow.py` writes `data/flow/latest.json` and `data/flow/history.json`. The first run downloads about four months of NSE files, which takes a few minutes.
+
 ## Install it as an app
 
 - **Android (Chrome):** open the link → Share icon in the dashboard → **Install the app** (or Chrome menu → Install app).
@@ -59,6 +71,7 @@ Settings → Pages → *Build and deployment* → Source: **GitHub Actions**. Th
 
 - `index.html`: the whole dashboard
 - `uploads/`: weekly sheets go here
+- `scripts/flow.py`: scores liquidity flow from NSE delivery data into `data/flow/`
 - `scripts/convert.py`: turns a sheet into `data/weeks/<date>.json` and rebuilds `data/index.json` (same scoring as the page)
 - `.github/workflows/publish.yml`: runs the converter and publishes to GitHub Pages
 

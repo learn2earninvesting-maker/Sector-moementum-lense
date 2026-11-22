@@ -41,6 +41,9 @@ jobs:
           pip install --quiet openpyxl requests
           python scripts/convert.py
 
+      - name: Score liquidity flow from NSE delivery data
+        run: python scripts/flow.py
+
       - name: Cache exchange files for next run
         if: always()
         uses: actions/cache/save@v4
