@@ -48,6 +48,14 @@ Shows which industry groups **delivery-based** money is moving into, before pric
 
 Groups come from the latest weekly sheet. `scripts/flow.py` writes `data/flow/latest.json` and `data/flow/history.json`. The first run downloads about four months of NSE files, which takes a few minutes.
 
+## Fundamentals (StockScans)
+
+Every final stock (Strong 25, VCP setups, Confluence and its watchlist) gets a fundamental check from StockScans. StockScans can't be reached from GitHub, so the **evening Claude task** (about 8:40 pm IST on weekdays) runs `scripts/fund_targets.py`, fetches the missing or week-old names from StockScans, saves them with `scripts/fund_merge.py` to `data/fund/stocks.json`, and pushes. The site scores them:
+
+- **Score out of 100** from what is available: growth (sales and profit YoY, 3-year EPS), quality (ROCE, ROE, cash flow vs profit), balance sheet (debt/equity, interest cover, pledge), ownership (promoter level and change, FII + DII change last quarter) and valuation (PE vs industry, PEG). Banks and finance companies use ROE instead of ROCE, debt and cash flow.
+- **Strong** 70+, **OK** 50–69, **Weak** under 50. **Red flag**: pledge over 10%, promoter stake down more than 3 points in a year, losses, negative operating cash flow, debt/equity over 2, interest cover under 1.5x.
+- A **Fundamentals** filter (Any / Hide weak & red flags / Strong only) sits on Strong 25, VCP setups and Confluence. In Confluence, A-list needs fundamentals OK or Strong, and a red flag moves a setup to Skip.
+
 ## Install it as an app
 
 - **Android (Chrome):** open the link → Share icon in the dashboard → **Install the app** (or Chrome menu → Install app).
@@ -71,6 +79,7 @@ Settings → Pages → *Build and deployment* → Source: **GitHub Actions**. Th
 
 - `index.html`: the whole dashboard
 - `uploads/`: weekly sheets go here
+- `scripts/fund_targets.py`, `scripts/fund_merge.py`: fundamentals from StockScans into `data/fund/` (run by the evening Claude task)
 - `scripts/flow.py`: scores liquidity flow from NSE delivery data into `data/flow/`
 - `scripts/convert.py`: turns a sheet into `data/weeks/<date>.json` and rebuilds `data/index.json` (same scoring as the page)
 - `.github/workflows/publish.yml`: runs the converter and publishes to GitHub Pages
