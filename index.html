@@ -128,6 +128,7 @@ select,input[type=search],input[type=number]{font:16px Inter,sans-serif;min-heig
 .lvl .buy b{color:var(--up)}.lvl .stp b{color:var(--dn)}
 .sigs{display:flex;flex-wrap:wrap;gap:4px}.sigs span{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--bg);border:1px solid var(--line)}.sigs span.on{background:var(--mint);border-color:transparent;color:#0b0b0b}
 .calc{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:end;margin:10px 0 14px;padding:12px;border-radius:14px;background:var(--soft)}.calc label{display:grid;gap:4px;font-size:13px;color:var(--ink2)}
+.lyr{display:grid;gap:5px}.lyr>div{display:grid;grid-template-columns:1.2em 7.2em minmax(0,1fr);gap:6px;font-size:13px;align-items:baseline}.lyr span{overflow-wrap:anywhere}
 .smew{font-size:12.5px;font-weight:600;color:var(--dn)}
 @media(max-width:600px){.lvl{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}.tabs button{font:600 14px Inter,sans-serif;min-height:40px;padding:0 16px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}.tabs button[aria-selected=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -331,6 +332,13 @@ tr.top10 td{background:var(--gold)}
   <div class="vgrid" id="z-plan"></div>
   <div class="cap">Trigger = the coil's high (or the inside day's high). Buy only above the trigger and not beyond the max entry (trigger + 1%); stocks can gap past it at the open. Stop = below the coil, or 1.5× the usual daily swing, whichever is closer. Size = capital × risk % ÷ (entry − stop). Planned levels, not orders. For education only, not a buy/sell recommendation.</div>
   <div class="after" id="j-plan"></div></div></section>
+<section class="view pall band" id="v-confluence" hidden><div class="wrap"><div class="lead" id="i-conf"><div class="kicker"><i></i>Confluence</div><h2>Loading…</h2></div>
+  <div class="tabs" id="cTabs" role="tablist"></div>
+  <div class="vgrid" id="z-conf"></div>
+  <h3 style="margin-top:26px">Delivery money, no setup yet: watch for a base to form</h3><p class="note">Stocks in early-inflow or confirmed groups where delivery is building and the weekly sheet rates them well, but which are not on today's VCP list. Not trades yet; candidates for tomorrow's scans.</p>
+  <div class="tbl"><table class="stk" id="t-cwatch"></table></div>
+  <div class="after" id="j-conf"></div>
+</div></section>
 <section class="view pall band" id="v-setups" hidden><div class="wrap"><div class="lead" id="i-setups"></div>
   <div class="ctl"><div class="seg" id="vseg"><button data-k="all" aria-pressed="true">All</button><button data-k="main">Mainboard</button><button data-k="sme">SME</button></div><label class="chip" style="cursor:pointer;min-height:40px">Sort <select id="vsort" aria-label="Sort setups" style="min-height:32px;border:0;padding:0 4px;font-size:14px"><option value="conf">Best fit</option><option value="rk">Scan order</option><option value="val">Most liquid</option><option value="rs">Strongest RS 63d</option><option value="adr">Tightest range (ADR)</option><option value="hi">Closest to 52-wk high</option><option value="dry">Driest volume</option><option value="vt">Volume rising</option></select></label><label class="chip" style="cursor:pointer;min-height:40px">Liquidity <select id="vliq" aria-label="Minimum traded value per day" style="min-height:32px;border:0;padding:0 4px;font-size:14px"><option value="0">Any</option><option value="0.25">₹25 L+/day</option><option value="2.5" selected>₹2.5 Cr+/day</option><option value="25">₹25 Cr+/day</option></select></label><select id="vday" aria-label="Choose day" hidden></select></div>
   <div class="note" id="vhid" style="margin:-2px 0 8px"></div>
@@ -493,8 +501,8 @@ const TEMPLATE=(()=>{const c=document.documentElement.cloneNode(true);c.querySel
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const SEG={E:{n:'Emerging Leader',c:'var(--up)'},T:{n:'Turnaround Candidate',c:'var(--up)',hollow:1},L:{n:'Established Leader',c:'var(--est)'},F:{n:'Fading Sector',c:'var(--dn)'},R:{n:'Rangebound',c:'var(--rb)'}};
 const ORDER=['E','T','L','F','R'];
-const GROUPS=[['home','Home','i-home',['summary']],['weekly','Weekly','i-cal',['changes','scorecard','shortlist','speed','trends']],['sectors','Sectors','i-sec',['top25','flow','emerging','leaders','fading','turnarounds','rotation','movers','breadth']],['stocks','Stocks','i-stk',['stocks','strong25','conviction','sector']],['setups','Setups','i-vcp',['plan','setups','clusters','vcptrack']],['more','More','i-more',['all','method']]];
-const TABS={summary:'Summary',plan:'Next-session plan',setups:'VCP setups',clusters:'Setup clusters',vcptrack:'Setup tracker',changes:'Segment changes',scorecard:'Scorecard',shortlist:'Shortlist changes',speed:'Speed',trends:'Trends',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',strong25:'Strong 25',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',flow:'Liquidity flow',all:'All sectors',method:'Method'};
+const GROUPS=[['home','Home','i-home',['summary']],['weekly','Weekly','i-cal',['changes','scorecard','shortlist','speed','trends']],['sectors','Sectors','i-sec',['top25','flow','emerging','leaders','fading','turnarounds','rotation','movers','breadth']],['stocks','Stocks','i-stk',['stocks','strong25','conviction','sector']],['setups','Setups','i-vcp',['plan','confluence','setups','clusters','vcptrack']],['more','More','i-more',['all','method']]];
+const TABS={summary:'Summary',plan:'Next-session plan',setups:'VCP setups',clusters:'Setup clusters',vcptrack:'Setup tracker',changes:'Segment changes',scorecard:'Scorecard',shortlist:'Shortlist changes',speed:'Speed',trends:'Trends',top25:'Top 25',emerging:'Emerging',leaders:'Established',fading:'Fading',turnarounds:'Turnarounds',stocks:'Stock picks',strong25:'Strong 25',conviction:'Conviction',sector:'Sector drill-down',rotation:'Theme rotation',movers:'Weekly movers',breadth:'Breadth',flow:'Liquidity flow',confluence:'Confluence',all:'All sectors',method:'Method'};
 let M=null,PREV=null,HIST=[],IDX=null,SRC='',SITE='',cmp='M3',mv='W',show=new Set(ORDER),view='summary',lastIn={};
 const sorts={};let sortT={k:'cmp',d:-1},sortD={k:'ms',d:1},dk=null;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -618,7 +626,7 @@ function lead(id){const v=INS[id],st=STAT[id];if(!v)return;const j=$('#j-'+id),t
 let FL=null,flTried=false;
 const FQ={lead:['Early inflow','var(--up)'],confirmed:['Confirmed','var(--est)'],fading:['Leaders losing flow','var(--dn)'],neutral:['Neutral','var(--rb)']};
 const flTip=g=>esc(`<b>${esc(g.name)}</b> · ${FQ[g.q][0]}<br>Flow ${Math.round(g.F)} · Price ${Math.round(g.P)} · ${g.n} stocks`+(g.R?` · MRank ${g.R}`:'')+`<br>Delivery value ${g.rg}x its base · ${g.thr}% of stocks thrusting · ${g.up}% on up days`+(g.top&&g.top.length?`<br>`+g.top.slice(0,3).map(t=>`${esc(t.sym)} ${t.x}x, ${t.r10>0?'+':''}${t.r10}%`).join(' · '):''));
-async function rFlow(){if(!FL&&!flTried){flTried=true;try{const r=await fetch('data/flow/latest.json',{cache:'no-cache'});if(r.ok)FL=await r.json()}catch(e){}}
+async function rFlow(){await getFL();
   const L=$('#i-liqflow');
   if(!FL){L.innerHTML='<div class="kicker"><i></i>Liquidity flow</div><h2>No delivery data yet</h2><p>The site builds this from NSE\'s daily delivery file at about 8 pm IST on weekdays. It needs 50 sessions of files, so the first run downloads about four months of history.</p>';return}
   const G=FL.groups,by=q=>G.filter(g=>g.q===q),ld=by('lead'),cf=by('confirmed'),fd=by('fading');
@@ -650,6 +658,56 @@ async function rFlow(){if(!FL&&!flTried){flTried=true;try{const r=await fetch('d
   $('#t-flow').innerHTML=`<tr>${cols.map(c=>`<th${c[1]==='name'||c[1]==='q'?'':' class="num"'}>${c[0]}</th>`).join('')}</tr>`+G.map(g=>`<tr data-k="${g.k}" class="row" style="display:table-row">${cols.map(c=>`<td${c[1]==='name'||c[1]==='q'?'':' class="num"'}>${c[1]==='q'?FQ[g.q][0]:esc(g[c[1]]??'—')}</td>`).join('')}</tr>`).join('')}
 $('#v-flow').addEventListener('click',e=>{const c=e.target.closest('[data-fk]');if(c)openDrill(c.dataset.fk)});
 
+/* ---------- confluence: weekly sheet x liquidity flow x VCP setup ---------- */
+let ctab='A';
+async function getFL(){if(!FL&&!flTried){flTried=true;try{const r=await fetch('data/flow/latest.json',{cache:'no-cache'});if(r.ok)FL=await r.json()}catch(e){}}return FL}
+function confRow(x){const g=x.g,s=x.s||null,fg=FL&&g?FL.groups.find(z=>z.k===g.k):null,st=FL&&FL.stk?FL.stk[String(x.code).replace(/-SM$/,'')]||FL.stk[x.sym]:null;
+  const L=[];
+  // 1 sector (weekly sheet)
+  const secP=!g?0:g.seg==='F'?0:g.mr<=25?25:g.mr<=44?18:g.mr<=90?8:0;
+  L.push({n:'Sector',ok:!!g&&g.seg!=='F'&&g.mr<=44,soft:!!g&&g.seg!=='F'&&g.mr<=90,t:g?`${clean(g.name)} · MRank ${g.mr}${g.seg==='F'?' · fading':''}`:'not in weekly sheet',p:secP});
+  // 2 stock quality (weekly sheet)
+  const ms=s?s.ms:null,quP=ms==='A'?15:ms==='B'?10:ms==='C'?5:0;
+  L.push({n:'Stock grade',ok:ms==='A'||ms==='B',soft:ms==='C',t:s?`MasterScore ${ms||'—'} · EPS ${s.eps??'—'} · Price str. ${s.rs??'—'}`:'no weekly grades',p:quP});
+  // 3 group flow
+  const q=fg?fg.q:null,gfP=q==='lead'?20:q==='confirmed'?16:q==='neutral'?6:0;
+  L.push({n:'Sector flow',ok:q==='lead'||q==='confirmed',soft:q==='neutral',t:fg?`${FQ[q][0]} · Flow ${Math.round(fg.F)}, delivery ${fg.rg}x`:'no delivery data for group',p:gfP});
+  // 4 stock delivery
+  const sdP=!st?0:st[5]?15:(st[0]>=1.2&&st[3]!=null&&st[4]!=null&&st[3]>=st[4])?10:st[0]>=1?5:0;
+  L.push({n:'Stock delivery',ok:sdP>=10,soft:sdP===5,t:st?`${st[0]}x delivery value · delivery ${st[3]??'—'}% (base ${st[4]??'—'}%)${st[5]?' · thrusting':''}`:(x.b==='sme'?'SME: not in NSE EQ delivery data':'under Rs 2.5 Cr a day or no data'),p:sdP});
+  // 5 setup and risk (VCP plan)
+  const rk=x.riskPct,setP=(x.status==='ready'?15:x.status==='watch'?7:0)+(rk<=3?10:rk<=5?6:rk<=7?2:0);
+  L.push({n:'Setup & risk',ok:x.status!=='avoid'&&rk<=5,soft:x.status!=='avoid'&&rk<=7,t:`${{ready:'Ready',watch:'Watching',avoid:'Avoid'}[x.status]} · risk ${rk.toFixed(1)}% to stop · trigger ${x.dist.toFixed(1)}% away`,p:setP});
+  const score=L.reduce((a,b)=>a+b.p,0),hard=x.status==='avoid'||x.b==='sme'||(g&&g.seg==='F')||q==='fading'||rk>7||(x.val??0)<vliq;
+  const tier=hard?'C':score>=70&&L.every(l=>l.ok||l.soft)&&L.filter(l=>l.ok).length>=4?'A':score>=55?'B':'C';
+  return {...x,L,score,tier,why:hard?[x.status==='avoid'?'plan says avoid':null,x.b==='sme'?'SME stock':null,g&&g.seg==='F'?'fading sector':null,q==='fading'?'sector losing delivery money':null,rk>7?'stop over 7% away':null,(x.val??0)<vliq?'below liquidity filter':null].filter(Boolean):[]}}
+async function rConf(){await getFL();const I=$('#i-conf');
+  if(!V||!M){I.innerHTML='<div class="kicker"><i></i>Confluence</div><h2>Needs a VCP sheet and a weekly sheet</h2>';return}
+  const P=vEnrich().map(planRow).filter(x=>x.ok);
+  if(!P.length){I.innerHTML='<div class="kicker"><i></i>Confluence</div><h2>Price history for the setups is pending</h2><p>It arrives with the 8 pm IST update.</p>';return}
+  const R=P.map(confRow).sort((a,b)=>b.score-a.score),T={A:R.filter(r=>r.tier==='A'),B:R.filter(r=>r.tier==='B'),C:R.filter(r=>r.tier==='C')};
+  const ns=nextSession(V.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+  I.innerHTML=`<div class="kicker"><i></i>Confluence · VCP ${fmtDate(V.date)} · flow ${FL?fmtDate(FL.date):'—'} · week of ${fmtDate(M.date)}</div><h2>${T.A.length?`${plural(T.A.length,'setup lines','setups line')} up on all three for ${ns}: ${T.A.slice(0,3).map(r=>'<b>'+esc(r.sym)+'</b>').join(', ')}`:T.B.length?`No setup passes every check for ${ns}; ${plural(T.B.length,'is','are')} close: ${T.B.slice(0,3).map(r=>'<b>'+esc(r.sym)+'</b>').join(', ')}`:`No setup lines up for ${ns}`}</h2>
+  <p>Each VCP setup is checked against the weekly sheet (sector rank and stock grade), the liquidity flow (sector and the stock's own delivery) and its own plan (trigger, stop distance). A-list = 70+ points and at least four of five checks fully passed, main board, stop within 7%.${FL?'':' Delivery data has not loaded, so the flow checks score zero.'}</p>
+  <div class="stats"><div class="stat m"><b>${T.A.length}</b><span>A: all layers agree</span></div><div class="stat"><b>${T.B.length}</b><span>B: one layer missing</span></div><div class="stat"><b>${T.C.length}</b><span>C: skip</span></div></div>`;
+  const LB={A:'A-list',B:'B-list',C:'Skip'};if(!T[ctab].length&&ctab==='A'&&T.B.length)ctab='B';
+  $('#cTabs').innerHTML=Object.keys(LB).map(k=>`<button role="tab" data-c="${k}" aria-selected="${k===ctab}">${LB[k]} · ${T[k].length}</button>`).join('');
+  const CC={A:'var(--est)',B:'var(--up)',C:'var(--rb)'};
+  $('#z-conf').innerHTML=T[ctab].map(x=>`<div class="pt${x.b==='sme'?' sme':''}" style="--c:${CC[x.tier]}" ${x.g?`data-sk="${x.g.k}"`:''}>
+    <div class="h"><b><a class="tv" href="${tvV(x)}" target="_blank" rel="noopener">${esc(x.sym)}<svg aria-hidden="true"><use href="#i-ext"/></svg></a></b><span class="note">${x.b==='sme'?'SME':'Main'} · ${x.score}/100</span><span class="st">${LB[x.tier]}</span></div>
+    ${x.why.length?`<div class="smew">Skip: ${x.why.join(' · ')}</div>`:''}
+    <div class="lyr">${x.L.map(l=>`<div><b style="color:${l.ok?'var(--est)':l.soft?'var(--ink2)':'var(--dn)'}">${l.ok?'✓':l.soft?'~':'✗'}</b><b>${l.n}</b><span style="color:var(--ink2)">${esc(l.t)}</span></div>`).join('')}</div>
+    <div class="lvl"><div class="buy">Buy above<b>${fmtR(x.trig)}</b></div><div class="stp">Stop<b>${fmtR(x.stop)}</b></div><div>Target 2R<b>${fmtR(x.t2)}</b></div><div>Target 3R<b>${fmtR(x.t3)}</b></div><div>Risk<b>${x.riskPct.toFixed(1)}%</b></div><div>Size<b>${x.qty.toLocaleString('en-IN')} sh</b></div><div>Max entry<b>${fmtR(x.max)}</b></div><div>Value<b>${fmtV(x.val/1e7)}</b></div></div></div>`).join('')||'<div class="empty">Nothing in this list.</div>';
+  // flow names without a setup
+  const inV=new Set(P.map(x=>String(x.code).replace(/-SM$/,'')).concat(P.map(x=>x.sym))),by=Object.fromEntries(M.S.map(s=>[s.sym,s]));
+  const W=!FL||!FL.stk?[]:Object.entries(FL.stk).map(([sym,v])=>{const s=by[sym],g=s&&s.g,fg=g&&FL.groups.find(z=>z.k===g.k);return {sym,v,s,g,fg}})
+    .filter(o=>o.s&&o.g&&o.fg&&!inV.has(o.sym)&&(o.fg.q==='lead'||o.fg.q==='confirmed')&&o.v[5]&&o.g.seg!=='F'&&(o.s.ms==='A'||o.s.ms==='B'))
+    .sort((a,b)=>(a.fg.q==='lead'?0:1)-(b.fg.q==='lead'?0:1)||b.v[0]-a.v[0]).slice(0,15);
+  $('#t-cwatch').innerHTML=W.length?`<tr><th>Stock</th><th>Group</th><th class="num">Deliv. x</th><th class="num">10d</th><th class="num">Deliv %</th><th>Grade</th></tr>`+W.map(o=>`<tr data-k="${o.g.k}" class="row" style="display:table-row"><td><b>${esc(o.sym)}</b></td><td>${esc(clean(o.g.name))} <small style="color:var(--mute)">${FQ[o.fg.q][0]} · MRank ${o.g.mr}</small></td><td class="num">${o.v[0]}</td><td class="num">${o.v[1]>0?'+':''}${o.v[1]}%</td><td class="num">${o.v[3]??'—'} <small style="color:var(--mute)">(${o.v[4]??'—'})</small></td><td>${esc(o.s.ms||'—')} · RS ${o.s.rs??'—'}</td></tr>`).join(''):`<tr><td>${FL&&FL.stk?'No candidates today.':'Per-stock delivery data arrives with the next 8 pm IST update.'}</td></tr>`;
+  $('#j-conf').innerHTML=`<p><b>How the 100 points split.</b> Sector rank 25 (top 25 = 25, 26–44 = 18, 45–90 = 8; fading = 0). Stock grade 15 (MasterScore A 15, B 10, C 5). Sector flow 20 (early inflow 20, confirmed 16, neutral 6, losing flow 0). Stock delivery 15 (thrusting 15; delivery 1.2x+ with delivery % above its base 10; 1x+ 5). Setup and risk 25 (ready 15, watching 7; stop within 3% adds 10, within 5% adds 6, within 7% adds 2).</p><p><b>Why this lowers risk.</b> A VCP gives a tight, defined stop. The weekly sheet says the sector and the stock are already strong. The delivery data says real money (not intraday churn) is accumulating. When all three agree, the stop is close and the odds of follow-through are better, which is what makes a 2R–3R target realistic. Levels and size come from the Next-session plan settings. Education, not investment advice.</p>`}
+$('#cTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ctab=b.dataset.c;rConf()});
+$('#v-confluence').addEventListener('click',e=>{const c=e.target.closest('[data-sk]');if(c&&!e.target.closest('a'))openDrill(c.dataset.sk)});
+
 /* ---------- navigation ---------- */
 const groupOf=v=>GROUPS.find(g=>g[3].includes(v));
 const tabsIn=g=>g[3];
@@ -658,7 +716,7 @@ function nav(){const cg=groupOf(view);
   const T=tabsIn(cg);$('#chips').hidden=T.length<2;$('#chips').innerHTML=`<div class="scroll">${T.map(t=>`<a href="#${t}" data-v="${t}" aria-current="${t===view?'page':'false'}">${TABS[t]}</a>`).join('')}</div>`;
   $(`#chips a[data-v="${view}"]`)?.scrollIntoView({block:'nearest',inline:'center'})}
 function go(v){if(!TABS[v])v='summary';view=v;lastIn[groupOf(v)[0]]=v;
-  $$('.view').forEach(s=>s.hidden=s.id!=='v-'+v);nav();window.scrollTo(0,0);hideTip();if(v==='flow')rFlow().then(()=>requestAnimationFrame(drawVisible));requestAnimationFrame(drawVisible)}
+  $$('.view').forEach(s=>s.hidden=s.id!=='v-'+v);nav();window.scrollTo(0,0);hideTip();if(v==='flow')rFlow().then(()=>requestAnimationFrame(drawVisible));if(v==='confluence')rConf();requestAnimationFrame(drawVisible)}
 addEventListener('hashchange',()=>go(location.hash.slice(1)));
 $('#gnav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const g=GROUPS.find(x=>x[0]===b.dataset.g);const t=lastIn[g[0]]&&tabsIn(g).includes(lastIn[g[0]])?lastIn[g[0]]:tabsIn(g)[0];location.hash=t;if(t===view)go(t)});
 
@@ -991,7 +1049,7 @@ $('#vliq').addEventListener('change',e=>{vliq=+e.target.value;vInsights();planIn
 document.addEventListener('click',e=>{if(e.target.id==='vshow'){e.preventDefault();vliq=0;$('#vliq').value='0';vInsights();['setups','clusters'].forEach(lead);rSetups();rSummary()}});
 $('#vseg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;vseg=b.dataset.k;[...$('#vseg').children].forEach(x=>x.setAttribute('aria-pressed',x===b));rSetups()});
 $('#vsort').addEventListener('change',e=>{vsort=e.target.value;rSetups()});
-async function loadVcpDay(d){const r=await fetch(`data/vcp/${d}.json`,{cache:'no-cache'});if(!r.ok)throw 0;V=await r.json();if(M){vInsights();planInsights();['plan','setups','clusters','vcptrack'].forEach(lead);rSetups();rPlan();rSummary()}$('#vday').value=d}
+async function loadVcpDay(d){const r=await fetch(`data/vcp/${d}.json`,{cache:'no-cache'});if(!r.ok)throw 0;V=await r.json();if(M){vInsights();planInsights();['plan','setups','clusters','vcptrack'].forEach(lead);rSetups();rPlan();rSummary();if(view==='confluence')rConf()}$('#vday').value=d}
 $('#vday').addEventListener('change',e=>loadVcpDay(e.target.value).catch(()=>showErr('Could not load that day.')));
 async function bootVcp(){try{const r=await fetch('data/vcp/index.json',{cache:'no-cache'});if(!r.ok)return;VIDX=await r.json();if(!VIDX.length)return;const sel=$('#vday');sel.hidden=VIDX.length<2;sel.innerHTML=[...VIDX].reverse().map(x=>`<option value="${x.date}">${fmtDate(x.date)}</option>`).join('');await loadVcpDay(VIDX[VIDX.length-1].date)}catch(e){}}
 
@@ -1032,7 +1090,7 @@ function rPlan(){if(!V){$('#z-plan').innerHTML='<div class="wait"><b>No VCP shee
     <div class="sigs">${x.sigs.map(([n,on])=>`<span class="${on?'on':''}">${on?'✓ ':''}${n}</span>`).join('')}</div>
     <div class="sec">Close ${fmtR(x.c)} · trigger ${x.dist.toFixed(1)}% above · ${x.g?esc(clean(x.g.name))+' MRank '+x.g.mr:'not in sector sheet'}${x.delUp!=null?` · delivery ${x.delUp>=0?'+':''}${x.delUp.toFixed(0)} pts`:''}</div></div>`).join('')||'<div class="empty">Nothing in this list.</div>'}
 $('#pTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ptab=b.dataset.p;rPlan()});
-['#pCap','#pRisk','#pStop'].forEach(id=>$(id).addEventListener('input',()=>{try{localStorage.setItem('sml-calc',JSON.stringify({cap:$('#pCap').value,risk:$('#pRisk').value,stop:$('#pStop').value}))}catch(e){}planInsights();lead('plan');rPlan()}));
+['#pCap','#pRisk','#pStop'].forEach(id=>$(id).addEventListener('input',()=>{try{localStorage.setItem('sml-calc',JSON.stringify({cap:$('#pCap').value,risk:$('#pRisk').value,stop:$('#pStop').value}))}catch(e){}planInsights();lead('plan');rPlan();if(view==='confluence')rConf()}));
 function planText(){const P=vEnrich().map(planRow).filter(x=>x.ok&&x.status==='ready').sort((a,b)=>a.dist-b.dist),ns=nextSession(V.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
   return `📋 Plan for ${ns} (from ${fmtDate(V.date)} close)\n\n`+(P.length?P.map(x=>`${x.b==='sme'?'🔴 SME ':''}${x.sym}: buy above ${fmtR(x.trig)} (max ${fmtR(x.max)}), stop ${fmtR(x.stop)}, targets ${fmtR(x.t2)} / ${fmtR(x.t3)}`).join('\n'):'No setup ready.')+`${tail('plan')}\n\nPlanned levels for education, not recommendations. Check exchange holidays.`}
 
