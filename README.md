@@ -56,6 +56,17 @@ Every final stock (Strong 25, VCP setups, Confluence and its watchlist) gets a f
 - **Strong** 70+, **OK** 50–69, **Weak** under 50. **Red flag**: pledge over 10%, promoter stake down more than 3 points in a year, losses, negative operating cash flow, debt/equity over 2, interest cover under 1.5x.
 - A **Fundamentals** filter (Any / Hide weak & red flags / Strong only) sits on Strong 25, VCP setups and Confluence. In Confluence, A-list needs fundamentals OK or Strong, and a red flag moves a setup to Skip.
 
+## Send sheets from Telegram (no GitHub step)
+
+The VCP sheet arrives in a Telegram channel, so a small bot of your own carries it to the repo. Forward the sheet to the bot, and the **Telegram inbox** Action (every 20 minutes from 3:30 to 11:10 pm IST on weekdays, every 3 hours at weekends) saves it to `uploads/` and republishes the dashboard. The bot replies "Saved ✓".
+
+One-time setup:
+1. In Telegram, open **@BotFather**, send `/newbot`, pick a name, and copy the token it gives you.
+2. In GitHub: repo → Settings → Secrets and variables → Actions → **New repository secret**: name `TG_BOT_TOKEN`, value = the token.
+3. Send any message to your new bot. Within 20 minutes it replies with your chat id. Add a second secret `TG_CHAT_ID` with that number. From then on the bot only accepts files from you.
+
+Accepted files: `vcp_setups_YYYY-MM-DD.xlsx` and `Weekly_Ranked_Sector_List…xlsx`, up to 20 MB. The upload icon in the app still works for viewing a sheet on one device, but it does not publish it.
+
 ## Install it as an app
 
 - **Android (Chrome):** open the link → Share icon in the dashboard → **Install the app** (or Chrome menu → Install app).

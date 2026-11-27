@@ -1,0 +1,49 @@
+name: Telegram inbox
+
+# Saves sheets you forward to your own Telegram bot into uploads/, then starts the publish workflow.
+# Setup and secrets: see scripts/tg_inbox.py and the README.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/20 10-17 * * 1-5"   # every 20 min, 3:30 pm to 11:10 pm IST on weekdays
+    - cron: "15 */3 * * 0,6"        # every 3 hours at weekends, for the weekly sheet
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: telegram-inbox
+  cancel-in-progress: false
+
+jobs:
+  inbox:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch sheets forwarded to the bot
+        id: tg
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: python3 scripts/tg_inbox.py
+
+      - name: Save to the repo
+        if: steps.tg.outputs.changed == '1'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add uploads data/tg_inbox.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Sheets from Telegram"
+            git pull --rebase origin main
+            git push origin main
+          fi
+
+      - name: Publish the dashboard
+        if: steps.tg.outputs.saved != '' && steps.tg.outputs.saved != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publish.yml --ref main
